@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { ExampleHomePage } from './example-home-page';
+import { ExampleHomePage } from '../../example/ui/example-home-page';
 
 const meta = {
   title: 'Widgets/HomePage',
