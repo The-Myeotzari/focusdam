@@ -1,8 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   color-scheme: light;
   --font-sans:
-    "Hanken Grotesk", "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    'Hanken Grotesk', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
 
   /* Focusdam Design System - Final */
   --ds-primary: #3c5f7c;
@@ -105,7 +109,15 @@ button,
 input,
 textarea,
 select {
+  margin: 0;
   font: inherit;
+  color: inherit;
+}
+
+button {
+  padding: 0;
+  border: 0;
+  background: transparent;
 }
 
 a {
@@ -114,9 +126,51 @@ a {
 }
 
 img,
-svg {
+svg,
+video,
+canvas {
   display: block;
   max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+figure,
+figcaption,
+dl,
+dd,
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+}
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+/* 프로젝트 공통 h1 스타일 */
+h1 {
+  font-size: 32px;
+  line-height: 38px;
+  font-weight: 500;
+  letter-spacing: -0.32px;
 }
 
 ::selection {
@@ -430,7 +484,7 @@ svg {
   height: 8px;
   border-radius: var(--ds-radius-full);
   background: var(--ds-primary);
-  content: "";
+  content: '';
 }
 
 .site-selection-row--checkbox .site-selection-row__control {
@@ -454,7 +508,7 @@ svg {
   height: 16px;
   border-radius: var(--ds-radius-full);
   background: #ffffff;
-  content: "";
+  content: '';
 }
 
 .site-progress {
