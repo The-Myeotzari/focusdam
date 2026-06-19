@@ -1,5 +1,5 @@
-import { ExampleHomePage } from '@/widgets/home-page';
+import { ExampleHomePage } from '@/widgets/example';
 
-export function ExamplePage() {
+export default function ExamplePage() {
   return <ExampleHomePage />;
 }
