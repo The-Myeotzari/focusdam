@@ -17,8 +17,10 @@ export function OngoingStarterItem({ starter }: Props) {
   );
 
   return (
-    <Link
-      href={`/starters/${starter.id}`}
+    // 빌드 오류가 발생하여 임의로 Link 주석 처리
+    // <Link
+    //   href={`/starters/${starter.id}`}
+    <article
       className="flex min-h-[104px] items-center gap-4 rounded-[32px] bg-[#f4f3f6] px-6 transition hover:bg-[var(--color-surface-container)]"
     >
       <span className="min-w-0 flex-1">
@@ -36,6 +38,7 @@ export function OngoingStarterItem({ starter }: Props) {
         className="shrink-0 text-[#72777e]"
         aria-hidden="true"
       />
-    </Link>
+    {/* </Link> */}
+    </article>
   );
 }
