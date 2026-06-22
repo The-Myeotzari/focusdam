@@ -11,6 +11,7 @@ export type SettingsMenuItemType = {
 
 // 설정 메뉴 섹션 타입 정의
 export type SettingsMenuSection = {
+  id: string;
   title: string;
   items: SettingsMenuItemType[];
 };
