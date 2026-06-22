@@ -78,6 +78,7 @@ export const ACCOUNT_SETTINGS_MENU_SECTIONS: SettingsMenuSection[] = [
         description: '삭제한 계정은 복구할 수 없어요.',
         icon: Trash2,
         tone: 'safety',
+        action: 'delete-account-dialog',
       },
     ],
   },

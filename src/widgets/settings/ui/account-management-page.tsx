@@ -21,7 +21,7 @@ export async function AccountManagementPage() {
           <ChevronLeft size={24} aria-hidden="true" />
         </Link>
 
-        <h1>계정 관리(헤더 작업 필요)</h1>
+        <h1 className="text-center text-[24px] leading-8">계정 관리(헤더 작업 필요)</h1>
       </header>
 
       {/* 유저 정보 카드 */}

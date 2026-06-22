@@ -7,6 +7,7 @@ export type SettingsMenuItemType = {
   description: string;
   icon: LucideIcon;
   tone: 'primary' | 'success' | 'caution' | 'premium' | 'safety';
+  action?: 'delete-account-dialog';
 };
 
 // 설정 메뉴 섹션 타입 정의

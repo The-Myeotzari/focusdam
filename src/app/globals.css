@@ -361,6 +361,27 @@ h1 {
   background: rgba(60, 95, 124, 0.06);
 }
 
+.site-button--danger {
+  min-height: 48px;
+  border-radius: var(--ds-radius-md);
+  background: var(--color-error);
+  color: var(--color-on-error);
+  font-size: 16px;
+}
+
+.site-button--danger:hover {
+  background: #a51717;
+}
+
+.site-button--danger:focus-visible {
+  outline-color: rgba(186, 26, 26, 0.24);
+}
+
+.site-button--danger:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .site-input {
   width: 100%;
   min-height: 48px;
