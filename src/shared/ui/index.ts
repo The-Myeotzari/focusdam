@@ -20,3 +20,4 @@ export { SiteReportBoard, SiteReportRow } from './site-report';
 export { SiteSectionTitle } from './site-section-title';
 export { SiteSelectionRow } from './site-selection-row';
 export { SiteStateCard } from './site-state-card';
+export { SiteSwitch } from './site-switch';
