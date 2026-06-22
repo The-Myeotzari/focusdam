@@ -3,7 +3,7 @@
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
-import type { SettingsMenuItemType } from '@/widgets/settings-menu';
+import type { SettingsMenuItemType } from '@/widgets/settings';
 
 type Props = SettingsMenuItemType;
 

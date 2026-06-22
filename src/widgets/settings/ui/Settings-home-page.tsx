@@ -1,8 +1,8 @@
 // 설정 홈 화면 페이지
 
-import { SETTINGS_MENU_SECTIONS, SettingsMenuItem } from '@/widgets/settings-menu';
+import { SETTINGS_MENU_SECTIONS, SettingsMenuItem } from '@/widgets/settings';
 
-export function SettingsPage() {
+export function SettingsHomePage() {
   return (
     <main className="flex gap-8 flex-col px-5 py-4">
       <div className="grid gap-8">

@@ -1,6 +1,6 @@
 import { Bell, CircleHelp, Database, Sparkles, UserRound } from 'lucide-react';
 
-import type { SettingsMenuSection } from '@/widgets/settings-menu';
+import type { SettingsMenuSection } from '@/widgets/settings';
 
 // 설정 홈 메뉴 데이터
 export const SETTINGS_MENU_SECTIONS: SettingsMenuSection[] = [
