@@ -1,4 +1,13 @@
-import { Bell, CircleHelp, Database, ListChecks, Sparkles, Trash2, UserRound } from 'lucide-react';
+import {
+  Bell,
+  CircleHelp,
+  Database,
+  ListChecks,
+  ShieldCheck,
+  Sparkles,
+  Trash2,
+  UserRound,
+} from 'lucide-react';
 
 import type { SettingsMenuSection } from '@/widgets/settings';
 
@@ -48,6 +57,13 @@ export const SETTINGS_MENU_SECTIONS: SettingsMenuSection[] = [
     id: 'support',
     title: '지원',
     items: [
+      {
+        href: '/settings/terms-safety',
+        title: '약관·안전 안내',
+        description: '서비스 약관과 안전 안내를 확인해요.',
+        icon: ShieldCheck,
+        tone: 'safety',
+      },
       {
         href: '/settings/help',
         title: '도움말 및 피드백',

@@ -12,3 +12,4 @@ export { PlusSubscriptionPage } from './ui/plus-subscription-page';
 export { SettingsHomePage } from './ui/settings-home-page';
 export { SettingsMenu } from './ui/settings-menu';
 export { SettingsMenuItem } from './ui/settings-menu-item';
+export { TermsSafetyPage } from './ui/terms-safety-page';
