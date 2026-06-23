@@ -1,6 +1,15 @@
 // model
-export { ACCOUNT_SETTINGS_MENU_SECTIONS, SETTINGS_MENU_SECTIONS } from './model/settings-menu';
-export { type SettingsMenuItemType, type SettingsMenuSection } from './model/settings-menu.types';
+export {
+  ACCOUNT_SETTINGS_MENU_SECTIONS,
+  HELP_FEEDBACK_ITEMS,
+  SETTINGS_MENU_SECTIONS,
+  TERMS_SAFETY_ITEMS,
+} from './model/settings-menu';
+export {
+  type HelpFeedbackItem,
+  type SettingsMenuItemType,
+  type SettingsMenuSection,
+} from './model/settings-menu.types';
 
 // ui
 export { AccountManagementPage } from './ui/account-management-page';

@@ -16,3 +16,11 @@ export type SettingsMenuSection = {
   title: string;
   items: SettingsMenuItemType[];
 };
+
+export type HelpFeedbackItem = {
+  description: string;
+  href: string;
+  icon: LucideIcon;
+  title: string;
+  toneClassName: string;
+};

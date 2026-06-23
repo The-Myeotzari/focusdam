@@ -1,55 +1,10 @@
 // 도움말·피드백 페이지
 
-import {
-  ChevronLeft,
-  ChevronRight,
-  CircleHelp,
-  FlaskConical,
-  Headphones,
-  MessageSquare,
-  Send,
-  SquareLibrary,
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight, Headphones, Send } from 'lucide-react';
 import Link from 'next/link';
 
-type HelpFeedbackItem = {
-  description: string;
-  href: string;
-  icon: typeof SquareLibrary;
-  title: string;
-  toneClassName: string;
-};
-
-const HELP_FEEDBACK_ITEMS: HelpFeedbackItem[] = [
-  {
-    href: '#faq',
-    title: '자주 묻는 질문',
-    description: 'FAQ',
-    icon: SquareLibrary,
-    toneClassName: 'bg-[#e3fbf6] text-[#0f8f87]',
-  },
-  {
-    href: '#contact',
-    title: '계정/결제/오류',
-    description: '문의하기',
-    icon: CircleHelp,
-    toneClassName: 'bg-[var(--ds-success)] text-[var(--ds-success-ink)]',
-  },
-  {
-    href: '#feedback',
-    title: '화면 단위 의견',
-    description: '피드백',
-    icon: MessageSquare,
-    toneClassName: 'bg-[var(--ds-premium)] text-[#6f42c1]',
-  },
-  {
-    href: '#beta',
-    title: '인터뷰 신청',
-    description: '베타 참여',
-    icon: FlaskConical,
-    toneClassName: 'bg-[var(--ds-safety)] text-[var(--ds-safety-ink)]',
-  },
-];
+import { HELP_FEEDBACK_ITEMS } from '../model/settings-menu';
+import type { HelpFeedbackItem } from '../model/settings-menu.types';
 
 function HelpFeedbackMenuItem({
   description,
