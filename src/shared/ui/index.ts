@@ -21,3 +21,4 @@ export { SiteSectionTitle } from './site-section-title';
 export { SiteSelectionRow } from './site-selection-row';
 export { SiteStateCard } from './site-state-card';
 export { SiteSwitch } from './site-switch';
+export { SiteTopBar } from './site-top-bar';
