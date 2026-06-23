@@ -3,9 +3,12 @@
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 
+import { getNotificationSettings } from '@/entities/notification-settings';
 import { NotificationSettingsForm } from '@/features/update-notification-settings';
 
-export function NotificationManagementPage() {
+export async function NotificationManagementPage() {
+  const settings = await getNotificationSettings();
+
   return (
     <main className="flex gap-8 flex-col px-5 py-4">
       {/* TODO: 페이지 헤더 영역 추후 분리 필요*/}
@@ -30,7 +33,7 @@ export function NotificationManagementPage() {
         </p>
       </section>
 
-      <NotificationSettingsForm />
+      <NotificationSettingsForm initialSettings={settings} />
     </main>
   );
 }

@@ -2,16 +2,18 @@
 
 import { useState, useTransition } from 'react';
 
-import { updateNotificationSettings } from '../api/update-notification-settings.action';
-import {
-  DEFAULT_NOTIFICATION_SETTINGS,
-  NOTIFICATION_SETTING_ITEMS,
-} from '../model/notification-settings';
-import type { NotificationSettingId } from '../model/notification-settings.types';
-import { NotificationSettingItem } from './notification-setting-item';
+import type { NotificationSettingId, NotificationSettings } from '@/entities/notification-settings';
 
-export function NotificationSettingsForm() {
-  const [settings, setSettings] = useState(DEFAULT_NOTIFICATION_SETTINGS);
+import { updateNotificationSettings } from '../api/update-notification-settings.action';
+import { NotificationSettingItem } from './notification-setting-item';
+import { NOTIFICATION_SETTING_ITEMS } from './notification-setting-items';
+
+type Props = {
+  initialSettings: NotificationSettings;
+};
+
+export function NotificationSettingsForm({ initialSettings }: Props) {
+  const [settings, setSettings] = useState(initialSettings);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -25,17 +27,12 @@ export function NotificationSettingsForm() {
 
   function resetSettings() {
     setStatusMessage(null);
-    setSettings(DEFAULT_NOTIFICATION_SETTINGS);
+    setSettings(initialSettings);
   }
 
   function saveSettings() {
     startTransition(async () => {
-      const result = await updateNotificationSettings({
-        startReminder: settings['start-reminder'],
-        spendHold: settings['spend-hold'],
-        emotionReset: settings['emotion-reset'],
-        quietHours: settings['quiet-hours'],
-      });
+      const result = await updateNotificationSettings(settings);
 
       setStatusMessage(result.message);
     });

@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 
-export type NotificationSettingId = 'start-reminder' | 'spend-hold' | 'emotion-reset' | 'quiet-hours';
+import type { NotificationSettingId } from '@/entities/notification-settings';
 
 export type NotificationSettingItem = {
   id: NotificationSettingId;
@@ -8,5 +8,3 @@ export type NotificationSettingItem = {
   value: string;
   icon: LucideIcon;
 };
-
-export type NotificationSettingState = Record<NotificationSettingId, boolean>;

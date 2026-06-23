@@ -1,9 +1,8 @@
 import { SiteSwitch } from '@/shared/ui';
 
-import type {
-  NotificationSettingId,
-  NotificationSettingItem as NotificationSettingItemType,
-} from '../model/notification-settings.types';
+import type { NotificationSettingId } from '@/entities/notification-settings';
+
+import type { NotificationSettingItem as NotificationSettingItemType } from '../model/notification-settings.types';
 
 type Props = {
   checked: boolean;
