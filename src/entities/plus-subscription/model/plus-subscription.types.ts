@@ -1,9 +1,11 @@
-export type PlusSubscriptionStatus = 'active' | 'inactive' | 'pastDue';
+export type PlusSubscriptionStatus = 'notSubscribed' | 'active' | 'canceled';
 
 export type PlusSubscription = {
   canCancel: boolean;
-  nextBillingDate: string;
-  paymentMethod: string;
-  planName: string;
+  canceledAt?: string;
+  currentPeriodEnd?: string;
+  nextBillingDate?: string;
+  paymentMethod?: string;
+  planName?: string;
   status: PlusSubscriptionStatus;
 };
