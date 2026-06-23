@@ -6,7 +6,6 @@ export {
   TERMS_SAFETY_ITEMS,
 } from './model/settings-menu';
 export {
-  type HelpFeedbackItem,
   type SettingsMenuItemType,
   type SettingsMenuSection,
 } from './model/settings-menu.types';

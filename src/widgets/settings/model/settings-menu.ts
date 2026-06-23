@@ -16,11 +16,7 @@ import {
   UserRound,
 } from 'lucide-react';
 
-import type {
-  HelpFeedbackItem,
-  SettingsMenuItemType,
-  SettingsMenuSection,
-} from './settings-menu.types';
+import type { SettingsMenuItemType, SettingsMenuSection } from './settings-menu.types';
 
 // 설정 홈 메뉴 데이터
 export const SETTINGS_MENU_SECTIONS: SettingsMenuSection[] = [
@@ -142,33 +138,33 @@ export const TERMS_SAFETY_ITEMS: SettingsMenuItemType[] = [
   },
 ];
 
-export const HELP_FEEDBACK_ITEMS: HelpFeedbackItem[] = [
+export const HELP_FEEDBACK_ITEMS: SettingsMenuItemType[] = [
   {
-    href: '#faq',
+    href: '/settings/help/faq',
     title: '자주 묻는 질문',
     description: 'FAQ',
     icon: SquareLibrary,
-    toneClassName: 'bg-[#e3fbf6] text-[#0f8f87]',
+    tone: 'success',
   },
   {
-    href: '#contact',
+    href: '/settings/help/contact',
     title: '계정/결제/오류',
     description: '문의하기',
     icon: CircleHelp,
-    toneClassName: 'bg-[var(--ds-success)] text-[var(--ds-success-ink)]',
+    tone: 'success',
   },
   {
     href: '#feedback',
     title: '화면 단위 의견',
     description: '피드백',
     icon: MessageSquare,
-    toneClassName: 'bg-[var(--ds-premium)] text-[#6f42c1]',
+    tone: 'premium',
   },
   {
-    href: '#beta',
+    href: '/settings/help/interview',
     title: '인터뷰 신청',
     description: '베타 참여',
     icon: FlaskConical,
-    toneClassName: 'bg-[var(--ds-safety)] text-[var(--ds-safety-ink)]',
+    tone: 'safety',
   },
 ];

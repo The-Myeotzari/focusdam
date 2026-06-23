@@ -1,45 +1,10 @@
 // 도움말·피드백 페이지
 
-import { ChevronLeft, ChevronRight, Headphones } from 'lucide-react';
+import { ChevronLeft, Headphones } from 'lucide-react';
 import Link from 'next/link';
 
 import { HELP_FEEDBACK_ITEMS } from '../model/settings-menu';
-import type { HelpFeedbackItem } from '../model/settings-menu.types';
-
-function HelpFeedbackMenuItem({
-  description,
-  href,
-  icon: Icon,
-  title,
-  toneClassName,
-}: HelpFeedbackItem) {
-  return (
-    <li>
-      <Link
-        href={href}
-        className="flex min-h-[88px] items-center gap-4 rounded-[var(--radius-xl)] bg-[var(--color-surface-container-lowest)] px-5 py-4 shadow-[var(--shadow-card)] transition-colors hover:bg-[var(--color-surface-container-low)] focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-primary)]"
-      >
-        <span
-          className={`grid size-12 shrink-0 place-items-center rounded-full ${toneClassName}`}
-          aria-hidden="true"
-        >
-          <Icon size={22} strokeWidth={1.8} />
-        </span>
-
-        <span className="min-w-0 flex-1">
-          <span className="block text-xs font-medium text-[var(--color-outline)]">
-            {description}
-          </span>
-          <strong className="mt-1 block text-base font-semibold text-[var(--color-on-surface)]">
-            {title}
-          </strong>
-        </span>
-
-        <ChevronRight size={20} className="shrink-0 text-[var(--color-on-surface)]" />
-      </Link>
-    </li>
-  );
-}
+import { SettingsMenuItem } from './settings-menu-item';
 
 export function HelpFeedbackPage() {
   return (
@@ -83,7 +48,7 @@ export function HelpFeedbackPage() {
       <section aria-label="도움말 및 피드백 항목">
         <ul className="grid gap-4">
           {HELP_FEEDBACK_ITEMS.map((item) => (
-            <HelpFeedbackMenuItem key={item.href} {...item} />
+            <SettingsMenuItem key={item.href} {...item} />
           ))}
         </ul>
       </section>
