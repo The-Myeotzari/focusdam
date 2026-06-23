@@ -120,7 +120,7 @@ export const TERMS_SAFETY_ITEMS: SettingsMenuItemType[] = [
     tone: 'safety',
   },
   {
-    href: '#privacy-policy',
+    href: '/settings/terms-safety/privacy-policy',
     title: '수집·보관·삭제',
     description: '개인정보처리방침',
     icon: LockKeyhole,

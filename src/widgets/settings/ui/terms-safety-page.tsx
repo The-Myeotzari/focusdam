@@ -25,11 +25,9 @@ export function TermsSafetyPage() {
       <section className="overflow-hidden rounded-[var(--radius-xxl)] bg-[var(--ds-safety)] px-7 py-8">
         <div>
           <h2 className="text-[30px] font-medium leading-10 text-[var(--ds-safety-ink)]">
-            안전하게
-            <br />
-            사용하기
+            안전하게 사용하기
           </h2>
-          <p className="mt-5 max-w-[260px] text-base leading-7 text-[var(--ds-safety-ink)]">
+          <p className="mt-5 text-base leading-7 text-[var(--ds-safety-ink)]">
             집중이담의 역할과 한계를 명확히 안내합니다.
           </p>
         </div>
