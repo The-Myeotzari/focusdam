@@ -1,4 +1,4 @@
-const CACHE_NAME = "focusdam-shell-v2";
+const CACHE_NAME = "focusdam-shell-v3";
 const ASSETS = [
   "/",
   "/manifest.webmanifest",
@@ -30,6 +30,11 @@ self.addEventListener("fetch", (event) => {
 
   const requestUrl = new URL(event.request.url);
   if (requestUrl.origin !== self.location.origin) {
+    return;
+  }
+
+  // Next.js build assets should always follow the current deployment.
+  if (requestUrl.pathname.startsWith("/_next/")) {
     return;
   }
 
