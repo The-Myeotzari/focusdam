@@ -5,6 +5,8 @@ export { type SettingsMenuItemType, type SettingsMenuSection } from './model/set
 // ui
 export { AccountManagementPage } from './ui/account-management-page';
 export { ConsentManagementPage } from './ui/consent-management-page';
+export { DataExportPage } from './ui/data-export-page';
+export { DataManagementPage } from './ui/data-management-page';
 export { NotificationManagementPage } from './ui/notification-management-page';
 export { SettingsHomePage } from './ui/settings-home-page';
 export { SettingsMenu } from './ui/settings-menu';
