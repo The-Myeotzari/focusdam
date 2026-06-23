@@ -8,6 +8,7 @@ export { ConsentManagementPage } from './ui/consent-management-page';
 export { DataExportPage } from './ui/data-export-page';
 export { DataManagementPage } from './ui/data-management-page';
 export { NotificationManagementPage } from './ui/notification-management-page';
+export { PlusSubscriptionPage } from './ui/plus-subscription-page';
 export { SettingsHomePage } from './ui/settings-home-page';
 export { SettingsMenu } from './ui/settings-menu';
 export { SettingsMenuItem } from './ui/settings-menu-item';
