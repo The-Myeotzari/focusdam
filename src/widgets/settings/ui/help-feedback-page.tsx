@@ -1,6 +1,6 @@
 // 도움말·피드백 페이지
 
-import { ChevronLeft, ChevronRight, Headphones, Send } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Headphones } from 'lucide-react';
 import Link from 'next/link';
 
 import { HELP_FEEDBACK_ITEMS } from '../model/settings-menu';
@@ -87,20 +87,6 @@ export function HelpFeedbackPage() {
           ))}
         </ul>
       </section>
-
-      <p className="rounded-[var(--radius-xxl)] bg-[var(--color-surface-container-low)] px-5 py-4 text-center text-sm leading-6 text-[var(--color-primary)]">
-        베타 운영과 사용자 개선 루프를 연결합니다.
-      </p>
-
-      <div className="mt-auto grid gap-3">
-        <Link href="#feedback" className="site-button site-button--primary w-full gap-2">
-          <Send size={18} aria-hidden="true" />
-          피드백 보내기
-        </Link>
-        <Link href="#faq" className="site-button site-button--secondary w-full">
-          FAQ 보기
-        </Link>
-      </div>
     </main>
   );
 }

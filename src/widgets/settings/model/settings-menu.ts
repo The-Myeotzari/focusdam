@@ -127,7 +127,7 @@ export const TERMS_SAFETY_ITEMS: SettingsMenuItemType[] = [
     tone: 'safety',
   },
   {
-    href: '#self-care',
+    href: '/settings/terms-safety/self-care',
     title: '자기관리 보조',
     description: '의료행위 아님',
     icon: BriefcaseMedical,
