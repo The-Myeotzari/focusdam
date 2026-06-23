@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Check, ExternalLink } from "lucide-react";
 import { SiteButton, SiteTopBar } from "@/shared/ui";
@@ -79,7 +80,7 @@ export function OnboardingAccountPage() {
               />
             </div>
 
-            <a
+            <Link
               href="/"
               className="flex h-[35px] w-full items-end justify-between border-t border-[#e2e2e5] pt-4 text-[#42474d]"
             >
@@ -87,7 +88,7 @@ export function OnboardingAccountPage() {
                 약관 및 개인정보처리방침
               </span>
               <ExternalLink size={11} strokeWidth={2} />
-            </a>
+            </Link>
           </div>
         </section>
 

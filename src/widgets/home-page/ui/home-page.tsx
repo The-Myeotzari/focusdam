@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { SiteButton } from "@/shared/ui";
 
 export function HomePage() {
@@ -19,7 +20,14 @@ export function HomePage() {
           <span className="pointer-events-none absolute inset-0 -z-[1] rounded-full bg-[#cce5ff] opacity-10 blur-[32px]" />
           <span className="pointer-events-none absolute inset-4 -z-[1] rounded-full bg-[#ffddb6] opacity-[0.05] blur-[20px]" />
           <div className="flex h-64 w-64 items-center justify-center rounded-[48px] bg-white p-8 shadow-[0_10px_30px_-5px_rgba(107,142,173,0.06)]">
-            <img className="h-48 w-48 object-contain opacity-90 mix-blend-multiply" src="/logo.svg" alt="" />
+            <Image
+              className="h-48 w-48 object-contain opacity-90 mix-blend-multiply"
+              src="/logo.svg"
+              alt=""
+              width={192}
+              height={192}
+              priority
+            />
           </div>
         </div>
 
