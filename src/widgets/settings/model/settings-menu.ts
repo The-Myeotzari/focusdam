@@ -134,7 +134,7 @@ export const TERMS_SAFETY_ITEMS: SettingsMenuItemType[] = [
     tone: 'safety',
   },
   {
-    href: '#crisis-contact',
+    href: '/settings/terms-safety/crisis-contact',
     title: '전문기관/신뢰 연락처',
     description: '위기 안내',
     icon: Info,
