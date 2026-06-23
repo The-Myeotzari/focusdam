@@ -1,5 +1,12 @@
-const CACHE_NAME = "focusdam-shell-v1";
-const ASSETS = ["/", "/manifest.webmanifest", "/icon.svg", "/apple-touch-icon.svg"];
+const CACHE_NAME = "focusdam-shell-v2";
+const ASSETS = [
+  "/",
+  "/manifest.webmanifest",
+  "/focusdam_128.png",
+  "/focusdam_180.png",
+  "/focusdam_192.png",
+  "/focusdam_512.png"
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

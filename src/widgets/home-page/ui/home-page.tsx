@@ -1,81 +1,85 @@
-import {
-  SiteBadge,
-  SiteButton,
-  SiteCard,
-  SiteInput,
-  SiteSectionTitle
-} from "@/shared/ui";
+import { SiteButton } from "@/shared/ui";
 
 export function HomePage() {
   return (
-    <main className="site-page site-shell">
-      <section className="site-hero site-card--hero site-stack-lg">
-        <SiteBadge tone="primary">small starts</SiteBadge>
-        <div className="site-stack" style={{ gap: 12 }}>
-          <h1 className="site-title-lg">
-            괜찮아요. 지금 할 수 있는 것부터 작게 시작하면 됩니다.
-          </h1>
-          <p className="site-body-lg" style={{ color: "var(--color-on-surface-variant)" }}>
-            집중이담의 디자인 시스템을 기준으로, 공통 컴포넌트와 기본 스타일을
-            정리해두었습니다. 이제 새로운 화면도 같은 톤으로 빠르게 확장할 수 있어요.
-          </p>
+    <main
+      aria-labelledby="home-title"
+      className="relative isolate mx-auto flex min-h-[100svh] w-[min(100%,390px)] flex-col items-center overflow-hidden bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]"
+    >
+      <div className="pointer-events-none absolute inset-0 -z-[1] overflow-hidden" aria-hidden="true">
+        <span className="pointer-events-none absolute -left-[39px] -top-[88px] h-[354px] w-[156px] rounded-full bg-[#cce5ff] opacity-[0.03] blur-[60px]" />
+        <span className="pointer-events-none absolute -right-5 top-[530px] h-[309px] w-[137px] rounded-full bg-[#ffddb6] opacity-[0.03] blur-[50px]" />
+      </div>
+
+      <section className="z-[1] flex min-h-[calc(100svh-66px)] w-full max-w-[600px] flex-1 flex-col items-center justify-center px-5 py-[82px]">
+        <div
+          className="relative isolate flex h-[320px] w-[min(100%,320px)] items-center justify-center py-8"
+          aria-hidden="true"
+        >
+          <span className="pointer-events-none absolute inset-0 -z-[1] rounded-full bg-[#cce5ff] opacity-10 blur-[32px]" />
+          <span className="pointer-events-none absolute inset-4 -z-[1] rounded-full bg-[#ffddb6] opacity-[0.05] blur-[20px]" />
+          <div className="flex h-64 w-64 items-center justify-center rounded-[48px] bg-white p-8 shadow-[0_10px_30px_-5px_rgba(107,142,173,0.06)]">
+            <img className="h-48 w-48 object-contain opacity-90 mix-blend-multiply" src="/logo.svg" alt="" />
+          </div>
         </div>
-        <div className="site-actions">
-          <SiteButton href="#structure">시작하기</SiteButton>
-          <SiteButton href="#checkin" variant="secondary">
-            체크인
+
+        <section className="flex w-44 max-w-[280px] flex-col items-center gap-4 pt-12 text-center">
+          <h1
+            id="home-title"
+            className="m-0 text-[32px] font-medium leading-[38px] tracking-[-0.8px] text-[#1a1c1e]"
+          >
+            집중이담
+          </h1>
+          <p className="m-0 text-[18px] font-medium leading-7 text-[#42474d]">
+            실행·감정·소비·대화를 10분 단위로 가볍게 관리
+          </p>
+        </section>
+
+        <div className="flex w-full flex-col items-center pt-12">
+          <SiteButton
+            href="/onboarding/reason"
+            className="!min-h-14 !w-[280px] !max-w-full !rounded-full !bg-[#3c5f7c] !px-0 !py-4 !text-[16px] !font-medium !leading-6 !text-white !shadow-[0_10px_30px_-5px_rgba(107,142,173,0.06)]"
+          >
+            시작하기
+          </SiteButton>
+          <SiteButton
+            href="/"
+            variant="secondary"
+            className="!mt-4 !min-h-14 !w-[280px] !max-w-full !rounded-full !bg-[rgba(221,227,235,0.3)] !px-0 !py-4 !text-[16px] !font-medium !leading-6 !text-[#3c5f7c] !shadow-[0_10px_30px_-5px_rgba(107,142,173,0.06)]"
+          >
+            이미 계정이 있어요
           </SiteButton>
         </div>
       </section>
 
-      <section className="site-stack-lg" style={{ marginTop: 24 }}>
-        <SiteSectionTitle
-          eyebrow="foundation"
-          title="기본 구성"
-          description="디자인 문서의 색상, 타이포그래피, 카드, 버튼, 입력 필드를 코드 토큰으로 반영했습니다."
-        />
-
-        <div className="site-grid-2" id="structure">
-          <SiteCard className="site-stack">
-            <SiteBadge tone="success">구조</SiteBadge>
-            <h2 className="site-title-md">레이어 중심의 구성</h2>
-            <p className="site-body-md">
-              app, widgets, features, entities, shared 구조를 유지하면서 공통 UI를 shared에
-              모아두었습니다.
-            </p>
-          </SiteCard>
-
-          <SiteCard className="site-stack">
-            <SiteBadge tone="premium">PWA</SiteBadge>
-            <h2 className="site-title-md">설치 가능한 앱 골격</h2>
-            <p className="site-body-md">
-              매니페스트와 서비스 워커 등록을 유지하면서, 홈 화면은 가볍고 명확한 진입점이
-              되도록 맞췄습니다.
-            </p>
-          </SiteCard>
-        </div>
-      </section>
-
-      <section id="checkin" className="site-stack" style={{ marginTop: 24 }}>
-        <SiteCard className="site-stack">
-          <div className="site-stack" style={{ gap: 8 }}>
-            <SiteBadge tone="caution">check-in</SiteBadge>
-            <h2 className="site-title-md">오늘의 한 줄</h2>
-            <p className="site-body-md">
-              입력 필드와 버튼 톤도 같은 시스템으로 맞춰두었습니다.
-            </p>
-          </div>
-          <SiteInput placeholder="오늘은 어떤 것부터 작게 시작할까요?" />
-          <div className="site-actions">
-            <SiteButton href="/" variant="primary">
-              저장하기
-            </SiteButton>
-            <SiteButton href="/" variant="outline">
-              나중에
-            </SiteButton>
-          </div>
-        </SiteCard>
-      </section>
+      <footer className="z-[2] flex h-[66px] w-[203px] items-center pb-12 text-[#42474d] opacity-40">
+        <ShieldIcon />
+        <span className="whitespace-nowrap pl-2 font-['Hanken_Grotesk','Noto_Sans_KR',sans-serif] text-[13px] font-semibold leading-[18px] tracking-[0.52px]">
+          Safe &amp; Supportive Sanctuary
+        </span>
+      </footer>
     </main>
+  );
+}
+
+function ShieldIcon() {
+  return (
+    <svg className="h-[15px] w-3 flex-[0_0_12px]" viewBox="0 0 12 15" aria-hidden="true">
+      <path
+        d="M6 0.75 10.5 2.4v3.7c0 3.45-1.85 6.55-4.5 8.15-2.65-1.6-4.5-4.7-4.5-8.15V2.4L6 0.75Z"
+        fill="none"
+        stroke="currentColor"
+        strokeLinejoin="round"
+        strokeWidth="1.2"
+      />
+      <path
+        d="M4.2 7.1 5.35 8.25 8.1 5.5"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.2"
+      />
+    </svg>
   );
 }
