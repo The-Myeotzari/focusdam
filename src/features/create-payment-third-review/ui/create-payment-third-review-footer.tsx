@@ -12,6 +12,9 @@ type Props = {
   showCancel: boolean;
 };
 
+const primaryActionClassName =
+  'flex min-h-[62px] w-full items-center justify-center gap-2 rounded-full bg-[#3c5f7c] px-6 text-[17px] font-semibold leading-7 text-white shadow-[0_20px_25px_-5px_rgba(60,95,124,0.2)]';
+
 // 결제 3심 생성 화면의 하단 이동 및 완료 액션을 렌더링합니다.
 export function CreatePaymentThirdReviewFooter({
   isFinal,
@@ -30,7 +33,7 @@ export function CreatePaymentThirdReviewFooter({
           <button
             type="button"
             onClick={onSubmit}
-            className="flex min-h-[62px] w-full items-center justify-center gap-2 rounded-full bg-[#3c5f7c] px-6 text-[17px] font-semibold leading-7 text-white shadow-[0_20px_25px_-5px_rgba(60,95,124,0.2)]"
+            className={primaryActionClassName}
           >
             {nextLabel}
             <ArrowRight size={18} strokeWidth={2.2} aria-hidden="true" />
@@ -38,7 +41,7 @@ export function CreatePaymentThirdReviewFooter({
         ) : (
           <Link
             href={nextHref}
-            className="flex min-h-[62px] w-full items-center justify-center gap-2 rounded-full bg-[#3c5f7c] px-6 text-[17px] font-semibold leading-7 text-white shadow-[0_20px_25px_-5px_rgba(60,95,124,0.2)]"
+            className={primaryActionClassName}
           >
             {nextLabel}
             <ArrowRight size={18} strokeWidth={2.2} aria-hidden="true" />

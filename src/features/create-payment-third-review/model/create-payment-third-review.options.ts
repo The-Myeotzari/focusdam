@@ -8,7 +8,7 @@ import type {
 export type PaymentReviewOption<TValue extends string> = {
   id: TValue;
   title: string;
-  description: string;
+  description?: string;
 };
 
 export const IMPULSE_STRENGTH_OPTIONS: Array<
@@ -22,18 +22,15 @@ export const IMPULSE_STRENGTH_OPTIONS: Array<
 export const NEED_TIMING_OPTIONS: Array<PaymentReviewOption<PaymentNeedTiming>> = [
   {
     id: 'now',
-    title: '업무에 바로 필요',
-    description: '지금 꼭 필요',
+    title: '지금 꼭 필요',
   },
   {
     id: 'tomorrow',
-    title: '하루 뒤 확인',
-    description: '애매함',
+    title: '애매함',
   },
   {
     id: 'low',
-    title: '보류 추천',
-    description: '필요 낮음',
+    title: '필요 낮음',
   },
 ];
 

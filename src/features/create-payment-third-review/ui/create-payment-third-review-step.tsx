@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useCreatePaymentThirdReviewDraft } from '@/features/create-payment-third-review/lib/use-create-payment-third-review-draft';
 import { createPaymentThirdReviewPayload } from '@/features/create-payment-third-review/model/create-payment-third-review.draft';
 import {
-  CREATE_PAYMENT_THIRD_REVIEW_STEPS,
+  CREATE_PAYMENT_THIRD_REVIEW_PROGRESS_STEPS,
   type CreatePaymentThirdReviewStep,
   getCreatePaymentThirdReviewStepConfig,
+  getPaymentReviewDecisionHref,
+  getPaymentReviewReportPreviousHref,
 } from '@/features/create-payment-third-review/model/create-payment-third-review.steps';
 import { CreatePaymentThirdReviewFooter } from '@/features/create-payment-third-review/ui/create-payment-third-review-footer';
 import { CreatePaymentThirdReviewProgress } from '@/features/create-payment-third-review/ui/create-payment-third-review-progress';
@@ -22,52 +24,67 @@ export function CreatePaymentThirdReviewStep({ step }: Props) {
   const router = useRouter();
   const { draft, resetDraft, updateDraft } = useCreatePaymentThirdReviewDraft();
   const config = getCreatePaymentThirdReviewStepConfig(step);
-  const stepIndex = CREATE_PAYMENT_THIRD_REVIEW_STEPS.findIndex(
+  const stepIndex = CREATE_PAYMENT_THIRD_REVIEW_PROGRESS_STEPS.findIndex(
     (item) => item.step === config.step,
   );
   const Icon = config.icon;
+  const nextHref =
+    config.step === 'complete' ? getPaymentReviewDecisionHref(draft.decision) : config.nextHref;
+  const secondaryHref =
+    config.step === 'report'
+      ? getPaymentReviewReportPreviousHref(draft.decision)
+      : config.secondaryHref;
+  const shouldShowHero = config.showHero ?? true;
+  const shouldShowProgress = config.showProgress ?? true;
 
   // 완료 단계에서 누적 입력값을 전송 payload로 만들고 플로우를 종료합니다.
   const handleSubmit = () => {
     const payload = createPaymentThirdReviewPayload(draft);
 
-    // TODO: 백엔드 연동 시 이 지점에서 payload를 Server Action 또는 mutation으로 전송합니다.
-    console.info('create-payment-third-review payload', payload);
+    console.groupCollapsed('[결제 3심 생성] 제출 payload');
+    console.info('draft', draft);
+    console.info('payload', payload);
+    console.groupEnd();
+
+    // TODO: 백엔드 연동 시 여기에서 payload를 Server Action 또는 mutation으로 넘기면 됩니다.
     resetDraft();
     router.push(config.nextHref);
   };
 
   return (
     <div className="flex flex-col">
-      <CreatePaymentThirdReviewProgress stepIndex={stepIndex} />
+      {shouldShowProgress ? <CreatePaymentThirdReviewProgress stepIndex={stepIndex} /> : null}
 
       <section
         className="flex flex-1 flex-col justify-between pb-5"
-        aria-labelledby="payment-review-step-title"
+        aria-label={shouldShowHero ? undefined : config.title.replace(/\n/g, ' ')}
+        aria-labelledby={shouldShowHero ? 'payment-review-step-title' : undefined}
       >
         <div className="grid gap-8">
-          <div className="flex flex-col items-center gap-4 px-2 pt-7 text-center">
-            <span
-              className="grid size-[72px] place-items-center rounded-full bg-[#dde3eb] text-[#3c5f7c]"
-              aria-hidden="true"
-            >
-              <Icon size={34} strokeWidth={2.05} />
-            </span>
-            <div className="grid gap-2">
-              <p className="text-xs font-semibold uppercase leading-4 tracking-[0.52px] text-[#3c5f7c]">
-                {config.label}
-              </p>
-              <h1
-                id="payment-review-step-title"
-                className="whitespace-pre-line text-[30px] font-semibold leading-[38px] text-[#1a1c1e]"
+          {shouldShowHero ? (
+            <div className="flex flex-col items-center gap-4 px-2 pt-7 text-center">
+              <span
+                className="grid size-[72px] place-items-center rounded-full bg-[#dde3eb] text-[#3c5f7c]"
+                aria-hidden="true"
               >
-                {config.title}
-              </h1>
-              <p className="mx-auto text-[15px] font-medium leading-6 text-[#5f656c]">
-                {config.description}
-              </p>
+                <Icon size={34} strokeWidth={2.05} />
+              </span>
+              <div className="grid gap-2">
+                <p className="text-xs font-semibold uppercase leading-4 tracking-[0.52px] text-[#3c5f7c]">
+                  {config.label}
+                </p>
+                <h1
+                  id="payment-review-step-title"
+                  className="whitespace-pre-line text-[30px] font-semibold leading-[38px] text-[#1a1c1e]"
+                >
+                  {config.title}
+                </h1>
+                <p className="mx-auto text-[15px] font-medium leading-6 text-[#5f656c]">
+                  {config.description}
+                </p>
+              </div>
             </div>
-          </div>
+          ) : null}
 
           <CreatePaymentThirdReviewStepBody
             draft={draft}
@@ -77,12 +94,12 @@ export function CreatePaymentThirdReviewStep({ step }: Props) {
         </div>
 
         <CreatePaymentThirdReviewFooter
-          isFinal={config.step === 'complete'}
-          nextHref={config.nextHref}
+          isFinal={config.submitOnNext === true}
+          nextHref={nextHref}
           nextLabel={config.nextLabel}
           onSubmit={handleSubmit}
           previousHref={config.previousHref}
-          secondaryHref={config.secondaryHref}
+          secondaryHref={secondaryHref}
           secondaryLabel={config.secondaryLabel}
           showCancel={config.step === 'step-1'}
         />

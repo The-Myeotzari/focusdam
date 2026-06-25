@@ -4,7 +4,7 @@ import type { PaymentImpulseStrength } from '@/features/create-payment-third-rev
 
 type ChoiceCardProps = {
   checked?: boolean;
-  description: string;
+  description?: string;
   onClick: () => void;
   title: string;
 };
@@ -32,7 +32,9 @@ export function ChoiceCard({ checked = false, description, onClick, title }: Cho
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-[17px] font-semibold leading-7 text-[#1a1c1e]">{title}</span>
-        <span className="block text-sm leading-6 text-[#72777e]">{description}</span>
+        {description ? (
+          <span className="block text-sm leading-6 text-[#72777e]">{description}</span>
+        ) : null}
       </span>
     </button>
   );

@@ -1,4 +1,7 @@
-import type { PaymentImpulseStrength } from '@/features/create-payment-third-review/model/create-payment-third-review.draft';
+import type {
+  PaymentImpulseStrength,
+  PaymentSavingTarget,
+} from '@/features/create-payment-third-review/model/create-payment-third-review.draft';
 import { IMPULSE_STRENGTH_OPTIONS } from '@/features/create-payment-third-review/model/create-payment-third-review.options';
 
 // 숫자 문자열을 원화 표기 문자열로 바꿉니다.
@@ -9,4 +12,17 @@ export function formatPaymentAmount(amount: string) {
 // 충동 강도 값을 사용자에게 보이는 한글 라벨로 바꿉니다.
 export function formatImpulseStrength(value: PaymentImpulseStrength) {
   return IMPULSE_STRENGTH_OPTIONS.find((option) => option.id === value)?.label ?? '높음';
+}
+
+// 목표 저축 반영 위치 값을 사용자에게 보이는 라벨로 바꿉니다.
+export function formatSavingTarget(value: PaymentSavingTarget) {
+  if (value === 'reward') {
+    return '자기보상';
+  }
+
+  if (value === 'benefit') {
+    return '제휴 혜택';
+  }
+
+  return '목표 저축';
 }

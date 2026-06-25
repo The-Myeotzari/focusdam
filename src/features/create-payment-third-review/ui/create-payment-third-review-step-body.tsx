@@ -3,7 +3,11 @@ import type {
   CreatePaymentThirdReviewDraftUpdater,
 } from '@/features/create-payment-third-review/model/create-payment-third-review.draft';
 import type { CreatePaymentThirdReviewStep } from '@/features/create-payment-third-review/model/create-payment-third-review.steps';
+import { PaymentReviewBuyStep } from '@/features/create-payment-third-review/ui/steps/payment-review-buy-step';
 import { PaymentReviewCompleteStep } from '@/features/create-payment-third-review/ui/steps/payment-review-complete-step';
+import { PaymentReviewReportStep } from '@/features/create-payment-third-review/ui/steps/payment-review-report-step';
+import { PaymentReviewSaveStep } from '@/features/create-payment-third-review/ui/steps/payment-review-save-step';
+import { PaymentReviewSatisfactionCheckStep } from '@/features/create-payment-third-review/ui/steps/payment-review-satisfaction-check-step';
 import { PaymentReviewStepFour } from '@/features/create-payment-third-review/ui/steps/payment-review-step-four';
 import { PaymentReviewStepOne } from '@/features/create-payment-third-review/ui/steps/payment-review-step-one';
 import { PaymentReviewStepThree } from '@/features/create-payment-third-review/ui/steps/payment-review-step-three';
@@ -33,5 +37,21 @@ export function CreatePaymentThirdReviewStepBody({ draft, step, updateDraft }: P
     return <PaymentReviewStepFour draft={draft} />;
   }
 
-  return <PaymentReviewCompleteStep draft={draft} updateDraft={updateDraft} />;
+  if (step === 'complete') {
+    return <PaymentReviewCompleteStep draft={draft} updateDraft={updateDraft} />;
+  }
+
+  if (step === 'save') {
+    return <PaymentReviewSaveStep draft={draft} updateDraft={updateDraft} />;
+  }
+
+  if (step === 'buy') {
+    return <PaymentReviewBuyStep draft={draft} updateDraft={updateDraft} />;
+  }
+
+  if (step === 'satisfaction-check') {
+    return <PaymentReviewSatisfactionCheckStep draft={draft} />;
+  }
+
+  return <PaymentReviewReportStep draft={draft} />;
 }

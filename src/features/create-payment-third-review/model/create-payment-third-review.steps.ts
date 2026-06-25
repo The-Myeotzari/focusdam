@@ -1,8 +1,28 @@
-import { CheckCircle2, ClipboardList, Clock3, Keyboard, PencilLine, Scale } from 'lucide-react';
+import {
+  CheckCircle2,
+  ClipboardList,
+  Clock3,
+  Keyboard,
+  PencilLine,
+  PiggyBank,
+  ReceiptText,
+  Scale,
+  SmilePlus,
+} from 'lucide-react';
 
 import type { LucideIcon } from 'lucide-react';
+import type { PaymentReviewDecision } from '@/features/create-payment-third-review/model/create-payment-third-review.draft';
 
-export type CreatePaymentThirdReviewStep = 'step-1' | 'step-2' | 'step-3' | 'step-4' | 'complete';
+export type CreatePaymentThirdReviewStep =
+  | 'step-1'
+  | 'step-2'
+  | 'step-3'
+  | 'step-4'
+  | 'complete'
+  | 'save'
+  | 'buy'
+  | 'satisfaction-check'
+  | 'report';
 
 export type CreatePaymentThirdReviewStepConfig = {
   step: CreatePaymentThirdReviewStep;
@@ -15,6 +35,9 @@ export type CreatePaymentThirdReviewStepConfig = {
   nextLabel: string;
   secondaryHref: string;
   secondaryLabel: string;
+  showHero?: boolean;
+  showProgress?: boolean;
+  submitOnNext?: boolean;
 };
 
 export const CREATE_PAYMENT_THIRD_REVIEW_STEPS: CreatePaymentThirdReviewStepConfig[] = [
@@ -74,13 +97,87 @@ export const CREATE_PAYMENT_THIRD_REVIEW_STEPS: CreatePaymentThirdReviewStepConf
     icon: CheckCircle2,
     previousHref: '/payment-third-review/create/step-4',
     nextHref: '/payment-third-review/list',
-    nextLabel: '제출하기',
+    nextLabel: '다음',
     secondaryHref: '/payment-third-review/create/step-4',
     secondaryLabel: '이전',
   },
+  {
+    step: 'save',
+    label: '목표 저축 반영',
+    title: '아낀 금액을\n어디에 둘까요?',
+    description: '보류 성공을 목표, 자기보상, 제휴 혜택으로 연결합니다.',
+    icon: PiggyBank,
+    previousHref: '/payment-third-review/create/complete',
+    nextHref: '/payment-third-review/create/report',
+    nextLabel: '리포트 보기',
+    secondaryHref: '/payment-third-review/create/complete',
+    secondaryLabel: '이전',
+    showHero: false,
+    showProgress: false,
+  },
+  {
+    step: 'buy',
+    label: '결제 이유',
+    title: '결제 이유를\n짧게 남길까요?',
+    description: '필요한 소비라면 기록하고 후회 방지 회고만 예약합니다.',
+    icon: ReceiptText,
+    previousHref: '/payment-third-review/create/complete',
+    nextHref: '/payment-third-review/create/satisfaction-check',
+    nextLabel: '만족도 체크 예약',
+    secondaryHref: '/payment-third-review/create/complete',
+    secondaryLabel: '이전',
+    showHero: false,
+    showProgress: false,
+  },
+  {
+    step: 'satisfaction-check',
+    label: '만족도 체크',
+    title: '24시간 뒤\n만족도를 확인해요',
+    description: '결제 직후의 확신이 하루 뒤에도 유지되는지 확인합니다.',
+    icon: SmilePlus,
+    previousHref: '/payment-third-review/create/buy',
+    nextHref: '/payment-third-review/create/report',
+    nextLabel: '리포트 보기',
+    secondaryHref: '/payment-third-review/create/buy',
+    secondaryLabel: '이전',
+    showHero: false,
+    showProgress: false,
+  },
+  {
+    step: 'report',
+    label: '리포트',
+    title: '결제 3심 리포트',
+    description: '방금 남긴 판단을 저장하기 전에 한 번 더 확인해요.',
+    icon: ClipboardList,
+    previousHref: '/payment-third-review/create/complete',
+    nextHref: '/payment-third-review/list',
+    nextLabel: '제출하기',
+    secondaryHref: '/payment-third-review/create/complete',
+    secondaryLabel: '이전',
+    showHero: false,
+    showProgress: false,
+    submitOnNext: true,
+  },
 ];
 
-export const CREATE_PAYMENT_THIRD_REVIEW_STEP_TOTAL = CREATE_PAYMENT_THIRD_REVIEW_STEPS.length;
+export const CREATE_PAYMENT_THIRD_REVIEW_PROGRESS_STEPS = CREATE_PAYMENT_THIRD_REVIEW_STEPS.filter(
+  (item) => item.showProgress !== false,
+);
+
+export const CREATE_PAYMENT_THIRD_REVIEW_STEP_TOTAL =
+  CREATE_PAYMENT_THIRD_REVIEW_PROGRESS_STEPS.length;
+
+const PAYMENT_REVIEW_DECISION_NEXT_HREFS: Record<PaymentReviewDecision, string> = {
+  hold: '/payment-third-review/create/report',
+  memo: '/payment-third-review/create/save',
+  buy: '/payment-third-review/create/buy',
+};
+
+const PAYMENT_REVIEW_REPORT_PREVIOUS_HREFS: Record<PaymentReviewDecision, string> = {
+  hold: '/payment-third-review/create/complete',
+  memo: '/payment-third-review/create/save',
+  buy: '/payment-third-review/create/satisfaction-check',
+};
 
 // URL에서 받은 스텝 값에 대응하는 화면 설정을 반환합니다.
 export function getCreatePaymentThirdReviewStepConfig(step: CreatePaymentThirdReviewStep) {
@@ -90,4 +187,12 @@ export function getCreatePaymentThirdReviewStepConfig(step: CreatePaymentThirdRe
   );
 }
 
-export const COMPLETE_REPORT_ICON = ClipboardList;
+// 최종 판단 선택값에 맞는 후속 화면 경로를 반환합니다.
+export function getPaymentReviewDecisionHref(decision: PaymentReviewDecision) {
+  return PAYMENT_REVIEW_DECISION_NEXT_HREFS[decision];
+}
+
+// 최종 리포트에서 이전 버튼이 돌아갈 판단별 화면 경로를 반환합니다.
+export function getPaymentReviewReportPreviousHref(decision: PaymentReviewDecision) {
+  return PAYMENT_REVIEW_REPORT_PREVIOUS_HREFS[decision];
+}
