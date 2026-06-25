@@ -53,7 +53,7 @@ export function PaymentThirdReviewHero({ overview }: Props) {
 
         <div className="mt-5">
           <SiteButton
-            href="/payment-third-review/create/item"
+            href="/payment-third-review/create/step-1"
             className="!min-h-[52px] !w-full !gap-2 !px-6 !text-sm !font-semibold"
           >
             결제 3심 진행
