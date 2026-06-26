@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import {
   CREATE_PAYMENT_THIRD_REVIEW_DRAFT_STORAGE_KEY,
-  DEFAULT_CREATE_PAYMENT_THIRD_REVIEW_DRAFT,
+  createInitialPaymentThirdReviewDraft,
   type CreatePaymentThirdReviewDraft,
   type CreatePaymentThirdReviewDraftUpdater,
 } from '@/features/create-payment-third-review/model/create-payment-third-review.draft';
@@ -12,7 +12,7 @@ import {
 // 결제 3심 생성 과정의 임시 입력값을 localStorage와 동기화합니다.
 export function useCreatePaymentThirdReviewDraft() {
   const [draft, setDraft] = useState<CreatePaymentThirdReviewDraft>(
-    DEFAULT_CREATE_PAYMENT_THIRD_REVIEW_DRAFT,
+    createInitialPaymentThirdReviewDraft,
   );
   const [isHydrated, setIsHydrated] = useState(false);
 
@@ -21,7 +21,7 @@ export function useCreatePaymentThirdReviewDraft() {
 
     if (storedDraft) {
       try {
-        setDraft({ ...DEFAULT_CREATE_PAYMENT_THIRD_REVIEW_DRAFT, ...JSON.parse(storedDraft) });
+        setDraft({ ...createInitialPaymentThirdReviewDraft(), ...JSON.parse(storedDraft) });
       } catch {
         window.localStorage.removeItem(CREATE_PAYMENT_THIRD_REVIEW_DRAFT_STORAGE_KEY);
       }
@@ -48,7 +48,7 @@ export function useCreatePaymentThirdReviewDraft() {
 
   // 생성 플로우가 끝난 뒤 드래프트와 저장소 값을 초기화합니다.
   const resetDraft = useCallback(() => {
-    setDraft(DEFAULT_CREATE_PAYMENT_THIRD_REVIEW_DRAFT);
+    setDraft(createInitialPaymentThirdReviewDraft());
     window.localStorage.removeItem(CREATE_PAYMENT_THIRD_REVIEW_DRAFT_STORAGE_KEY);
   }, []);
 

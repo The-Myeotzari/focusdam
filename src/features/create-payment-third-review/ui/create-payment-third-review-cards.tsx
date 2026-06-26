@@ -1,4 +1,4 @@
-import { Check, Circle, Zap } from 'lucide-react';
+import { Check, Circle } from 'lucide-react';
 
 import type { PaymentImpulseStrength } from '@/features/create-payment-third-review/model/create-payment-third-review.draft';
 
@@ -41,7 +41,7 @@ export function ChoiceCard({ checked = false, description, onClick, title }: Cho
 }
 
 type ImpulseStrengthCardProps = {
-  value: PaymentImpulseStrength;
+  value: PaymentImpulseStrength | '';
   onChange: (value: PaymentImpulseStrength) => void;
 };
 
@@ -55,23 +55,9 @@ const impulseStrengthOptions: Array<{ label: string; value: PaymentImpulseStreng
 export function ImpulseStrengthCard({ onChange, value }: ImpulseStrengthCardProps) {
   return (
     <section
-      className="grid gap-6 rounded-[32px] border border-[#c2c7ce4d] bg-white px-6 py-6 shadow-[0_12px_28px_rgba(60,95,124,0.08)]"
-      aria-labelledby="impulse-strength-title"
+      className="rounded-[24px] bg-white px-5 py-4 shadow-[0_4px_12px_rgba(0,0,0,0.04)]"
+      aria-label="충동 강도 선택"
     >
-      <div className="flex items-center gap-4">
-        <span
-          className="grid size-12 shrink-0 place-items-center rounded-full bg-[#dde3eb4d] text-[#3c5f7c]"
-          aria-hidden="true"
-        >
-          <Zap size={26} strokeWidth={2.2} />
-        </span>
-        <h2
-          id="impulse-strength-title"
-          className="text-[16px] font-semibold leading-6 text-[#72777e]"
-        >
-          충동 강도
-        </h2>
-      </div>
       <div className="grid grid-cols-3 gap-2.5" aria-label="충동 강도 선택">
         {impulseStrengthOptions.map((option) => (
           <button

@@ -34,6 +34,8 @@ export function CreatePaymentThirdReviewStep({ step }: Props) {
     config.step === 'report'
       ? getPaymentReviewReportPreviousHref(draft.decision)
       : config.secondaryHref;
+  const isStepOneReady =
+    draft.itemName.trim().length > 0 && draft.amount.trim().length > 0 && Boolean(draft.impulseStrength);
   const shouldShowHero = config.showHero ?? true;
   const shouldShowProgress = config.showProgress ?? true;
 
@@ -95,6 +97,7 @@ export function CreatePaymentThirdReviewStep({ step }: Props) {
 
         <CreatePaymentThirdReviewFooter
           isFinal={config.submitOnNext === true}
+          isNextDisabled={config.step === 'step-1' && !isStepOneReady}
           nextHref={nextHref}
           nextLabel={config.nextLabel}
           onSubmit={handleSubmit}

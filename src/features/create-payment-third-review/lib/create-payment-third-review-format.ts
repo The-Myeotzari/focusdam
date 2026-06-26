@@ -10,8 +10,8 @@ export function formatPaymentAmount(amount: string) {
 }
 
 // 충동 강도 값을 사용자에게 보이는 한글 라벨로 바꿉니다.
-export function formatImpulseStrength(value: PaymentImpulseStrength) {
-  return IMPULSE_STRENGTH_OPTIONS.find((option) => option.id === value)?.label ?? '높음';
+export function formatImpulseStrength(value: PaymentImpulseStrength | '') {
+  return IMPULSE_STRENGTH_OPTIONS.find((option) => option.id === value)?.label ?? '미선택';
 }
 
 // 목표 저축 반영 위치 값을 사용자에게 보이는 라벨로 바꿉니다.

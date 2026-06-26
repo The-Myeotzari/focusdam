@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 type Props = {
   isFinal: boolean;
+  isNextDisabled?: boolean;
   nextHref: string;
   nextLabel: string;
   onSubmit: () => void;
@@ -14,10 +15,13 @@ type Props = {
 
 const primaryActionClassName =
   'flex min-h-[62px] w-full items-center justify-center gap-2 rounded-full bg-[#3c5f7c] px-6 text-[17px] font-semibold leading-7 text-white shadow-[0_20px_25px_-5px_rgba(60,95,124,0.2)]';
+const disabledPrimaryActionClassName =
+  'flex min-h-[62px] w-full cursor-not-allowed items-center justify-center gap-2 rounded-full bg-[#d7dde3] px-6 text-[17px] font-semibold leading-7 text-white';
 
 // 결제 3심 생성 화면의 하단 이동 및 완료 액션을 렌더링합니다.
 export function CreatePaymentThirdReviewFooter({
   isFinal,
+  isNextDisabled = false,
   nextHref,
   nextLabel,
   onSubmit,
@@ -33,8 +37,14 @@ export function CreatePaymentThirdReviewFooter({
           <button
             type="button"
             onClick={onSubmit}
-            className={primaryActionClassName}
+            disabled={isNextDisabled}
+            className={isNextDisabled ? disabledPrimaryActionClassName : primaryActionClassName}
           >
+            {nextLabel}
+            <ArrowRight size={18} strokeWidth={2.2} aria-hidden="true" />
+          </button>
+        ) : isNextDisabled ? (
+          <button type="button" disabled className={disabledPrimaryActionClassName}>
             {nextLabel}
             <ArrowRight size={18} strokeWidth={2.2} aria-hidden="true" />
           </button>
