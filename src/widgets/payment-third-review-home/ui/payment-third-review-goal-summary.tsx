@@ -1,4 +1,4 @@
-import { ArrowRight, Flag } from 'lucide-react';
+import { Flag } from 'lucide-react';
 
 import { SiteButton } from '@/shared/ui';
 import type {
@@ -37,7 +37,6 @@ export function PaymentThirdReviewGoalSummary({ goalSettingHref, items, overview
           className="!min-h-10 !shrink-0 !gap-1.5 !rounded-full !px-4 !text-xs !font-semibold"
         >
           설정하기
-          <ArrowRight size={14} strokeWidth={2.2} aria-hidden="true" />
         </SiteButton>
       </article>
 

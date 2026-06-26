@@ -1,4 +1,4 @@
-import { ArrowRight, ShieldCheck } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 
 import { SiteBadge, SiteButton, SiteCard } from '@/shared/ui';
 
@@ -29,8 +29,7 @@ export function PaymentThirdReviewHero() {
             href="/payment-third-review/create/step-1"
             className="!min-h-[52px] !w-full !gap-2 !px-6 !text-sm !font-semibold"
           >
-            결제 3심 진행
-            <ArrowRight size={18} strokeWidth={2.2} aria-hidden="true" />
+            결제 3심 진행하기
           </SiteButton>
         </div>
       </SiteCard>

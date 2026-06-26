@@ -1,7 +1,5 @@
-import { ArrowRight } from 'lucide-react';
-
-import { PaymentReviewHistoryRow } from '@/entities/payment-third-review';
 import type { PaymentReviewHistoryItem } from '@/entities/payment-third-review';
+import { PaymentReviewHistoryRow } from '@/entities/payment-third-review';
 import { SiteButton } from '@/shared/ui';
 
 type Props = {
@@ -18,16 +16,19 @@ export function PaymentThirdReviewReportPreview({ items }: Props) {
         <SiteButton
           href="/payment-third-review/list"
           variant="secondary"
-          className="!min-h-9 !rounded-full !px-4 !text-xs !font-semibold"
+          className="!min-h-9 !rounded-full !bg-transparent !px-1 !text-xs !font-semibold !text-[#72777e] !shadow-none"
         >
           더보기
-          <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
         </SiteButton>
       </div>
 
       <div className="grid gap-2">
         {items.slice(0, 3).map((item) => (
-          <PaymentReviewHistoryRow key={item.id} item={item} />
+          <PaymentReviewHistoryRow
+            key={item.id}
+            href={`/payment-third-review/list/${item.id}`}
+            item={item}
+          />
         ))}
       </div>
     </section>

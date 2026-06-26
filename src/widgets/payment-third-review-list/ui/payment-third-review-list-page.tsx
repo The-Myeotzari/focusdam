@@ -24,7 +24,11 @@ export function PaymentThirdReviewListPage() {
 
           <div className="grid gap-2">
             {PAYMENT_REVIEW_HISTORY_ITEMS.map((item) => (
-              <PaymentReviewHistoryRow key={item.id} item={item} />
+              <PaymentReviewHistoryRow
+                key={item.id}
+                href={`/payment-third-review/list/${item.id}`}
+                item={item}
+              />
             ))}
           </div>
         </section>
