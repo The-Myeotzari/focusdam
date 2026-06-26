@@ -1,3 +1,12 @@
+export type PaymentReviewSatisfactionStatus = 'scheduled' | 'required' | 'completed';
+
+export type PaymentReviewSatisfactionResult = {
+  checkedAt: string;
+  memo: string;
+  score: number;
+  summary: string;
+};
+
 export type PaymentReviewHistoryItem = {
   id: string;
   itemName: string;
@@ -11,4 +20,8 @@ export type PaymentReviewHistoryItem = {
   followUpType: 'reminder' | 'satisfaction' | 'saved';
   progressLabel: string;
   budgetImpactLabel: string;
+  satisfaction?: {
+    status: PaymentReviewSatisfactionStatus;
+    result?: PaymentReviewSatisfactionResult;
+  };
 };

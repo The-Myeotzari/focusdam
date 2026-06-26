@@ -1,8 +1,7 @@
-import {
-  PAYMENT_REVIEW_HISTORY_ITEMS,
-  PaymentReviewHistoryRow,
-} from '@/entities/payment-third-review';
+import { PAYMENT_REVIEW_HISTORY_ITEMS } from '@/entities/payment-third-review';
 import { SiteTopBar } from '@/shared/ui';
+
+import { PaymentThirdReviewListFilter } from './payment-third-review-list-filter';
 
 export function PaymentThirdReviewListPage() {
   return (
@@ -22,15 +21,7 @@ export function PaymentThirdReviewListPage() {
             </p>
           </div>
 
-          <div className="grid gap-2">
-            {PAYMENT_REVIEW_HISTORY_ITEMS.map((item) => (
-              <PaymentReviewHistoryRow
-                key={item.id}
-                href={`/payment-third-review/list/${item.id}`}
-                item={item}
-              />
-            ))}
-          </div>
+          <PaymentThirdReviewListFilter items={PAYMENT_REVIEW_HISTORY_ITEMS} />
         </section>
       </main>
     </>

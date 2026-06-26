@@ -10,7 +10,7 @@ type Props = {
 
 export function PaymentReviewHistoryRow({ href, item }: Props) {
   const decisionMeta = getDecisionMeta(item.decisionType);
-  const followUpMeta = getFollowUpMeta(item.followUpType);
+  const followUpMeta = getFollowUpMeta(item);
   const Icon = decisionMeta.icon;
   const content = (
     <>
@@ -26,7 +26,8 @@ export function PaymentReviewHistoryRow({ href, item }: Props) {
               {item.itemName}
             </p>
             <p className="truncate text-xs font-medium leading-5 text-[#72777e]">
-              {item.decision} · 충동 {item.impulseStrength}
+              <span className={decisionMeta.textClassName}>{item.decision}</span>
+              <span> · 충동 {item.impulseStrength}</span>
             </p>
           </div>
         </div>
@@ -40,8 +41,8 @@ export function PaymentReviewHistoryRow({ href, item }: Props) {
       </div>
 
       <div className="mt-3 flex flex-wrap gap-1.5">
-        <StatusBadge className={followUpMeta.className} label={followUpMeta.label} />
-        <StatusBadge className="bg-[#f4f3f6] text-[#72777e]" label={item.followUpLabel} />
+        <StatusBadge dotClassName={followUpMeta.dotClassName} label={followUpMeta.label} />
+        <StatusBadge label={item.followUpLabel} />
       </div>
     </>
   );
@@ -90,31 +91,48 @@ function getDecisionMeta(decisionType: PaymentReviewHistoryItem['decisionType'])
 }
 
 // 결제 3심 후속 처리 유형에 맞는 배지 정보를 반환합니다.
-function getFollowUpMeta(followUpType: PaymentReviewHistoryItem['followUpType']) {
-  if (followUpType === 'satisfaction') {
+function getFollowUpMeta(item: PaymentReviewHistoryItem) {
+  if (item.followUpType === 'satisfaction') {
+    if (item.satisfaction?.status === 'required') {
+      return {
+        label: '만족도 체크 필요',
+        dotClassName: 'bg-[#d85c49]',
+      };
+    }
+
+    if (item.satisfaction?.status === 'completed') {
+      return {
+        label: '만족도 체크 완료',
+        dotClassName: 'bg-[#2d6a4f]',
+      };
+    }
+
     return {
       label: '만족도 체크 예정',
-      className: 'bg-[#e0f1ff] text-[#3c5f7c]',
+      dotClassName: 'bg-[#3c5f7c]',
     };
   }
 
-  if (followUpType === 'saved') {
+  if (item.followUpType === 'saved') {
     return {
       label: '저축 반영',
-      className: 'bg-[#e8f5f1] text-[#2d6a4f]',
+      dotClassName: 'bg-[#2d6a4f]',
     };
   }
 
   return {
     label: '리마인드 예정',
-    className: 'bg-[#fff2e0] text-[#94640a]',
+    dotClassName: 'bg-[#94640a]',
   };
 }
 
 // 결제 3심 결과 카드의 작은 상태 배지를 렌더링합니다.
-function StatusBadge({ className, label }: { className: string; label: string }) {
+function StatusBadge({ dotClassName, label }: { dotClassName?: string; label: string }) {
   return (
-    <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold leading-4 ${className}`}>
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f4f3f6] px-2.5 py-1 text-[11px] font-semibold leading-4 text-[#72777e]">
+      {dotClassName ? (
+        <span className={`size-1.5 rounded-full ${dotClassName}`} aria-hidden="true" />
+      ) : null}
       {label}
     </span>
   );
