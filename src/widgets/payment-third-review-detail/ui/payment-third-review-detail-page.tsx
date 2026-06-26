@@ -10,7 +10,7 @@ import {
   PaymentReviewInfoRow,
   PaymentReviewStatusBadge,
 } from '@/entities/payment-third-review';
-import type { PaymentReviewHistoryItem } from '@/entities/payment-third-review';
+import type { PaymentReviewHistoryItem, PaymentReviewReminderResult } from '@/entities/payment-third-review';
 import { SiteTopBar } from '@/shared/ui';
 
 type Props = {
@@ -101,6 +101,14 @@ export function PaymentThirdReviewDetailPage({ id }: Props) {
               만족도 체크하기
             </Link>
           ) : null}
+          {item.reminder?.status === 'required' ? (
+            <Link
+              href={`/payment-third-review/reminder/${item.id}`}
+              className="mt-4 flex min-h-12 items-center justify-center rounded-full bg-[#3c5f7c] px-5 text-sm font-semibold leading-5 text-white"
+            >
+              리마인드 확인하기
+            </Link>
+          ) : null}
         </section>
 
         {item.satisfaction?.status === 'completed' && item.satisfaction.result ? (
@@ -121,6 +129,33 @@ export function PaymentThirdReviewDetailPage({ id }: Props) {
             </div>
           </section>
         ) : null}
+
+        {item.reminder?.status === 'completed' && item.reminder.result ? (
+          <section className="grid gap-3" aria-labelledby="payment-review-reminder-result">
+            <h2
+              id="payment-review-reminder-result"
+              className="text-lg font-semibold leading-7 text-[#1a1c1e]"
+            >
+              리마인드 결과
+            </h2>
+            <div className="rounded-[28px] bg-white px-5 py-1 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+              <PaymentReviewInfoRow label="완료 일자" value={item.reminder.result.submittedAt} />
+              <PaymentReviewInfoRow
+                label="완료 유형"
+                value={getReminderCompletedTypeLabel(item.reminder.result.completedType)}
+              />
+              <PaymentReviewInfoRow
+                label="최종 판단"
+                value={getReminderDecisionLabel(item.reminder.result.decision)}
+              />
+              <PaymentReviewInfoRow
+                label="리마인드 횟수"
+                value={`${item.reminder.result.reminderCount}회`}
+              />
+              <PaymentReviewInfoRow label="메모" value={item.reminder.result.memo} />
+            </div>
+          </section>
+        ) : null}
       </main>
     </>
   );
@@ -137,4 +172,30 @@ function getDecisionMeta(decisionType: PaymentReviewHistoryItem['decisionType'])
   }
 
   return { icon: CalendarClock };
+}
+
+// 리마인드 완료 유형을 상세 화면용 라벨로 변환합니다.
+function getReminderCompletedTypeLabel(
+  completedType: PaymentReviewReminderResult['completedType'],
+) {
+  if (completedType === 'after-hold') {
+    return '재보류 이후 완료';
+  }
+
+  return '기본 완료';
+}
+
+// 리마인드 최종 판단 값을 상세 화면용 라벨로 변환합니다.
+function getReminderDecisionLabel(
+  decision: PaymentReviewReminderResult['decision'],
+) {
+  if (decision === 'buy') {
+    return '결제 진행';
+  }
+
+  if (decision === 'cancel') {
+    return '결제 미진행';
+  }
+
+  return '보류';
 }

@@ -23,12 +23,41 @@ const satisfactionStatusMeta = {
   PaymentReviewFollowUpMeta
 >;
 
+const reminderStatusMeta = {
+  completed: {
+    dotClassName: 'bg-[#2d6a4f]',
+    label: '리마인드 완료',
+  },
+  required: {
+    dotClassName: 'bg-[#d85c49]',
+    label: '리마인드 필요',
+  },
+  scheduled: {
+    dotClassName: 'bg-[#94640a]',
+    label: '리마인드 예정',
+  },
+} satisfies Record<
+  NonNullable<PaymentReviewHistoryItem['reminder']>['status'],
+  PaymentReviewFollowUpMeta
+>;
+
 // 결제 3심 후속 처리 유형과 만족도 상태에 맞는 배지 메타를 반환합니다.
 export function getPaymentReviewFollowUpMeta(
   item: PaymentReviewHistoryItem,
 ): PaymentReviewFollowUpMeta {
   if (item.followUpType === 'satisfaction') {
     return satisfactionStatusMeta[item.satisfaction?.status ?? 'scheduled'];
+  }
+
+  if (item.followUpType === 'reminder') {
+    if (item.reminder?.status === 'completed' && item.reminder.result?.completedType === 'after-hold') {
+      return {
+        dotClassName: 'bg-[#2d6a4f]',
+        label: '재보류 후 완료',
+      };
+    }
+
+    return reminderStatusMeta[item.reminder?.status ?? 'scheduled'];
   }
 
   if (item.followUpType === 'saved') {
@@ -38,10 +67,7 @@ export function getPaymentReviewFollowUpMeta(
     };
   }
 
-  return {
-    dotClassName: 'bg-[#94640a]',
-    label: '리마인드 예정',
-  };
+  return reminderStatusMeta.scheduled;
 }
 
 // 후속 처리 유형에 맞는 상세 제목을 반환합니다.
@@ -75,6 +101,18 @@ export function getPaymentReviewFollowUpDescription(item: PaymentReviewHistoryIt
 
   if (item.followUpType === 'saved') {
     return `${item.followUpLabel}으로 이동했어요`;
+  }
+
+  if (item.reminder?.status === 'required') {
+    return '24시간이 지나 다시 결정할 차례예요';
+  }
+
+  if (item.reminder?.status === 'completed') {
+    if (item.reminder.result?.completedType === 'after-hold') {
+      return '재보류 이후 리마인드 결정을 완료했어요';
+    }
+
+    return '리마인드 결정을 완료했어요';
   }
 
   return `${item.followUpLabel} 다시 확인해요`;

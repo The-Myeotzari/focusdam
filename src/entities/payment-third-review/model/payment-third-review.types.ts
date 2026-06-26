@@ -1,5 +1,19 @@
 export type PaymentReviewSatisfactionStatus = 'scheduled' | 'required' | 'completed';
 
+export type PaymentReviewReminderStatus = 'scheduled' | 'required' | 'completed';
+
+export type PaymentReviewReminderDecision = 'buy' | 'cancel' | 'hold';
+
+export type PaymentReviewReminderCompletedType = 'default' | 'after-hold';
+
+export type PaymentReviewReminderResult = {
+  completedType: PaymentReviewReminderCompletedType;
+  decision: PaymentReviewReminderDecision;
+  memo: string;
+  reminderCount: number;
+  submittedAt: string;
+};
+
 export type PaymentReviewSatisfactionResult = {
   checkedAt: string;
   memo: string;
@@ -23,5 +37,9 @@ export type PaymentReviewHistoryItem = {
   satisfaction?: {
     status: PaymentReviewSatisfactionStatus;
     result?: PaymentReviewSatisfactionResult;
+  };
+  reminder?: {
+    status: PaymentReviewReminderStatus;
+    result?: PaymentReviewReminderResult;
   };
 };

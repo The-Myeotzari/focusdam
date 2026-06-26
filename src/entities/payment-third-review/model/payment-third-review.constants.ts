@@ -31,6 +31,9 @@ export const PAYMENT_REVIEW_HISTORY_ITEMS: PaymentReviewHistoryItem[] = [
     followUpType: 'reminder',
     progressLabel: '목표 대비 91%',
     budgetImpactLabel: '결제 보류 중',
+    reminder: {
+      status: 'required',
+    },
   },
   {
     id: 'ptr-006',
@@ -87,6 +90,54 @@ export const PAYMENT_REVIEW_HISTORY_ITEMS: PaymentReviewHistoryItem[] = [
     budgetImpactLabel: '24,600원 절약',
   },
   {
+    id: 'ptr-008',
+    itemName: '태블릿 거치대',
+    date: '6월 17일',
+    amount: '34,900원',
+    impulseStrength: '보통',
+    decision: '24시간 보류',
+    decisionType: 'hold',
+    reason: '하루 뒤에도 업무 책상에 필요한지 확인',
+    followUpLabel: '결제 미진행',
+    followUpType: 'reminder',
+    progressLabel: '목표 대비 70%',
+    budgetImpactLabel: '34,900원 소비 방지',
+    reminder: {
+      status: 'completed',
+      result: {
+        completedType: 'default',
+        decision: 'cancel',
+        memo: '하루 지나고 보니 급하지 않아서 구매하지 않았어요.',
+        reminderCount: 1,
+        submittedAt: '6월 18일',
+      },
+    },
+  },
+  {
+    id: 'ptr-009',
+    itemName: '운동화',
+    date: '6월 14일',
+    amount: '89,000원',
+    impulseStrength: '높음',
+    decision: '24시간 보류',
+    decisionType: 'hold',
+    reason: '가격 비교와 실제 필요성을 더 확인',
+    followUpLabel: '3일 뒤 완료',
+    followUpType: 'reminder',
+    progressLabel: '목표 대비 96%',
+    budgetImpactLabel: '재보류 후 결제 미진행',
+    reminder: {
+      status: 'completed',
+      result: {
+        completedType: 'after-hold',
+        decision: 'cancel',
+        memo: '3일 더 지나도 필요성이 낮아서 구매하지 않았어요.',
+        reminderCount: 2,
+        submittedAt: '6월 18일',
+      },
+    },
+  },
+  {
     id: 'ptr-004',
     itemName: '장보기 추가 품목',
     date: '6월 15일',
@@ -113,6 +164,9 @@ export const PAYMENT_REVIEW_HISTORY_ITEMS: PaymentReviewHistoryItem[] = [
     followUpType: 'reminder',
     progressLabel: '목표 대비 88%',
     budgetImpactLabel: '결제 보류 중',
+    reminder: {
+      status: 'scheduled',
+    },
   },
 ];
 

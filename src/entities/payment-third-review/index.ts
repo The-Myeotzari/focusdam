@@ -9,6 +9,9 @@ export {
 } from './lib/payment-review-history-meta';
 export type {
   PaymentReviewHistoryItem,
+  PaymentReviewReminderDecision,
+  PaymentReviewReminderResult,
+  PaymentReviewReminderStatus,
   PaymentReviewSatisfactionResult,
   PaymentReviewSatisfactionStatus,
 } from './model/payment-third-review.types';
