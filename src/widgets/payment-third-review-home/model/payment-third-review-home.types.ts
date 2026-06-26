@@ -4,7 +4,6 @@ export type PaymentReviewOverview = {
   goalAmount: string;
   currentSpend: string;
   progressLabel: string;
-  statusLabel: string;
 };
 
 export type SummaryCard = {

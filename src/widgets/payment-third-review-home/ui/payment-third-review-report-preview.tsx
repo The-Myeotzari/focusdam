@@ -26,7 +26,7 @@ export function PaymentThirdReviewReportPreview({ items }: Props) {
       </div>
 
       <div className="grid gap-2">
-        {items.slice(0, 5).map((item) => (
+        {items.slice(0, 3).map((item) => (
           <PaymentReviewHistoryRow key={item.id} item={item} />
         ))}
       </div>

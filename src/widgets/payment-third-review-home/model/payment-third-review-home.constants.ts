@@ -9,7 +9,6 @@ export const PAYMENT_REVIEW_OVERVIEW: PaymentReviewOverview = {
   goalAmount: '86,000원',
   currentSpend: '62,000원',
   progressLabel: '목표 대비 72%',
-  statusLabel: '목표 안에서 사용 중',
 };
 
 export const SUMMARY_CARDS: SummaryCard[] = [
