@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { useCreatePaymentThirdReviewDraft } from '@/features/create-payment-third-review/lib/use-create-payment-third-review-draft';
@@ -22,7 +23,7 @@ type Props = {
 // 결제 3심 생성의 헤더, 본문, 하단 액션을 하나의 스텝 화면으로 조합합니다.
 export function CreatePaymentThirdReviewStep({ step }: Props) {
   const router = useRouter();
-  const { draft, resetDraft, updateDraft } = useCreatePaymentThirdReviewDraft();
+  const { draft, isHydrated, resetDraft, updateDraft } = useCreatePaymentThirdReviewDraft();
   const config = getCreatePaymentThirdReviewStepConfig(step);
   const stepIndex = CREATE_PAYMENT_THIRD_REVIEW_PROGRESS_STEPS.findIndex(
     (item) => item.step === config.step,
@@ -39,6 +40,14 @@ export function CreatePaymentThirdReviewStep({ step }: Props) {
   const shouldShowHero = config.showHero ?? true;
   const shouldShowProgress = config.showProgress ?? true;
 
+  useEffect(() => {
+    const isDraftEmpty = !draft.itemName.trim() && !draft.amount.trim();
+
+    if (isHydrated && config.step !== 'step-1' && isDraftEmpty) {
+      router.replace('/payment-third-review/list');
+    }
+  }, [config.step, draft.amount, draft.itemName, isHydrated, router]);
+
   // 완료 단계에서 누적 입력값을 전송 payload로 만들고 플로우를 종료합니다.
   const handleSubmit = () => {
     const payload = createPaymentThirdReviewPayload(draft);
@@ -50,7 +59,7 @@ export function CreatePaymentThirdReviewStep({ step }: Props) {
 
     // TODO: 백엔드 연동 시 여기에서 payload를 Server Action 또는 mutation으로 넘기면 됩니다.
     resetDraft();
-    router.push(config.nextHref);
+    router.replace(config.nextHref);
   };
 
   return (

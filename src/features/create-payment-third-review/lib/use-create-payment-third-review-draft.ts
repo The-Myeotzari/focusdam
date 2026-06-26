@@ -52,5 +52,5 @@ export function useCreatePaymentThirdReviewDraft() {
     window.localStorage.removeItem(CREATE_PAYMENT_THIRD_REVIEW_DRAFT_STORAGE_KEY);
   }, []);
 
-  return { draft, resetDraft, updateDraft };
+  return { draft, isHydrated, resetDraft, updateDraft };
 }

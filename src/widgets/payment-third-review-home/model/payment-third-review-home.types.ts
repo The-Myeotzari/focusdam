@@ -9,7 +9,7 @@ export type PaymentReviewOverview = {
 
 export type SummaryCard = {
   title: string;
-  value: string;
+  value?: string;
   description: string;
   icon: LucideIcon;
   tone: string;

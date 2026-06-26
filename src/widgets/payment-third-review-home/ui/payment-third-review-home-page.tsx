@@ -13,8 +13,12 @@ export function PaymentThirdReviewHomePage() {
     <>
       <SiteTopBar title="결제 3심" backHref="/" skipHref="#report-preview" />
       <main className="flex flex-col gap-5 px-5 pb-8 pt-4">
-        <PaymentThirdReviewHero overview={PAYMENT_REVIEW_OVERVIEW} />
-        <PaymentThirdReviewGoalSummary items={SUMMARY_CARDS} />
+        <PaymentThirdReviewHero />
+        <PaymentThirdReviewGoalSummary
+          goalSettingHref="/payment-third-review/goal-setting"
+          items={SUMMARY_CARDS}
+          overview={PAYMENT_REVIEW_OVERVIEW}
+        />
         <PaymentThirdReviewReportPreview items={PAYMENT_REVIEW_HISTORY_ITEMS} />
       </main>
     </>
