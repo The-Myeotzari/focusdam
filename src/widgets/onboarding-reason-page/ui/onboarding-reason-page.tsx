@@ -27,7 +27,7 @@ export function OnboardingReasonPage() {
       aria-labelledby="reason-title"
       className="isolate mx-auto flex min-h-[100svh] w-[min(100%,390px)] flex-col items-center bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]"
     >
-      <SiteTopBar title="집중이담" backHref="/" skipHref="/" className="z-[1]" />
+      <SiteTopBar title="집중이담" backHref="/onboarding/start" skipHref="/onboarding/account" className="z-[1]" />
 
       <section className="z-0 flex w-full max-w-[1140px] flex-col items-start px-5 py-8">
         <section className="flex w-full max-w-[672px] flex-col items-center gap-4 pb-10">

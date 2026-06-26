@@ -1,9 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Check, ExternalLink } from "lucide-react";
-import { SiteButton, SiteTopBar } from "@/shared/ui";
+import { SiteTopBar } from "@/shared/ui";
 import { createClient } from "@/shared/lib/supabase/client";
 
 export function OnboardingAccountPage() {
@@ -47,7 +48,7 @@ export function OnboardingAccountPage() {
       <SiteTopBar
         title="집중이담"
         backHref="/onboarding/notifications"
-        skipHref="/"
+        skipHref="/onboarding/account"
       />
 
       <section className="flex w-full max-w-[1140px] flex-col items-center px-5 py-8">
@@ -97,25 +98,21 @@ export function OnboardingAccountPage() {
             type="button"
             disabled={!requiredConsent || isSigningIn}
             onClick={signInWithKakao}
-            className={`flex h-[68px] min-h-[68px] w-full items-center justify-center gap-3 rounded-full px-5 py-5 text-[18px] font-medium leading-7 shadow-[0_1px_2px_rgba(0,0,0,0.05)] transition-opacity ${
-              requiredConsent
-                ? "bg-[#fee500] text-[#191919]"
-                : "cursor-not-allowed bg-[#e2e2e5] text-[#72777e]"
+            aria-label={isSigningIn ? "카카오로 이동 중" : "카카오로 시작하기"}
+            className={`flex h-[68px] min-h-[68px] w-full items-center justify-center gap-2 rounded-full bg-[#fee500] px-5 py-5 text-[18px] font-medium leading-7 text-[#191919] shadow-[0_1px_2px_rgba(0,0,0,0.05)] transition-opacity focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#fee50080] ${
+              requiredConsent && !isSigningIn ? "opacity-100" : "cursor-not-allowed opacity-45"
             }`}
           >
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#191919] text-[15px] font-bold text-[#fee500]">
-              K
-            </span>
-            {isSigningIn ? "카카오로 이동 중..." : "카카오로 시작하기"}
+            <Image
+              src="/kakao.png"
+              alt=""
+              width={34}
+              height={35}
+              className="h-5 w-5 object-contain"
+              priority
+            />
+            {isSigningIn ? "카카오로 이동 중..." : "Kakao로 로그인하기"}
           </button>
-          <SiteButton
-            href="/"
-            variant="secondary"
-            className="!h-[68px] !min-h-[68px] !w-full !rounded-full !bg-[#dde3eb] !px-0 !py-5 !text-[18px] !font-medium !leading-7 !text-[#5f656c] !shadow-none"
-          >
-            비회원으로 체험
-          </SiteButton>
-
           {authError ? (
             <p role="alert" className="m-0 text-center text-[13px] font-medium leading-[18px] text-[#ba1a1a]">
               {authError}

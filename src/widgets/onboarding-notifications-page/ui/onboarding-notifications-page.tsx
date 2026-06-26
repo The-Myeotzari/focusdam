@@ -29,7 +29,7 @@ export function OnboardingNotificationsPage() {
       aria-labelledby="notifications-title"
       className="mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col items-center bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]"
     >
-      <SiteTopBar title="집중이담" backHref="/onboarding/goal" skipHref="/" />
+      <SiteTopBar title="집중이담" backHref="/onboarding/goal" skipHref="/onboarding/account" />
 
       <section className="flex w-full flex-1 flex-col items-center px-5 pb-14 pt-12">
         <section className="flex w-full flex-col items-center gap-6 text-center">

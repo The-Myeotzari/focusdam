@@ -5,9 +5,33 @@ import { Play, Zap } from 'lucide-react';
 import { SiteBadge, SiteButton, SiteCard } from '@/shared/ui';
 import { HomeMetricCard, OngoingActivities } from '@/widgets/home-page';
 
-export function ReturningUserHome() {
+type ReturningUserHomeProps = {
+  userName?: string | null;
+};
+
+export function ReturningUserHome({ userName }: ReturningUserHomeProps) {
   return (
     <>
+      <section className="flex items-center justify-between gap-4" aria-label="계정 상태">
+        <div>
+          <p className="m-0 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--color-primary)]">
+            Signed in
+          </p>
+          <p className="m-0 mt-1 text-base font-medium leading-[1.5] text-[var(--color-on-surface)]">
+            {userName ? `${userName}님` : '로그인됨'}
+          </p>
+        </div>
+
+        <form action="/auth/sign-out" method="post">
+          <button
+            type="submit"
+            className="h-10 rounded-full bg-[#eeedf0] px-4 text-sm font-medium text-[var(--color-on-surface-variant)] transition hover:bg-[#e2e2e5] focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#3c5f7c40]"
+          >
+            로그아웃
+          </button>
+        </form>
+      </section>
+
       {/* 스타터 추천 혹은 진행 중인 스타터 노출 */}
       <section aria-labelledby="today-small-goal">
         <SiteCard

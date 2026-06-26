@@ -35,7 +35,7 @@ export function OnboardingGoalPage() {
       aria-labelledby="goal-title"
       className="relative mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col items-center overflow-x-hidden bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]"
     >
-      <SiteTopBar title="집중이담" backHref="/onboarding/safety" skipHref="/" className="z-[4]" />
+      <SiteTopBar title="집중이담" backHref="/onboarding/safety" skipHref="/onboarding/account" className="z-[4]" />
 
       <section className="flex w-full max-w-[390px] flex-col items-start px-5 pb-[31.5px] pt-8">
         <section className="flex w-full flex-col items-start gap-4 pb-12">
