@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Check, Circle, SmilePlus } from 'lucide-react';
 import { useState } from 'react';
 
+import { PaymentReviewInfoRow } from '@/entities/payment-third-review';
 import type { PaymentReviewHistoryItem } from '@/entities/payment-third-review';
 import { SiteTopBar } from '@/shared/ui';
 
@@ -198,19 +199,9 @@ function SatisfactionResult({ item }: { item: PaymentReviewHistoryItem }) {
 
   return (
     <section className="rounded-[28px] bg-white px-5 py-1 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
-      <ResultRow label="체크 일자" value={result.checkedAt} />
-      <ResultRow label="만족도" value={`${result.summary} ${result.score}/5`} />
-      <ResultRow label="회고 메모" value={result.memo} />
+      <PaymentReviewInfoRow label="체크 일자" value={result.checkedAt} />
+      <PaymentReviewInfoRow label="만족도" value={`${result.summary} ${result.score}/5`} />
+      <PaymentReviewInfoRow label="회고 메모" value={result.memo} />
     </section>
-  );
-}
-
-// 만족도 체크 결과의 한 줄 정보를 렌더링합니다.
-function ResultRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-start justify-between gap-4 border-b border-[#eceff2] py-4 last:border-b-0">
-      <p className="shrink-0 text-sm font-medium leading-6 text-[#72777e]">{label}</p>
-      <p className="text-right text-[16px] font-semibold leading-6 text-[#1a1c1e]">{value}</p>
-    </div>
   );
 }

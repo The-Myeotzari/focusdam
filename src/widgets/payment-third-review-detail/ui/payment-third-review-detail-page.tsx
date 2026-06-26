@@ -2,7 +2,14 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CalendarClock, CheckCircle2, PiggyBank } from 'lucide-react';
 
-import { getPaymentReviewHistoryItemById } from '@/entities/payment-third-review';
+import {
+  getPaymentReviewFollowUpDescription,
+  getPaymentReviewFollowUpMeta,
+  getPaymentReviewFollowUpTitle,
+  getPaymentReviewHistoryItemById,
+  PaymentReviewInfoRow,
+  PaymentReviewStatusBadge,
+} from '@/entities/payment-third-review';
 import type { PaymentReviewHistoryItem } from '@/entities/payment-third-review';
 import { SiteTopBar } from '@/shared/ui';
 
@@ -19,7 +26,7 @@ export function PaymentThirdReviewDetailPage({ id }: Props) {
   }
 
   const decisionMeta = getDecisionMeta(item.decisionType);
-  const followUpMeta = getFollowUpMeta(item);
+  const followUpMeta = getPaymentReviewFollowUpMeta(item);
   const Icon = decisionMeta.icon;
 
   return (
@@ -31,8 +38,11 @@ export function PaymentThirdReviewDetailPage({ id }: Props) {
       />
       <main className="mx-auto flex min-h-[calc(100svh-56px)] w-full max-w-[430px] flex-col gap-5 px-5 pb-8 pt-4">
         <div className="flex flex-wrap gap-1.5">
-          <StatusBadge dotClassName={followUpMeta.dotClassName} label={followUpMeta.label} />
-          <StatusBadge label={item.followUpLabel} />
+          <PaymentReviewStatusBadge
+            dotClassName={followUpMeta.dotClassName}
+            label={followUpMeta.label}
+          />
+          <PaymentReviewStatusBadge label={item.followUpLabel} />
         </div>
 
         <section className="rounded-[32px] bg-[#3c5f7c] p-6 text-white shadow-[0_16px_34px_rgba(60,95,124,0.16)]">
@@ -46,8 +56,11 @@ export function PaymentThirdReviewDetailPage({ id }: Props) {
             </span>
           </div>
           <div className="mt-5 flex flex-wrap gap-1.5">
-            <StatusBadge className="!bg-white/15 !text-white" label={item.decision} />
-            <StatusBadge className="!bg-white/15 !text-white" label={`충동 ${item.impulseStrength}`} />
+            <PaymentReviewStatusBadge className="!bg-white/15 !text-white" label={item.decision} />
+            <PaymentReviewStatusBadge
+              className="!bg-white/15 !text-white"
+              label={`충동 ${item.impulseStrength}`}
+            />
           </div>
           <p className="mt-8 text-[30px] font-semibold leading-9">{item.amount}</p>
         </section>
@@ -61,9 +74,9 @@ export function PaymentThirdReviewDetailPage({ id }: Props) {
           </h2>
 
           <div className="rounded-[28px] bg-white px-5 py-1 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
-            <SummaryRow label="결제 이유" value={item.reason} />
-            <SummaryRow label="목표 영향" value={item.progressLabel} />
-            <SummaryRow label="예산 반영" value={item.budgetImpactLabel} />
+            <PaymentReviewInfoRow label="결제 이유" value={item.reason} />
+            <PaymentReviewInfoRow label="목표 영향" value={item.progressLabel} />
+            <PaymentReviewInfoRow label="예산 반영" value={item.budgetImpactLabel} />
           </div>
         </section>
 
@@ -75,10 +88,10 @@ export function PaymentThirdReviewDetailPage({ id }: Props) {
             id="payment-review-detail-follow-up"
             className="text-xs font-semibold leading-5 text-[#72777e]"
           >
-            {getFollowUpTitle(item.followUpType)}
+            {getPaymentReviewFollowUpTitle(item.followUpType)}
           </p>
           <p className="mt-1 text-[17px] font-semibold leading-7 text-[#1a1c1e]">
-            {getFollowUpDescription(item)}
+            {getPaymentReviewFollowUpDescription(item)}
           </p>
           {item.satisfaction?.status === 'required' ? (
             <Link
@@ -99,27 +112,17 @@ export function PaymentThirdReviewDetailPage({ id }: Props) {
               만족도 조사 결과
             </h2>
             <div className="rounded-[28px] bg-white px-5 py-1 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
-              <SummaryRow label="체크 일자" value={item.satisfaction.result.checkedAt} />
-              <SummaryRow
+              <PaymentReviewInfoRow label="체크 일자" value={item.satisfaction.result.checkedAt} />
+              <PaymentReviewInfoRow
                 label="만족도"
                 value={`${item.satisfaction.result.summary} ${item.satisfaction.result.score}/5`}
               />
-              <SummaryRow label="회고 메모" value={item.satisfaction.result.memo} />
+              <PaymentReviewInfoRow label="회고 메모" value={item.satisfaction.result.memo} />
             </div>
           </section>
         ) : null}
       </main>
     </>
-  );
-}
-
-// 판단 요약 안의 구분선 행을 렌더링합니다.
-function SummaryRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-start justify-between gap-4 border-b border-[#eceff2] py-4 last:border-b-0">
-      <p className="shrink-0 text-sm font-medium leading-6 text-[#72777e]">{label}</p>
-      <p className="text-right text-[16px] font-semibold leading-6 text-[#1a1c1e]">{value}</p>
-    </div>
   );
 }
 
@@ -134,101 +137,4 @@ function getDecisionMeta(decisionType: PaymentReviewHistoryItem['decisionType'])
   }
 
   return { icon: CalendarClock };
-}
-
-// 결제 3심 후속 처리 유형에 맞는 배지 정보를 반환합니다.
-function getFollowUpMeta(item: PaymentReviewHistoryItem) {
-  if (item.followUpType === 'satisfaction') {
-    if (item.satisfaction?.status === 'required') {
-      return {
-        label: '만족도 체크 필요',
-        dotClassName: 'bg-[#d85c49]',
-      };
-    }
-
-    if (item.satisfaction?.status === 'completed') {
-      return {
-        label: '만족도 체크 완료',
-        dotClassName: 'bg-[#2d6a4f]',
-      };
-    }
-
-    return {
-      label: '만족도 체크 예정',
-      dotClassName: 'bg-[#3c5f7c]',
-    };
-  }
-
-  if (item.followUpType === 'saved') {
-    return {
-      label: '저축 반영',
-      dotClassName: 'bg-[#2d6a4f]',
-    };
-  }
-
-  return {
-    label: '리마인드 예정',
-    dotClassName: 'bg-[#94640a]',
-  };
-}
-
-// 후속 처리 유형에 맞는 상세 제목을 반환합니다.
-function getFollowUpTitle(followUpType: PaymentReviewHistoryItem['followUpType']) {
-  if (followUpType === 'satisfaction') {
-    return '만족도 체크';
-  }
-
-  if (followUpType === 'saved') {
-    return '저축 반영';
-  }
-
-  return '리마인드';
-}
-
-// 후속 처리 유형에 맞는 상세 문장을 반환합니다.
-function getFollowUpDescription(item: PaymentReviewHistoryItem) {
-  if (item.followUpType === 'satisfaction') {
-    if (item.satisfaction?.status === 'required') {
-      return '결제 후 24시간이 지나 만족도 체크가 필요해요';
-    }
-
-    if (item.satisfaction?.status === 'completed') {
-      return '만족도 체크를 완료했어요';
-    }
-
-    return `${item.followUpLabel} 만족도를 확인해요`;
-  }
-
-  if (item.followUpType === 'saved') {
-    return `${item.followUpLabel}으로 이동했어요`;
-  }
-
-  return `${item.followUpLabel} 다시 확인해요`;
-}
-
-// 결제 3심 상세 상단의 상태 배지를 렌더링합니다.
-function StatusBadge({
-  className,
-  dotClassName,
-  label,
-}: {
-  className?: string;
-  dotClassName?: string;
-  label: string;
-}) {
-  return (
-    <span
-      className={[
-        'inline-flex items-center gap-1.5 rounded-full bg-[#f4f3f6] px-2.5 py-1 text-[11px] font-semibold leading-4 text-[#72777e]',
-        className,
-      ]
-        .filter(Boolean)
-        .join(' ')}
-    >
-      {dotClassName ? (
-        <span className={`size-1.5 rounded-full ${dotClassName}`} aria-hidden="true" />
-      ) : null}
-      {label}
-    </span>
-  );
 }
