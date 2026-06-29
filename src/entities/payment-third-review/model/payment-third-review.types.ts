@@ -51,6 +51,7 @@ export type PaymentReviewHistoryItem = {
   followUpLabel: string;
   followUpType: 'reminder' | 'satisfaction' | 'saved';
   progressLabel: string;
+  savedAmount?: number;
   budgetImpactLabel: string;
   status: PaymentReviewStatus;
   satisfaction?: {

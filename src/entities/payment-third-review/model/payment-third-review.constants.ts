@@ -175,6 +175,7 @@ export const PAYMENT_REVIEW_HISTORY_ITEMS: PaymentReviewHistoryItem[] = [
     followUpLabel: '목표 저축',
     followUpType: 'saved',
     progressLabel: '목표 대비 64%',
+    savedAmount: 24600,
     budgetImpactLabel: '24,600원 절약',
     status: 'save_completed',
   },
@@ -257,6 +258,7 @@ export const PAYMENT_REVIEW_HISTORY_ITEMS: PaymentReviewHistoryItem[] = [
     followUpLabel: '보류 후 저축',
     followUpType: 'reminder',
     progressLabel: '목표 대비 70%',
+    savedAmount: 34900,
     budgetImpactLabel: '34,900원 소비 방지',
     status: 'hold_after_save',
     reminder: {
@@ -369,6 +371,7 @@ export const PAYMENT_REVIEW_HISTORY_ITEMS: PaymentReviewHistoryItem[] = [
     followUpLabel: '재보류 후 저축',
     followUpType: 'reminder',
     progressLabel: '목표 대비 96%',
+    savedAmount: 89000,
     budgetImpactLabel: '재보류 후 결제 미진행',
     status: 'rehold_after_save',
     reminder: {

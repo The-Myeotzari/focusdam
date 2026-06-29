@@ -8,7 +8,11 @@ import type {
   PaymentReviewHistoryItem,
   PaymentReviewReminderDecision,
 } from '@/entities/payment-third-review';
-import { PaymentReviewInfoRow } from '@/entities/payment-third-review';
+import {
+  getGoalAchievementHrefAfterSaving,
+  parsePaymentReviewWon,
+  PaymentReviewInfoRow,
+} from '@/entities/payment-third-review';
 import { SiteTopBar } from '@/shared/ui';
 
 type Props = {
@@ -59,19 +63,31 @@ export function PaymentThirdReviewReminderResultPage({ decision, item }: Props) 
 
   // 리마인드 최종 판단 payload를 제출하고 상세 화면으로 이동합니다.
   const handleSubmit = () => {
+    const savedAmount = decision === 'cancel' ? parsePaymentReviewWon(item.amount) : 0;
+    const goalAchievementHref =
+      decision === 'cancel'
+        ? getGoalAchievementHrefAfterSaving({
+            savedAmount,
+            triggerReviewId: item.id,
+            triggerStatus: 'hold_after_save',
+          })
+        : null;
     const payload = {
       decision,
       memo,
       paymentThirdReviewId: item.id,
       reminderAfterDays: decision === 'hold' ? 3 : null,
+      savedAmount,
     };
 
     console.group('[payment-third-review] reminder payload');
     console.log(payload);
+    console.info('goalAchievementHref', goalAchievementHref);
     console.groupEnd();
     // TODO: 백엔드 연동 시 여기에서 리마인드 최종 판단 payload를 Server Action 또는 mutation으로 넘기면 됩니다.
+    // TODO: 결제 미진행으로 목표 달성 시 백엔드 응답의 achievementId로 목표 달성 화면에 이동하면 됩니다.
 
-    router.replace(`/payment-third-review/list/${item.id}`);
+    router.replace(goalAchievementHref ?? `/payment-third-review/list/${item.id}`);
   };
 
   return (

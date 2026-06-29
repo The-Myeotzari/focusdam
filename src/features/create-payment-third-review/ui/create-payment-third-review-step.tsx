@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
+import { getGoalAchievementHrefAfterSaving } from '@/entities/payment-third-review';
 import { useCreatePaymentThirdReviewDraft } from '@/features/create-payment-third-review/lib/use-create-payment-third-review-draft';
 import { createPaymentThirdReviewPayload } from '@/features/create-payment-third-review/model/create-payment-third-review.draft';
 import {
@@ -51,15 +52,24 @@ export function CreatePaymentThirdReviewStep({ step }: Props) {
   // 완료 단계에서 누적 입력값을 전송 payload로 만들고 플로우를 종료합니다.
   const handleSubmit = () => {
     const payload = createPaymentThirdReviewPayload(draft);
+    const goalAchievementHref =
+      draft.decision === 'memo' && draft.savingTarget === 'goal'
+        ? getGoalAchievementHrefAfterSaving({
+            savedAmount: payload.amount,
+            triggerStatus: 'save_completed',
+          })
+        : null;
 
     console.groupCollapsed('[결제 3심 생성] 제출 payload');
     console.info('draft', draft);
     console.info('payload', payload);
+    console.info('goalAchievementHref', goalAchievementHref);
     console.groupEnd();
 
     // TODO: 백엔드 연동 시 여기에서 payload를 Server Action 또는 mutation으로 넘기면 됩니다.
+    // TODO: 저축 반영 후 목표 달성 시 백엔드 응답의 achievementId로 목표 달성 화면에 이동하면 됩니다.
     resetDraft();
-    router.replace(config.nextHref);
+    router.replace(goalAchievementHref ?? config.nextHref);
   };
 
   return (
