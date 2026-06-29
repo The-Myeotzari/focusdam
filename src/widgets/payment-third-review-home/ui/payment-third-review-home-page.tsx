@@ -15,6 +15,7 @@ export function PaymentThirdReviewHomePage() {
       <main className="flex flex-col gap-5 px-5 pb-8 pt-4">
         <PaymentThirdReviewHero />
         <PaymentThirdReviewGoalSummary
+          goalAchievementHref="/payment-third-review/goal-achievement"
           goalSettingHref="/payment-third-review/goal-setting"
           items={SUMMARY_CARDS}
           overview={PAYMENT_REVIEW_OVERVIEW}

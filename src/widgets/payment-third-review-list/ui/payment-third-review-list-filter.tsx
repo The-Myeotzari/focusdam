@@ -59,15 +59,23 @@ export function PaymentThirdReviewListFilter({ items }: Props) {
         })}
       </div>
 
-      <div className="grid gap-2">
-        {filteredItems.map((item) => (
-          <PaymentReviewHistoryRow
-            key={item.id}
-            href={`/payment-third-review/list/${item.id}`}
-            item={item}
-          />
-        ))}
-      </div>
+      {filteredItems.length === 0 ? (
+        <div className="rounded-[24px] bg-white px-5 py-10 text-center shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+          <p className="text-[16px] font-semibold leading-7 text-[#1a1c1e]">
+            아직 결제 3심 내역이 없습니다.
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-2">
+          {filteredItems.map((item) => (
+            <PaymentReviewHistoryRow
+              key={item.id}
+              href={`/payment-third-review/list/${item.id}`}
+              item={item}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

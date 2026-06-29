@@ -7,12 +7,18 @@ import type {
 } from '@/widgets/payment-third-review-home/model/payment-third-review-home.types';
 
 type Props = {
+  goalAchievementHref: string;
   goalSettingHref: string;
   items: SummaryCard[];
   overview: PaymentReviewOverview;
 };
 
-export function PaymentThirdReviewGoalSummary({ goalSettingHref, items, overview }: Props) {
+export function PaymentThirdReviewGoalSummary({
+  goalAchievementHref,
+  goalSettingHref,
+  items,
+  overview,
+}: Props) {
   return (
     <section aria-labelledby="spend-summary-title" className="grid gap-3">
       <h2 id="spend-summary-title" className="text-lg font-semibold leading-7 text-[#1a1c1e]">
@@ -31,13 +37,22 @@ export function PaymentThirdReviewGoalSummary({ goalSettingHref, items, overview
             </p>
           </div>
         </div>
-        <SiteButton
-          href={goalSettingHref}
-          variant="secondary"
-          className="!min-h-10 !shrink-0 !gap-1.5 !rounded-full !px-4 !text-xs !font-semibold"
-        >
-          설정하기
-        </SiteButton>
+        <div className="grid shrink-0 gap-2">
+          <SiteButton
+            href={goalSettingHref}
+            variant="secondary"
+            className="!min-h-10 !gap-1.5 !rounded-full !px-4 !text-xs !font-semibold"
+          >
+            설정하기
+          </SiteButton>
+          <SiteButton
+            href={goalAchievementHref}
+            variant="outline"
+            className="!min-h-9 !gap-1.5 !rounded-full !border-transparent !bg-transparent !px-3 !text-xs !font-semibold !text-[#3c5f7c] !shadow-none"
+          >
+            달성 기록
+          </SiteButton>
+        </div>
       </article>
 
       <div className="grid grid-cols-2 gap-3">

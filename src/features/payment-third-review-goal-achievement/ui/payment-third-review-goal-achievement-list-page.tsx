@@ -34,43 +34,51 @@ export function PaymentThirdReviewGoalAchievementListPage({ achievements }: Prop
             </p>
           </div>
 
-          <div className="grid gap-2">
-            {achievements.map((achievement) => (
-              <Link
-                key={achievement.id}
-                href={`/payment-third-review/goal-achievement/${achievement.id}`}
-                className="block rounded-[22px] bg-white p-4 shadow-[0_4px_12px_rgba(0,0,0,0.04)]"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#e8f5f1] text-[#2d6a4f]">
-                      <Award size={19} strokeWidth={2.1} aria-hidden="true" />
-                    </span>
-                    <div className="min-w-0">
-                      <p className="truncate text-[15px] font-semibold leading-6 text-[#1a1c1e]">
-                        {achievement.goalName}
+          {achievements.length === 0 ? (
+            <div className="rounded-[24px] bg-white px-5 py-10 text-center shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+              <p className="text-[16px] font-semibold leading-7 text-[#1a1c1e]">
+                아직 목표 달성 내역이 없습니다.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-2">
+              {achievements.map((achievement) => (
+                <Link
+                  key={achievement.id}
+                  href={`/payment-third-review/goal-achievement/${achievement.id}`}
+                  className="block rounded-[22px] bg-white p-4 shadow-[0_4px_12px_rgba(0,0,0,0.04)]"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#e8f5f1] text-[#2d6a4f]">
+                        <Award size={19} strokeWidth={2.1} aria-hidden="true" />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate text-[15px] font-semibold leading-6 text-[#1a1c1e]">
+                          {achievement.goalName}
+                        </p>
+                        <p className="truncate text-xs font-medium leading-5 text-[#72777e]">
+                          {achievement.achievedAt} ·{' '}
+                          {formatPaymentReviewWon(achievement.savedAmount)} 저축 반영
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <p className="text-sm font-semibold leading-5 text-[#1a1c1e]">
+                        {formatPaymentReviewWon(achievement.achievedAmount)}
                       </p>
-                      <p className="truncate text-xs font-medium leading-5 text-[#72777e]">
-                        {achievement.achievedAt} · {formatPaymentReviewWon(achievement.savedAmount)}{' '}
-                        저축 반영
-                      </p>
+                      <ArrowRight
+                        size={15}
+                        strokeWidth={2.2}
+                        className="text-[#72777e]"
+                        aria-hidden="true"
+                      />
                     </div>
                   </div>
-                  <div className="flex shrink-0 items-center gap-2">
-                    <p className="text-sm font-semibold leading-5 text-[#1a1c1e]">
-                      {formatPaymentReviewWon(achievement.achievedAmount)}
-                    </p>
-                    <ArrowRight
-                      size={15}
-                      strokeWidth={2.2}
-                      className="text-[#72777e]"
-                      aria-hidden="true"
-                    />
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </section>
       </main>
     </>
