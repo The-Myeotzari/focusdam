@@ -11,7 +11,7 @@ type Props = {
 };
 
 export function PaymentReviewHistoryRow({ href, item }: Props) {
-  const decisionMeta = getDecisionMeta(item.decisionType);
+  const decisionMeta = getDecisionMeta(item.outcomeType);
   const followUpMeta = getPaymentReviewFollowUpMeta(item);
   const Icon = decisionMeta.icon;
   const content = (
@@ -28,7 +28,7 @@ export function PaymentReviewHistoryRow({ href, item }: Props) {
               {item.itemName}
             </p>
             <p className="truncate text-xs font-medium leading-5 text-[#72777e]">
-              <span className={decisionMeta.textClassName}>{item.decision}</span>
+              <span className={decisionMeta.textClassName}>{getOutcomeLabel(item.outcomeType)}</span>
               <span> · 충동 {item.impulseStrength}</span>
             </p>
           </div>
@@ -71,8 +71,8 @@ export function PaymentReviewHistoryRow({ href, item }: Props) {
 }
 
 // 결제 3심 판단 유형에 맞는 아이콘과 색상 정보를 반환합니다.
-function getDecisionMeta(decisionType: PaymentReviewHistoryItem['decisionType']) {
-  if (decisionType === 'save') {
+function getDecisionMeta(outcomeType: PaymentReviewHistoryItem['outcomeType']) {
+  if (outcomeType === 'save') {
     return {
       icon: PiggyBank,
       iconClassName: 'bg-[#e8f5f1] text-[#2d6a4f]',
@@ -80,7 +80,7 @@ function getDecisionMeta(decisionType: PaymentReviewHistoryItem['decisionType'])
     };
   }
 
-  if (decisionType === 'buy') {
+  if (outcomeType === 'buy') {
     return {
       icon: CheckCircle2,
       iconClassName: 'bg-[#e0f1ff] text-[#3c5f7c]',
@@ -93,4 +93,17 @@ function getDecisionMeta(decisionType: PaymentReviewHistoryItem['decisionType'])
     iconClassName: 'bg-[#fff2e0] text-[#94640a]',
     textClassName: 'text-[#94640a]',
   };
+}
+
+// 결제 3심 현재 결과 유형을 리스트용 라벨로 변환합니다.
+function getOutcomeLabel(outcomeType: PaymentReviewHistoryItem['outcomeType']) {
+  if (outcomeType === 'buy') {
+    return '결제';
+  }
+
+  if (outcomeType === 'save') {
+    return '저축';
+  }
+
+  return '보류';
 }

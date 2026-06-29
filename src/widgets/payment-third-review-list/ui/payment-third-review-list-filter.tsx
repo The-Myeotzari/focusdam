@@ -9,7 +9,7 @@ type Props = {
   items: PaymentReviewHistoryItem[];
 };
 
-type PaymentReviewListFilter = 'all' | PaymentReviewHistoryItem['decisionType'];
+type PaymentReviewListFilter = 'all' | PaymentReviewHistoryItem['outcomeType'];
 
 const filterOptions: Array<{ label: string; value: PaymentReviewListFilter }> = [
   { label: '전체', value: 'all' },
@@ -26,7 +26,7 @@ export function PaymentThirdReviewListFilter({ items }: Props) {
       return items;
     }
 
-    return items.filter((item) => item.decisionType === selectedFilter);
+    return items.filter((item) => item.outcomeType === selectedFilter);
   }, [items, selectedFilter]);
 
   return (

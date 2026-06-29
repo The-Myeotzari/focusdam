@@ -25,7 +25,7 @@ export function PaymentThirdReviewDetailPage({ id }: Props) {
     notFound();
   }
 
-  const decisionMeta = getDecisionMeta(item.decisionType);
+  const decisionMeta = getDecisionMeta(item.outcomeType);
   const followUpMeta = getPaymentReviewFollowUpMeta(item);
   const Icon = decisionMeta.icon;
 
@@ -150,7 +150,7 @@ export function PaymentThirdReviewDetailPage({ id }: Props) {
               />
               <PaymentReviewInfoRow
                 label="리마인드 횟수"
-                value={`${item.reminder.result.reminderCount}회`}
+                value={`${item.reminder.reminderCount}회`}
               />
               <PaymentReviewInfoRow label="메모" value={item.reminder.result.memo} />
             </div>
@@ -162,12 +162,12 @@ export function PaymentThirdReviewDetailPage({ id }: Props) {
 }
 
 // 결제 3심 판단 유형에 맞는 아이콘 정보를 반환합니다.
-function getDecisionMeta(decisionType: PaymentReviewHistoryItem['decisionType']) {
-  if (decisionType === 'save') {
+function getDecisionMeta(outcomeType: PaymentReviewHistoryItem['outcomeType']) {
+  if (outcomeType === 'save') {
     return { icon: PiggyBank };
   }
 
-  if (decisionType === 'buy') {
+  if (outcomeType === 'buy') {
     return { icon: CheckCircle2 };
   }
 
@@ -178,11 +178,11 @@ function getDecisionMeta(decisionType: PaymentReviewHistoryItem['decisionType'])
 function getReminderCompletedTypeLabel(
   completedType: PaymentReviewReminderResult['completedType'],
 ) {
-  if (completedType === 'after-hold') {
+  if (completedType === 'after-rehold') {
     return '재보류 이후 완료';
   }
 
-  return '기본 완료';
+  return '보류 이후 완료';
 }
 
 // 리마인드 최종 판단 값을 상세 화면용 라벨로 변환합니다.
