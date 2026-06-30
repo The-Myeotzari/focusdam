@@ -16,25 +16,16 @@ type Props = {
 export function ReviewPlusDetailPage({ review }: Props) {
   return (
     <>
-      <SiteTopBar title="주간 리포트" backHref="/review" skipHref="#recommendation" skipLabel="추천" />
+      <SiteTopBar
+        title="주간 리포트"
+        backHref="/review"
+        skipHref="#recommendation"
+        skipLabel="추천"
+      />
       <main className="mx-auto flex min-h-[calc(100svh-56px)] w-full max-w-[430px] flex-col gap-5 px-5 pb-8 pt-4">
-        <section
-          aria-labelledby="review-plus-detail-title"
-          className="rounded-[32px] bg-[#e8f5f1] px-6 py-7 shadow-[0_20px_60px_rgba(60,95,124,0.08)]"
-        >
-          <p className="w-fit rounded-full bg-white/55 px-3 py-1 text-xs font-semibold leading-5 text-[#3c5f7c]">
-            {review.weekLabel}
-          </p>
-          <h1
-            id="review-plus-detail-title"
-            className="mt-4 text-[28px] font-semibold leading-9 text-[var(--color-on-surface)]"
-          >
-            {review.summary.title}
-          </h1>
-          <p className="mt-3 text-sm font-medium leading-6 text-[var(--color-on-surface-variant)]">
-            {review.summary.description}
-          </p>
-        </section>
+        <p className="w-fit rounded-full bg-[#e8eef3] px-4 py-1.5 text-sm font-medium leading-5 text-[#3c5f7c]">
+          {review.weekLabel}
+        </p>
 
         {review.insights.map((insight, index) => {
           const accent = getInsightAccentClassName(insight.accent);
@@ -44,12 +35,12 @@ export function ReviewPlusDetailPage({ review }: Props) {
             <section
               key={insight.id}
               aria-labelledby={`review-insight-${insight.id}`}
-              className={`rounded-[32px] px-5 py-6 ${accent.section}`}
+              className={`rounded-[32px] px-5 py-6 shadow-[var(--shadow-card)] ${accent.section}`}
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <p
-                    className={`w-fit rounded-full px-4 py-1.5 text-sm font-medium leading-5 ${accent.badge}`}
+                    className={`mt-2 w-fit rounded-full px-4 py-1.5 text-sm font-medium leading-5 ${accent.badge}`}
                   >
                     {insight.badge}
                   </p>
@@ -70,14 +61,23 @@ export function ReviewPlusDetailPage({ review }: Props) {
               <p className="mt-3 text-sm font-medium leading-6 text-[var(--color-on-surface-variant)]">
                 {insight.description}
               </p>
-              <div className="mt-6 grid gap-5">
+              <div className="mt-6 grid overflow-hidden rounded-[24px] bg-white/70">
                 {insight.sections.map((section) => (
-                  <section key={section.id} aria-label={section.subject}>
-                    <h3 className="text-[17px] font-semibold leading-7 text-[var(--color-on-surface)]">
-                      {section.subject}
-                    </h3>
-                    <p className="mt-2 text-sm font-medium leading-6 text-[var(--color-on-surface-variant)]">
-                      {section.content}
+                  <section
+                    key={section.id}
+                    aria-label={section.subject}
+                    className="grid gap-1 border-b border-white/80 px-4 py-4 last:border-b-0"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <h3 className="text-sm font-semibold leading-6 text-[var(--color-on-surface)]">
+                        {section.subject}
+                      </h3>
+                      <strong className="shrink-0 text-right text-[18px] font-semibold leading-7 text-[#3c5f7c]">
+                        {section.value}
+                      </strong>
+                    </div>
+                    <p className="text-xs font-medium leading-5 text-[var(--color-on-surface-variant)]">
+                      {section.description}
                     </p>
                   </section>
                 ))}
@@ -181,8 +181,8 @@ export function ReviewPlusDetailPage({ review }: Props) {
             추천 적용
             <CheckCircle2 size={18} strokeWidth={2} aria-hidden="true" />
           </SiteButton>
-          <SiteButton href="/review" variant="secondary" className="w-full">
-            다음 목표 만들기
+          <SiteButton href="/review/list" variant="secondary" className="w-full">
+            목록으로 돌아가기
           </SiteButton>
         </div>
       </main>

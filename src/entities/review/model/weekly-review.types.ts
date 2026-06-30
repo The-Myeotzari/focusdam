@@ -18,11 +18,13 @@ export type WeeklyReviewPlusFeature = {
 export type WeeklyReviewInsightSection = {
   id: string;
   subject: string;
-  content: string;
+  value: string;
+  description: string;
 };
 
 export type WeeklyReviewInsight = {
   id: string;
+  menu: '할일' | '소비' | '감정' | '대화';
   badge: string;
   title: string;
   description: string;
@@ -57,4 +59,18 @@ export type WeeklyReview = {
   insights: WeeklyReviewInsight[];
   goal: WeeklyReviewGoal;
   recommendation: WeeklyReviewRecommendation;
+};
+
+export type WeeklyReviewListItem = {
+  id: string;
+  year: number;
+  month: number;
+  weekLabel: string;
+  title: string;
+  description: string;
+  savedAmount: string;
+  startedCount: string;
+  returnRate: string;
+  href: string;
+  plusHref: string;
 };

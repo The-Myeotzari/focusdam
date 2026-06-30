@@ -12,10 +12,10 @@ import {
   Target,
 } from 'lucide-react';
 
-import type { WeeklyReview } from './weekly-review.types';
+import type { WeeklyReview, WeeklyReviewListItem } from './weekly-review.types';
 
 export const WEEKLY_REVIEW: WeeklyReview = {
-  weekLabel: '6월 4주',
+  weekLabel: '2026년 6월 4주',
   summary: {
     title: '착수 12회 · 절약 86,000원',
     description: '이번 주 행동 변화를 숫자로 쌓았습니다.',
@@ -68,7 +68,8 @@ export const WEEKLY_REVIEW: WeeklyReview = {
   insights: [
     {
       id: 'time-window',
-      badge: '실행 리포트',
+      menu: '할일',
+      badge: '할일 리포트',
       title: '시작이 쉬워진 시간대',
       description:
         '언제 착수가 잘 됐는지 패턴을 보여줍니다. 이번 주 당신의 황금 시간대를 확인해 보세요.',
@@ -77,25 +78,26 @@ export const WEEKLY_REVIEW: WeeklyReview = {
         {
           id: 'best-time',
           subject: '착수 최다 시간',
-          content:
-            '이번 주 가장 자주 시작한 시간은 오전 10시였습니다. 집중을 시작하기 전 준비 시간이 짧고, 방해 요소가 적은 구간으로 보입니다.',
+          value: '오전 10시',
+          description: '가장 자주 시작한 시간',
         },
         {
           id: 'average-start',
-          subject: '지난 주 대비 변화',
-          content:
-            '평균 시작 지연은 지난 주보다 14분 줄었습니다. 시작을 미루는 시간이 짧아졌고, 루틴에 들어가는 속도가 조금 더 안정됐습니다.',
+          subject: '평균 시작 지연',
+          value: '-14분',
+          description: '시작까지 걸린 시간 변화',
         },
         {
           id: 'recommend-time',
-          subject: '다음 주 제안',
-          content:
-            '다음 주에도 오전 루틴을 유지해보세요. 알림은 오전 10시 직전에 두고, 시작 단위는 10분 이하로 작게 잡는 편이 좋습니다.',
+          subject: '추천',
+          value: '오전 루틴 유지',
+          description: '다음 주에도 유지하기 좋은 흐름',
         },
       ],
     },
     {
       id: 'spending-effect',
+      menu: '소비',
       badge: '소비 리포트',
       title: '결제 3심이 효과를 냈어요',
       description: '보류와 취소 전환을 통해 실제 절약된 지출을 모았습니다.',
@@ -104,19 +106,20 @@ export const WEEKLY_REVIEW: WeeklyReview = {
         {
           id: 'saved',
           subject: '절약 누적',
-          content:
-            '이번 주 결제 3심을 거치며 86,000원을 아꼈습니다. 금액보다 중요한 점은 결제 직전 멈추는 행동이 반복됐다는 것입니다.',
+          value: '86,000원',
+          description: '이번 주 아낀 금액',
         },
         {
           id: 'hold-rate',
           subject: '보류 성공률',
-          content:
-            '보류 후 결제를 멈춘 비율은 63%였습니다. 즉시 결제보다 한 번 미루는 선택이 실제 지출 감소로 이어졌습니다.',
+          value: '63%',
+          description: '보류 후 결제를 멈춘 비율',
         },
       ],
     },
     {
       id: 'reset-return',
+      menu: '감정',
       badge: '감정 리포트',
       title: '리셋 후 다시 돌아온 비율',
       description: '감정이 흔들렸던 순간과 행동 복귀율을 함께 봅니다.',
@@ -125,25 +128,26 @@ export const WEEKLY_REVIEW: WeeklyReview = {
         {
           id: 'reset-count',
           subject: '리셋 사용',
-          content:
-            '이번 주 리셋은 6회 사용했습니다. 흔들림을 무시하지 않고 알아차린 기록이 남아 있다는 점이 먼저 좋은 신호입니다.',
+          value: '6회',
+          description: '흔들림을 알아차린 횟수',
         },
         {
           id: 'return-success',
           subject: '복귀 성공',
-          content:
-            '리셋 이후 다시 루틴으로 돌아온 횟수는 4회였습니다. 완벽하게 유지하는 것보다 돌아오는 힘이 더 분명하게 쌓였습니다.',
+          value: '4회',
+          description: '다시 루틴으로 돌아온 횟수',
         },
         {
           id: 'repeat-emotion',
           subject: '반복 감정',
-          content:
-            '가장 자주 기록된 감정은 불안이었습니다. 다음 주에는 불안이 올라오는 순간 바로 끝내기보다, 7분짜리 복귀 행동을 먼저 두는 편이 좋습니다.',
+          value: '불안',
+          description: '가장 자주 기록된 감정',
         },
       ],
     },
     {
       id: 'dialogue',
+      menu: '대화',
       badge: '대화 리포트',
       title: '자주 막힌 대화 상황',
       description: '복사·저장한 문장을 기반으로 필요한 말들을 추천합니다.',
@@ -151,21 +155,21 @@ export const WEEKLY_REVIEW: WeeklyReview = {
       sections: [
         {
           id: 'request',
-          subject: '가장 자주 막힌 상황',
-          content:
-            '이번 주에는 요청 상황에서 가장 자주 멈췄습니다. 필요한 것을 말하기 전 상대 반응을 먼저 걱정하는 흐름이 반복됐습니다.',
+          subject: '최다 상황',
+          value: '요청',
+          description: '가장 자주 필요했던 대화',
         },
         {
           id: 'copy',
-          subject: '도움이 된 문장',
-          content:
-            '문장 복사는 5회 발생했습니다. 직접 쓰기 어려운 말은 미리 만든 문장으로 시작하면 부담이 줄어드는 패턴이 보입니다.',
+          subject: '복사',
+          value: '5회',
+          description: '도움이 된 문장 복사',
         },
         {
           id: 'saved-message',
-          subject: '다음에 다시 쓸 문장',
-          content:
-            '저장한 문장은 2개입니다. 다음 주에는 요청, 피드백, 일정 조정 상황별로 하나씩만 더 모아도 충분합니다.',
+          subject: '저장 문장',
+          value: '2개',
+          description: '다음에 다시 쓸 문장',
         },
       ],
     },
@@ -205,6 +209,139 @@ export const WEEKLY_REVIEW: WeeklyReview = {
     ],
   },
 };
+
+export const WEEKLY_REVIEW_LIST_ITEMS = [
+  {
+    id: 'weekly-review-2026-06-4',
+    year: 2026,
+    month: 6,
+    weekLabel: '2026년 6월 4주',
+    title: '착수 12회 · 절약 86,000원',
+    description: '오전 루틴과 결제 보류가 가장 선명했던 주간 리포트예요.',
+    savedAmount: '86,000원',
+    startedCount: '12회',
+    returnRate: '68%',
+    href: '/review',
+    plusHref: '/review/plus',
+  },
+  {
+    id: 'weekly-review-2026-06-3',
+    year: 2026,
+    month: 6,
+    weekLabel: '2026년 6월 3주',
+    title: '착수 9회 · 절약 42,000원',
+    description: '루틴 재시작이 늘었고, 소비 보류 흐름이 처음 자리 잡았어요.',
+    savedAmount: '42,000원',
+    startedCount: '9회',
+    returnRate: '61%',
+    href: '/review',
+    plusHref: '/review/plus',
+  },
+  {
+    id: 'weekly-review-2026-06-2',
+    year: 2026,
+    month: 6,
+    weekLabel: '2026년 6월 2주',
+    title: '착수 7회 · 절약 28,000원',
+    description: '작은 시작을 여러 번 남기며 다음 주 목표의 기준을 만들었어요.',
+    savedAmount: '28,000원',
+    startedCount: '7회',
+    returnRate: '54%',
+    href: '/review',
+    plusHref: '/review/plus',
+  },
+  {
+    id: 'weekly-review-2026-06-1',
+    year: 2026,
+    month: 6,
+    weekLabel: '2026년 6월 1주',
+    title: '착수 6회 · 절약 19,000원',
+    description: '새 루틴을 작게 시작하며 소비 기록을 다시 남기기 시작했어요.',
+    savedAmount: '19,000원',
+    startedCount: '6회',
+    returnRate: '48%',
+    href: '/review',
+    plusHref: '/review/plus',
+  },
+  {
+    id: 'weekly-review-2026-05-4',
+    year: 2026,
+    month: 5,
+    weekLabel: '2026년 5월 4주',
+    title: '착수 10회 · 절약 64,000원',
+    description: '할일 착수가 늘었고 결제 보류 성공률이 안정적으로 유지됐어요.',
+    savedAmount: '64,000원',
+    startedCount: '10회',
+    returnRate: '66%',
+    href: '/review',
+    plusHref: '/review/plus',
+  },
+  {
+    id: 'weekly-review-2026-05-3',
+    year: 2026,
+    month: 5,
+    weekLabel: '2026년 5월 3주',
+    title: '착수 8회 · 절약 37,000원',
+    description: '감정 리셋 이후 다시 돌아온 기록이 가장 많이 쌓였어요.',
+    savedAmount: '37,000원',
+    startedCount: '8회',
+    returnRate: '59%',
+    href: '/review',
+    plusHref: '/review/plus',
+  },
+  {
+    id: 'weekly-review-2026-05-2',
+    year: 2026,
+    month: 5,
+    weekLabel: '2026년 5월 2주',
+    title: '착수 5회 · 절약 21,000원',
+    description: '짧은 복귀 행동을 중심으로 루틴을 다시 연결했어요.',
+    savedAmount: '21,000원',
+    startedCount: '5회',
+    returnRate: '52%',
+    href: '/review',
+    plusHref: '/review/plus',
+  },
+  {
+    id: 'weekly-review-2026-05-1',
+    year: 2026,
+    month: 5,
+    weekLabel: '2026년 5월 1주',
+    title: '착수 4회 · 절약 16,000원',
+    description: '기록 수는 적었지만 대화 문장을 저장하는 흐름이 생겼어요.',
+    savedAmount: '16,000원',
+    startedCount: '4회',
+    returnRate: '45%',
+    href: '/review',
+    plusHref: '/review/plus',
+  },
+  {
+    id: 'weekly-review-2026-04-4',
+    year: 2026,
+    month: 4,
+    weekLabel: '2026년 4월 4주',
+    title: '착수 11회 · 절약 73,000원',
+    description: '오전 시작과 소비 보류가 함께 좋아졌던 주간 리포트예요.',
+    savedAmount: '73,000원',
+    startedCount: '11회',
+    returnRate: '64%',
+    href: '/review',
+    plusHref: '/review/plus',
+  },
+  {
+    id: 'weekly-review-2026-04-3',
+    year: 2026,
+    month: 4,
+    weekLabel: '2026년 4월 3주',
+    title: '착수 7회 · 절약 31,000원',
+    description: '할일 착수는 줄었지만 감정 복귀는 꾸준히 이어졌어요.',
+    savedAmount: '31,000원',
+    startedCount: '7회',
+    returnRate: '57%',
+    href: '/review',
+    plusHref: '/review/plus',
+  },
+] satisfies WeeklyReviewListItem[];
 
 export const WEEKLY_REVIEW_SUMMARY_ICONS = [AlarmClock, Target, RotateCcw] as const;
 export const WEEKLY_REVIEW_DETAIL_ICONS = [Clock3, CreditCard, RotateCcw, MessageCircle] as const;

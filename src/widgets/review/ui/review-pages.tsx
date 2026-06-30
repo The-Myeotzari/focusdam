@@ -1,9 +1,16 @@
 import { getPlusSubscription } from '@/entities/plus-subscription';
-import { getWeeklyReview } from '@/entities/review';
+import { getWeeklyReview, getWeeklyReviewList } from '@/entities/review';
 
+import { ReviewListPage } from './review-list-page';
 import { ReviewPlusDetailPage } from './review-plus-detail-page';
 import { ReviewPlusLockedPage } from './review-plus-locked-page';
 import { ReviewSummaryPage } from './review-summary-page';
+
+export async function ReviewListRoutePage() {
+  const items = await getWeeklyReviewList();
+
+  return <ReviewListPage items={items} />;
+}
 
 export async function ReviewSummaryRoutePage() {
   const review = await getWeeklyReview();
