@@ -4,10 +4,13 @@ import { useMemo, useState } from 'react';
 
 import type { PaymentReviewHistoryItem } from '@/entities/payment-third-review';
 import { PaymentReviewHistoryRow } from '@/entities/payment-third-review';
+import { useInfiniteScroll } from '@/shared/lib/use-infinite-scroll';
 
 type Props = {
   items: PaymentReviewHistoryItem[];
 };
+
+const PAGE_SIZE = 6;
 
 type PaymentReviewListFilter = 'all' | PaymentReviewHistoryItem['outcomeType'];
 
@@ -28,6 +31,11 @@ export function PaymentThirdReviewListFilter({ items }: Props) {
 
     return items.filter((item) => item.outcomeType === selectedFilter);
   }, [items, selectedFilter]);
+  const { hasMore, loadMoreRef, visibleItems } = useInfiniteScroll({
+    items: filteredItems,
+    pageSize: PAGE_SIZE,
+    resetKeys: [selectedFilter],
+  });
 
   return (
     <div className="grid gap-3">
@@ -66,15 +74,26 @@ export function PaymentThirdReviewListFilter({ items }: Props) {
           </p>
         </div>
       ) : (
-        <div className="grid gap-2">
-          {filteredItems.map((item) => (
-            <PaymentReviewHistoryRow
-              key={item.id}
-              href={`/payment-third-review/list/${item.id}`}
-              item={item}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid gap-2">
+            {visibleItems.map((item) => (
+              <PaymentReviewHistoryRow
+                key={item.id}
+                href={`/payment-third-review/list/${item.id}`}
+                item={item}
+              />
+            ))}
+          </div>
+
+          {hasMore ? (
+            <div
+              ref={loadMoreRef}
+              className="min-h-11 rounded-full bg-[#ebeaf0] px-4 py-2.5 text-center text-sm font-semibold leading-6 text-[#72777e]"
+            >
+              다음 내역을 불러오는 중
+            </div>
+          ) : null}
+        </>
       )}
     </div>
   );
