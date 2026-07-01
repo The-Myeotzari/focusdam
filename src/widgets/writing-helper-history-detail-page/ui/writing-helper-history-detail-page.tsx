@@ -2,50 +2,28 @@
 
 import Link from 'next/link';
 import { ArrowLeft, Clipboard, FileText } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 import {
   getWritingHelperHistoryItem,
   type WritingHelperHistoryItem,
 } from '@/entities/writing-helper-history';
+import { useCopyToClipboard } from '@/shared/lib/use-copy-to-clipboard';
+import { SiteToast, SiteToastViewport } from '@/shared/ui';
 
 type WritingHelperHistoryDetailPageProps = {
   id: string;
 };
 
 export function WritingHelperHistoryDetailPage({ id }: WritingHelperHistoryDetailPageProps) {
-  const [item, setItem] = useState<WritingHelperHistoryItem | null>(null);
-  const [copyMessage, setCopyMessage] = useState('');
-
-  useEffect(() => {
-    setItem(getWritingHelperHistoryItem(id));
-  }, [id]);
-
-  useEffect(() => {
-    if (!copyMessage) {
-      return;
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      setCopyMessage('');
-    }, 2000);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-    };
-  }, [copyMessage]);
-
-  const handleCopy = async (value: string) => {
-    const trimmedValue = value.trim();
-
-    if (!trimmedValue) {
-      setCopyMessage('복사할 문장이 없습니다.');
-      return;
-    }
-
-    await navigator.clipboard.writeText(trimmedValue);
-    setCopyMessage('문장을 복사했습니다.');
-  };
+  const item = getWritingHelperHistoryItem(id);
+  const {
+    copyText,
+    resetStatus: resetCopyStatus,
+    status: copyStatus,
+  } = useCopyToClipboard({
+    emptyMessage: '복사할 문장이 없습니다.',
+    successMessage: '문장을 복사했습니다.',
+  });
 
   if (!item) {
     return (
@@ -113,19 +91,31 @@ export function WritingHelperHistoryDetailPage({ id }: WritingHelperHistoryDetai
           <HistoryTextBlock
             title="조합 초안"
             value={item.result.draftExample}
-            onCopy={() => handleCopy(item.result.draftExample)}
+            onCopy={() => {
+              void copyText(item.result.draftExample);
+            }}
           />
           <HistoryTextBlock
             title="직접 작성한 문장"
             value={item.editedDraft || '아직 직접 작성한 문장이 없습니다.'}
-            onCopy={() => handleCopy(item.editedDraft)}
+            onCopy={() => {
+              void copyText(item.editedDraft);
+            }}
           />
 
-          {copyMessage ? (
-            <p className="mt-4 text-sm leading-6 text-[var(--color-on-surface-variant)]">
-              {copyMessage}
-            </p>
-          ) : null}
+          <SiteToastViewport>
+            <SiteToast
+              key={copyStatus?.id}
+              open={Boolean(copyStatus)}
+              variant={copyStatus?.variant}
+              description={copyStatus?.message}
+              onOpenChange={(open) => {
+                if (!open) {
+                  resetCopyStatus();
+                }
+              }}
+            />
+          </SiteToastViewport>
         </section>
       </section>
     </main>

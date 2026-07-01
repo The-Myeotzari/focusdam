@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 
 import { createWritingHelperHistoryItem } from '@/features/create-writing-helper-history';
 import { updateWritingHelperHistoryItem } from '@/features/update-writing-helper-history';
+import { useCopyToClipboard } from '@/shared/lib/use-copy-to-clipboard';
 
 import { buildWritingHelperResult } from '../lib/build-writing-helper-result';
 import type { WritingHelperInput } from '../model/writing-helper.types';
@@ -23,9 +24,16 @@ const initialInput: WritingHelperInput = {
 export function WritingHelperPlayground() {
   const [input, setInput] = useState<WritingHelperInput>(initialInput);
   const [draft, setDraft] = useState('');
-  const [copyMessage, setCopyMessage] = useState('');
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [currentHistoryId, setCurrentHistoryId] = useState<string | null>(null);
+  const {
+    copyText,
+    resetStatus: resetCopyStatus,
+    status: copyStatus,
+  } = useCopyToClipboard({
+    emptyMessage: '복사할 문장을 먼저 작성해주세요.',
+    successMessage: '작성한 문장을 복사했습니다.',
+  });
 
   const result = useMemo(() => {
     return buildWritingHelperResult(input);
@@ -39,13 +47,13 @@ export function WritingHelperPlayground() {
 
     setCurrentHistoryId(historyItem.id);
     setDraft('');
-    setCopyMessage('');
+    resetCopyStatus();
     setIsReportOpen(true);
   };
 
   const handleUseDraftExample = () => {
     setDraft(result.draftExample);
-    setCopyMessage('');
+    resetCopyStatus();
 
     if (currentHistoryId) {
       updateWritingHelperHistoryItem(currentHistoryId, {
@@ -56,7 +64,7 @@ export function WritingHelperPlayground() {
 
   const handleDraftChange = (nextDraft: string) => {
     setDraft(nextDraft);
-    setCopyMessage('');
+    resetCopyStatus();
 
     if (currentHistoryId) {
       updateWritingHelperHistoryItem(currentHistoryId, {
@@ -66,15 +74,7 @@ export function WritingHelperPlayground() {
   };
 
   const handleCopyDraft = async () => {
-    const trimmedDraft = draft.trim();
-
-    if (!trimmedDraft) {
-      setCopyMessage('복사할 문장을 먼저 작성해주세요.');
-      return;
-    }
-
-    await navigator.clipboard.writeText(trimmedDraft);
-    setCopyMessage('작성한 문장을 복사했습니다.');
+    await copyText(draft);
   };
 
   if (isReportOpen) {
@@ -82,7 +82,7 @@ export function WritingHelperPlayground() {
       <WritingHelperReportPanel
         result={result}
         draft={draft}
-        copyMessage={copyMessage}
+        copyMessage={copyStatus?.message ?? ''}
         onBack={() => {
           setIsReportOpen(false);
         }}
