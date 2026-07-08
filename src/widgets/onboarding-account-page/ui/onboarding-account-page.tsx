@@ -1,9 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Check, ExternalLink } from "lucide-react";
-import { SiteButton, SiteTopBar } from "@/shared/ui";
+import { SiteTopBar } from "@/shared/ui";
 import { createClient } from "@/shared/lib/supabase/client";
 
 export function OnboardingAccountPage() {
@@ -25,7 +26,7 @@ export function OnboardingAccountPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "kakao",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=/`
+          redirectTo: `${window.location.origin}/auth/callback?next=/home`
         }
       });
 
@@ -44,11 +45,7 @@ export function OnboardingAccountPage() {
       aria-labelledby="account-title"
       className="mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col items-center overflow-x-hidden bg-[#faf9fc] pb-16 font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]"
     >
-      <SiteTopBar
-        title="집중이담"
-        backHref="/onboarding/notifications"
-        skipHref="/"
-      />
+      <SiteTopBar title="집중이담" backHref="/onboarding/notifications" skipHref="/" />
 
       <section className="flex w-full max-w-[1140px] flex-col items-center px-5 py-8">
         <section className="flex w-full max-w-[672px] flex-col items-center gap-4 pb-12">
@@ -63,7 +60,7 @@ export function OnboardingAccountPage() {
           </p>
         </section>
 
-        <section className="w-full max-w-[576px] pb-16" aria-label="개인정보 동의">
+        <section className="w-full max-w-[576px] pb-12" aria-label="개인정보 동의">
           <div className="isolate flex w-full flex-col items-start gap-6 rounded-[32px] bg-white p-6 shadow-[0_10px_40px_-10px_rgba(107,142,173,0.08)]">
             <div className="flex w-full flex-col gap-4">
               <ConsentRow
@@ -97,24 +94,11 @@ export function OnboardingAccountPage() {
             type="button"
             disabled={!requiredConsent || isSigningIn}
             onClick={signInWithKakao}
-            className={`flex h-[68px] min-h-[68px] w-full items-center justify-center gap-3 rounded-full px-5 py-5 text-[18px] font-medium leading-7 shadow-[0_1px_2px_rgba(0,0,0,0.05)] transition-opacity ${
-              requiredConsent
-                ? "bg-[#fee500] text-[#191919]"
-                : "cursor-not-allowed bg-[#e2e2e5] text-[#72777e]"
-            }`}
+            className="mx-auto inline-flex h-12 w-full items-center justify-center gap-3 rounded-full bg-[#FEE500] px-4 text-black disabled:cursor-not-allowed disabled:opacity-60"
           >
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#191919] text-[15px] font-bold text-[#fee500]">
-              K
-            </span>
-            {isSigningIn ? "카카오로 이동 중..." : "카카오로 시작하기"}
+            <Image src="/kakao.png" alt="kakao" width={20} height={10} />
+            {isSigningIn ? "Kakao로 이동 중..." : "Kakao로 로그인하기"}
           </button>
-          <SiteButton
-            href="/"
-            variant="secondary"
-            className="!h-[68px] !min-h-[68px] !w-full !rounded-full !bg-[#dde3eb] !px-0 !py-5 !text-[18px] !font-medium !leading-7 !text-[#5f656c] !shadow-none"
-          >
-            비회원으로 체험
-          </SiteButton>
 
           {authError ? (
             <p role="alert" className="m-0 text-center text-[13px] font-medium leading-[18px] text-[#ba1a1a]">
