@@ -17,7 +17,7 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}/onboarding/account?error=oauth_callback`);
   }
 
-  return NextResponse.redirect(`${origin}${next}`);
+  return NextResponse.redirect(`${origin}${next === '/' ? '/home' : next}`);
 }
 
 function getSafeNextPath(next: string | null) {
