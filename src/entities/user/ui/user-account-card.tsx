@@ -1,6 +1,6 @@
 // 사용자 정보 카드 컴포넌트
 
-import type { UserAccount } from '@/entities/user';
+import type { UserAccount } from '@/entities/user/model/user.types';
 
 type Props = {
   user: UserAccount;

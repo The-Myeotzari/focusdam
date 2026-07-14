@@ -3,12 +3,10 @@
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 
-import { getCurrentUser, UserAccountCard } from '@/entities/user';
+import { CurrentUserAccountCard } from '@/entities/user';
 import { ACCOUNT_SETTINGS_MENU_SECTIONS, SettingsMenu } from '@/widgets/settings';
 
-export async function AccountManagementPage() {
-  const user = await getCurrentUser();
-
+export function AccountManagementPage() {
   return (
     <main className="flex gap-8 flex-col px-5 py-4">
       {/* TODO: 페이지 헤더 영역 추후 분리 필요*/}
@@ -25,7 +23,7 @@ export async function AccountManagementPage() {
       </header>
 
       {/* 유저 정보 카드 */}
-      <UserAccountCard user={user} />
+      <CurrentUserAccountCard />
 
       {/* 계정 설정 메뉴 */}
       <SettingsMenu sections={ACCOUNT_SETTINGS_MENU_SECTIONS} />
