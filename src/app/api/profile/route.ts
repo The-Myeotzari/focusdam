@@ -6,7 +6,7 @@ import { getUser } from "@/shared/lib/api/get-user";
 export async function GET(request: Request) {
   const auth = await getUser(request);
 
-  if ("response" in auth) {
+  if (!auth.ok) {
     return auth.response;
   }
 
