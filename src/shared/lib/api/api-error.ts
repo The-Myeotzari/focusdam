@@ -1,13 +1,7 @@
 import { NextResponse } from "next/server";
+import type { ApiErrorBody } from '@/shared/lib/api/api-error.schema';
 
-export type ApiErrorBody = {
-  type: "about:blank";
-  title: string;
-  status: number;
-  detail: string;
-  timestamp: string;
-  path: string;
-};
+export type { ApiErrorBody } from '@/shared/lib/api/api-error.schema';
 
 export function apiError(request: Request, title: string, status: number, detail: string) {
   return NextResponse.json<ApiErrorBody>(
