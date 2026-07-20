@@ -1,14 +1,10 @@
 import type { Database } from '@/shared/types/database.types';
 import { createServerClient } from '@supabase/ssr';
 import { cookies, headers } from 'next/headers';
+import { getSiteEnv, getSupabaseEnv } from '@/shared/config/env';
 
 export async function createServer() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-
-  if (!url || !publishableKey) {
-    throw new Error('Supabase 환경변수가 설정되지 않았습니다.');
-  }
+  const { publishableKey, url } = getSupabaseEnv();
 
   const cookieStore = await cookies();
 
@@ -41,5 +37,5 @@ export async function getOrigin() {
     return `${protocol}://${host}`;
   }
 
-  return process.env.NEXT_PUBLIC_BASE_URL ?? '';
+  return getSiteEnv().siteUrl;
 }

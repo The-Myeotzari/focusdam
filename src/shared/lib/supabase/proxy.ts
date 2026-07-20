@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+import { getSupabaseEnv } from "@/shared/config/env";
 import type { Database } from "@/shared/types/database.types";
 
 const PUBLIC_PATH_PREFIXES = ["/auth", "/onboarding"];
@@ -11,12 +12,7 @@ function isPublicPath(pathname: string) {
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-
-  if (!url || !publishableKey) {
-    return response;
-  }
+  const { publishableKey, url } = getSupabaseEnv();
 
   const supabase = createServerClient<Database>(url, publishableKey, {
     cookies: {
@@ -39,6 +35,7 @@ export async function updateSession(request: NextRequest) {
   if (!data?.claims && !isApiPath && !isPublicPath(request.nextUrl.pathname)) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/onboarding/account";
+    redirectUrl.search = "";
     redirectUrl.searchParams.set("next", `${request.nextUrl.pathname}${request.nextUrl.search}`);
     return NextResponse.redirect(redirectUrl);
   }
