@@ -8,9 +8,10 @@ export async function getUser(request: Request) {
 
   if (error || !data.user) {
     return {
+      ok: false as const,
       response: apiError(request, "UNAUTHORIZED", 401, MESSAGES.AUTH.ERROR.UNAUTHORIZED_USER),
     };
   }
 
-  return { supabase, user: data.user };
+  return { ok: true as const, supabase, user: data.user };
 }
