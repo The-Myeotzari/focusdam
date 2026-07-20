@@ -28,9 +28,16 @@ const steps = [
   }
 ] as const;
 
+const navItems = [
+  { label: "홈", icon: Home, href: "/", active: false },
+  { label: "기록", icon: CalendarDays, href: "/starter/recent", active: false },
+  { label: "타이머", icon: Timer, href: "/focus/current?duration=10", active: true },
+  { label: "설정", icon: Settings, href: "/settings", active: false }
+] as const;
+
 export function FocusEmotionResetPage() {
   return (
-    <main className="relative isolate mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col overflow-hidden bg-[#faf9fc] pb-24 font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
+    <main className="relative isolate mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col overflow-hidden bg-[#faf9fc] pb-20 font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
       <span
         className="pointer-events-none absolute -left-7 top-[126px] h-60 w-40 rounded-full bg-[#fff1f2]/40 blur-[30px]"
         aria-hidden="true"
@@ -40,7 +47,7 @@ export function FocusEmotionResetPage() {
         aria-hidden="true"
       />
 
-      <header className="relative z-[2] flex h-16 w-full items-center bg-[#faf9fc] px-5 py-4">
+      <header className="relative z-[2] flex h-16 w-full shrink-0 items-center bg-[#faf9fc] px-5 py-4">
         <Link
           href="/focus/current?duration=10"
           aria-label="타이머로 돌아가기"
@@ -54,7 +61,7 @@ export function FocusEmotionResetPage() {
       </header>
 
       <section className="relative z-[1] flex flex-1 flex-col items-center overflow-y-auto px-8 pb-10 pt-8">
-        <section className="flex h-[218px] w-full flex-col items-center justify-center" aria-label="집중 유지 타이머">
+        <section className="flex h-[218px] w-full shrink-0 flex-col items-center justify-center" aria-label="집중 유지 타이머">
           <div className="relative isolate flex h-48 w-48 items-center justify-center">
             <svg className="absolute inset-0 h-48 w-48 -rotate-90" viewBox="0 0 192 192" aria-hidden="true">
               <circle cx="96" cy="96" r="88" fill="none" stroke="#eeedf0" strokeWidth="6" />
@@ -112,12 +119,12 @@ export function FocusEmotionResetPage() {
           </div>
 
           <div className="mt-8 flex flex-col gap-3">
-            <button
-              type="button"
+            <Link
+              href="/focus/emotion-reset/name"
               className="flex h-14 w-full items-center justify-center rounded-full bg-[#3c5f7c] text-[18px] font-medium leading-7 text-white"
             >
               15초 리셋 시작
-            </button>
+            </Link>
             <Link
               href="/focus/current?duration=10"
               className="flex h-14 w-full items-center justify-center rounded-full bg-[#dde3eb]/50 text-[16px] font-medium leading-6 text-[#5f656c]"
@@ -128,41 +135,28 @@ export function FocusEmotionResetPage() {
         </section>
       </section>
 
-      <EmotionResetBottomNav />
+      <nav className="fixed bottom-0 left-1/2 z-[3] flex h-20 w-full max-w-[390px] -translate-x-1/2 items-center justify-center gap-[27.8px] rounded-t-[32px] bg-white px-[29.91px] shadow-[0_-8px_30px_rgba(60,95,124,0.05)]">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <Link
+              key={item.label}
+              href={item.href}
+              aria-current={item.active ? "page" : undefined}
+              className={[
+                "flex flex-col items-center justify-center px-4 py-1.5 text-[13px] font-medium leading-[18px] tracking-[0.52px]",
+                item.active ? "h-[51px] w-[67px] rounded-full bg-[#557896] text-[#fcfcff]" : "h-12 text-[#5f656c]"
+              ]
+                .filter(Boolean)
+                .join(" ")}
+            >
+              <Icon size={item.active ? 21 : 20} strokeWidth={2.3} aria-hidden="true" />
+              <span className="mt-0.5 whitespace-nowrap">{item.label}</span>
+            </Link>
+          );
+        })}
+      </nav>
     </main>
-  );
-}
-
-function EmotionResetBottomNav() {
-  const items = [
-    { label: "홈", icon: Home, href: "/", active: false },
-    { label: "기록", icon: CalendarDays, href: "/starter/new", active: false },
-    { label: "타이머", icon: Timer, href: "/focus/current?duration=10", active: true },
-    { label: "설정", icon: Settings, href: "/settings", active: false }
-  ] as const;
-
-  return (
-    <nav className="fixed bottom-0 left-1/2 z-[3] flex h-20 w-full max-w-[390px] -translate-x-1/2 items-center justify-center gap-[27.8px] rounded-t-[32px] bg-white px-[29.91px] shadow-[0_-8px_30px_rgba(60,95,124,0.05)]">
-      {items.map((item) => {
-        const Icon = item.icon;
-
-        return (
-          <Link
-            key={item.label}
-            href={item.href}
-            aria-current={item.active ? "page" : undefined}
-            className={[
-              "flex flex-col items-center justify-center px-4 py-1.5 text-[13px] font-medium leading-[18px] tracking-[0.52px]",
-              item.active ? "h-[51px] w-[67px] rounded-full bg-[#557896] text-[#fcfcff]" : "h-12 text-[#5f656c]"
-            ]
-              .filter(Boolean)
-              .join(" ")}
-          >
-            <Icon size={item.active ? 21 : 20} strokeWidth={2.3} aria-hidden="true" />
-            <span className="mt-0.5 whitespace-nowrap">{item.label}</span>
-          </Link>
-        );
-      })}
-    </nav>
   );
 }
