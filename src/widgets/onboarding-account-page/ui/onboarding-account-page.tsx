@@ -43,7 +43,7 @@ export function OnboardingAccountPage() {
   return (
     <main
       aria-labelledby="account-title"
-      className="mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col items-center overflow-x-hidden bg-[#faf9fc] pb-16 font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]"
+      className="flex min-h-[100svh] w-full flex-col items-center overflow-x-hidden bg-[#faf9fc] pb-16 font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]"
     >
       <SiteTopBar
         title="집중이담"
@@ -51,15 +51,15 @@ export function OnboardingAccountPage() {
         skipHref="/onboarding/account"
       />
 
-      <section className="flex w-full max-w-[1140px] flex-col items-center px-5 py-8">
+      <section className="flex w-full max-w-[1140px] flex-col items-center px-5 py-8 sm:py-12">
         <section className="flex w-full max-w-[672px] flex-col items-center gap-4 pb-12">
           <h2
             id="account-title"
-            className="m-0 w-full pt-4 text-center text-[32px] font-medium leading-[38px] tracking-[-0.32px] text-[#1a1c1e]"
+            className="m-0 w-full break-keep pt-4 text-center text-[30px] font-medium leading-[38px] tracking-[-0.32px] text-[#1a1c1e] sm:text-[32px]"
           >
             데이터는 최소한으로만 사용해요.
           </h2>
-          <p className="m-0 w-[290px] text-center text-[18px] font-medium leading-7 text-[#42474d]">
+          <p className="m-0 w-full max-w-[290px] break-keep text-center text-[18px] font-medium leading-7 text-[#42474d]">
             필수 정보와 선택 정보를 분리하고, 선택동의는 언제든 철회할 수 있습니다.
           </p>
         </section>
@@ -120,7 +120,7 @@ export function OnboardingAccountPage() {
           ) : null}
 
           <div className="pt-[15.25px]">
-            <p className="mx-auto m-0 w-[252px] text-center text-[12px] font-medium leading-5 text-[#42474d]">
+            <p className="mx-auto m-0 w-full max-w-[320px] text-center text-[12px] font-medium leading-5 text-[#42474d]">
               계속 진행함으로써 귀하는 집중이담의 서비스 이용약관에 동의하며 개인정보 보호를
               위한 노력을 이해합니다.
             </p>

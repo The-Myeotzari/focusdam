@@ -27,11 +27,11 @@ export function OnboardingNotificationsPage() {
   return (
     <main
       aria-labelledby="notifications-title"
-      className="mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col items-center bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]"
+      className="flex min-h-[100svh] w-full flex-col items-center bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]"
     >
       <SiteTopBar title="집중이담" backHref="/onboarding/goal" skipHref="/onboarding/account" />
 
-      <section className="flex w-full flex-1 flex-col items-center px-5 pb-14 pt-12">
+      <section className="flex w-full max-w-[1140px] flex-1 flex-col items-center px-5 pb-14 pt-10 sm:pt-12">
         <section className="flex w-full flex-col items-center gap-6 text-center">
           <h2
             id="notifications-title"
@@ -39,7 +39,7 @@ export function OnboardingNotificationsPage() {
           >
             언제 도와드릴까요?
           </h2>
-          <p className="m-0 w-[322px] text-[18px] font-medium leading-7 text-[#42474d]">
+          <p className="m-0 w-full max-w-[322px] break-keep text-[18px] font-medium leading-7 text-[#42474d]">
             당신의 집중 골든타임을 지키기 위해 꼭 필요한 알림만 보내드릴게요.
           </p>
         </section>
@@ -86,7 +86,7 @@ function ReminderCard({
   enabled: boolean;
 }) {
   return (
-    <article className="flex min-h-[128px] w-full items-center gap-6 rounded-[32px] bg-white px-6 py-5">
+    <article className="flex min-h-[116px] w-full items-center gap-3 rounded-[28px] bg-white px-4 py-5 sm:min-h-[128px] sm:gap-6 sm:rounded-[32px] sm:px-6">
       <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#eef2f6] text-[#3c5f7c]" aria-hidden="true">
         {icon}
       </span>

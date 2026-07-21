@@ -33,11 +33,16 @@ export function OnboardingGoalPage() {
   return (
     <main
       aria-labelledby="goal-title"
-      className="relative mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col items-center overflow-x-hidden bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]"
+      className="relative flex min-h-[100svh] w-full flex-col items-center overflow-x-hidden bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]"
     >
-      <SiteTopBar title="집중이담" backHref="/onboarding/safety" skipHref="/onboarding/account" className="z-[4]" />
+      <SiteTopBar
+        title="집중이담"
+        backHref="/onboarding/safety"
+        skipHref="/onboarding/account"
+        className="z-[4]"
+      />
 
-      <section className="flex w-full max-w-[390px] flex-col items-start px-5 pb-[31.5px] pt-8">
+      <section className="flex w-full max-w-[1140px] flex-col items-start px-5 pb-8 pt-8">
         <section className="flex w-full flex-col items-start gap-4 pb-12">
           <h2
             id="goal-title"
@@ -46,7 +51,7 @@ export function OnboardingGoalPage() {
             처음 2주는 작게 시작해요.
           </h2>
           <div className="flex w-full flex-col items-start gap-[4.5px]">
-            <p className="m-0 w-[289px] text-[18px] font-medium leading-7 text-[#42474d]">
+            <p className="m-0 w-full max-w-[360px] text-[18px] font-medium leading-7 text-[#42474d]">
               큰 목표보다 반복 가능한 기준을 먼저 정합니다.
             </p>
             <p className="m-0 w-full text-[18px] font-medium leading-7 text-[#42474d] opacity-70">
@@ -62,11 +67,11 @@ export function OnboardingGoalPage() {
         </section>
 
         <section className="flex w-full flex-col items-start pb-8">
-          <article className="box-border flex h-32 w-full items-start gap-4 rounded-[32px] border border-[rgba(60,95,124,0.1)] bg-[rgba(204,229,255,0.3)] p-6">
+          <article className="box-border flex min-h-32 w-full items-start gap-4 rounded-[28px] border border-[rgba(60,95,124,0.1)] bg-[rgba(204,229,255,0.3)] p-5 sm:rounded-[32px] sm:p-6">
             <span className="flex h-5 w-2.5 flex-[0_0_10px] items-start justify-center text-[#557896]" aria-hidden="true">
               <Medal size={20} strokeWidth={2} />
             </span>
-            <p className="m-0 w-[222px] text-[16px] font-medium leading-[26px] text-[#254a66]">
+            <p className="m-0 w-full max-w-[222px] text-[16px] font-medium leading-[26px] text-[#254a66]">
               첫 목표 달성 시, 고도화된 집중력 리포트와 함께 프리미엄 웰니스 엠블럼이 수여됩니다.
             </p>
           </article>
@@ -102,7 +107,7 @@ function GoalCard({
   titleClassName: string;
 }) {
   return (
-    <article className="box-border flex h-[100px] w-full flex-col items-start rounded-[32px] bg-[#f4f3f6] p-6">
+    <article className="box-border flex min-h-[100px] w-full flex-col items-start rounded-[28px] bg-[#f4f3f6] p-5 sm:rounded-[32px] sm:p-6">
       <div className="flex h-[50px] w-full items-center gap-4">
         <span className={`flex h-12 w-12 flex-[0_0_48px] items-center justify-center rounded-full ${iconClassName}`} aria-hidden="true">
           {icon}

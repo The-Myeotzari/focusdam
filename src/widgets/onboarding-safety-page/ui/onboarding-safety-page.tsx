@@ -30,11 +30,16 @@ export function OnboardingSafetyPage() {
   return (
     <main
       aria-labelledby="safety-title"
-      className="mx-auto flex min-h-[100svh] w-[min(100%,390px)] flex-col items-center bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]"
+      className="flex min-h-[100svh] w-full flex-col items-center bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]"
     >
-      <SiteTopBar title="안전 고지" backHref="/onboarding/reason" skipHref="/onboarding/account" variant="leading" />
+      <SiteTopBar
+        title="안전 고지"
+        backHref="/onboarding/reason"
+        skipHref="/onboarding/account"
+        variant="leading"
+      />
 
-      <section className="flex min-h-[calc(100svh-56px)] w-full max-w-[600px] flex-col items-start justify-between px-5 py-8">
+      <section className="flex min-h-[calc(100svh-56px)] w-full max-w-[600px] flex-col items-start justify-between px-5 py-8 sm:px-8 sm:py-12">
         <div>
           <section className="flex w-full flex-col items-start pb-12">
             <div className="isolate flex w-full flex-col items-center">
@@ -48,7 +53,7 @@ export function OnboardingSafetyPage() {
               </div>
               <h2
                 id="safety-title"
-                className="m-0 w-[252px] text-center text-[32px] font-medium leading-10 tracking-[-0.32px] text-[#3c5f7c]"
+                className="m-0 w-full max-w-[360px] break-keep text-center text-[30px] font-medium leading-10 tracking-[-0.32px] text-[#3c5f7c] sm:text-[32px]"
               >
                 집중이담은 자기관리 보조 도구예요
               </h2>
@@ -92,7 +97,7 @@ function SafetyCard({
   iconClassName: string;
 }) {
   return (
-    <article className="box-border flex min-h-[177px] w-full items-start gap-5 rounded-[32px] border border-[rgba(194,199,206,0.3)] bg-white p-6 shadow-[0_30px_60px_rgba(107,142,173,0.05)]">
+    <article className="box-border flex min-h-[177px] w-full items-start gap-4 rounded-[28px] border border-[rgba(194,199,206,0.3)] bg-white p-5 shadow-[0_30px_60px_rgba(107,142,173,0.05)] sm:gap-5 sm:rounded-[32px] sm:p-6">
       <span className={`flex h-11 w-11 flex-[0_0_44px] items-center justify-center rounded-full p-3 ${iconClassName}`} aria-hidden="true">
         {icon}
       </span>

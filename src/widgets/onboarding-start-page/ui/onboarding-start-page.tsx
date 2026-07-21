@@ -5,20 +5,20 @@ export function OnboardingStartPage() {
   return (
     <main
       aria-labelledby="onboarding-start-title"
-      className="relative isolate mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col items-center overflow-hidden bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]"
+      className="relative isolate flex min-h-[100svh] w-full flex-col items-center overflow-hidden bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]"
     >
       <div className="pointer-events-none absolute inset-0 -z-[1] overflow-hidden" aria-hidden="true">
         <span className="absolute -left-[39px] -top-[88px] h-[354px] w-[156px] rounded-full bg-[#cce5ff] opacity-[0.03] blur-[60px]" />
         <span className="absolute -right-5 top-[530px] h-[309px] w-[137px] rounded-full bg-[#ffddb6] opacity-[0.03] blur-[50px]" />
       </div>
 
-      <section className="z-[1] flex min-h-[calc(100svh-66px)] w-full max-w-[600px] flex-1 flex-col items-center justify-center px-5 py-[82px]">
-        <div className="relative isolate flex h-[320px] w-full max-w-[320px] items-center justify-center py-8" aria-hidden="true">
+      <section className="z-[1] flex min-h-[calc(100svh-66px)] w-full max-w-[600px] flex-1 flex-col items-center justify-center px-5 py-12 sm:px-8 sm:py-[82px]">
+        <div className="relative isolate flex aspect-square w-full max-w-[320px] items-center justify-center py-8" aria-hidden="true">
           <span className="absolute inset-0 -z-[1] rounded-full bg-[#cce5ff] opacity-10 blur-[32px]" />
           <span className="absolute inset-4 -z-[1] rounded-full bg-[#ffddb6] opacity-[0.05] blur-[20px]" />
-          <div className="flex h-64 w-64 items-center justify-center rounded-[48px] bg-white p-8 shadow-[0_10px_30px_-5px_rgba(107,142,173,0.06)]">
+          <div className="flex aspect-square w-4/5 max-w-64 items-center justify-center rounded-[40px] bg-white p-6 shadow-[0_10px_30px_-5px_rgba(107,142,173,0.06)] sm:rounded-[48px] sm:p-8">
             <Image
-              className="h-48 w-48 object-contain opacity-90 mix-blend-multiply"
+              className="h-full w-full object-contain opacity-90 mix-blend-multiply"
               src="/logo.svg"
               alt=""
               width={192}
@@ -28,7 +28,7 @@ export function OnboardingStartPage() {
           </div>
         </div>
 
-        <section className="flex w-44 max-w-[280px] flex-col items-center gap-4 pt-12 text-center">
+        <section className="flex w-full max-w-[280px] flex-col items-center gap-4 pt-8 text-center sm:pt-12">
           <h1
             id="onboarding-start-title"
             className="text-[32px] font-medium leading-[38px] tracking-[-0.8px] text-[#1a1c1e]"
