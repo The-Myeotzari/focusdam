@@ -30,7 +30,7 @@ export function OnboardingSafetyPage() {
   return (
     <main
       aria-labelledby="safety-title"
-      className="mx-auto flex min-h-[100svh] w-[min(100%,390px)] flex-col items-center bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]"
+      className="mx-auto flex min-h-[100svh] w-full max-w-[var(--page-max-width)] flex-col items-center bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]"
     >
       <SiteTopBar title="안전 고지" backHref="/onboarding/reason" skipHref="/" variant="leading" />
 

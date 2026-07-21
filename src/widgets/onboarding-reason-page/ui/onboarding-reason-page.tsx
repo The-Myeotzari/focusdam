@@ -25,7 +25,7 @@ export function OnboardingReasonPage() {
   return (
     <main
       aria-labelledby="reason-title"
-      className="isolate mx-auto flex min-h-[100svh] w-[min(100%,390px)] flex-col items-center bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]"
+      className="isolate mx-auto flex min-h-[100svh] w-full max-w-[var(--page-max-width)] flex-col items-center bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]"
     >
       <SiteTopBar title="집중이담" backHref="/" skipHref="/" className="z-[1]" />
 
