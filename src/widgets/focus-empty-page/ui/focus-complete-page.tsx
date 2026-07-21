@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Check } from "lucide-react";
+import { Check } from "lucide-react";
+import { SiteTopBar } from "@/shared/ui";
 
 const ACTIVE_STARTER_ACTION_STORAGE_KEY = "focusdam:active-starter-action";
 
@@ -19,18 +20,7 @@ export function FocusCompletePage() {
 
   return (
     <main className="relative isolate mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col overflow-y-auto bg-[#faf9fc] pb-24 font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
-      <header className="sticky top-0 z-[2] flex h-16 w-full items-center bg-[#faf9fc] px-5 py-4">
-        <Link
-          href="/focus/current?duration=10"
-          aria-label="타이머로 돌아가기"
-          className="flex size-8 items-center justify-center rounded-full text-[#3c5f7c]"
-        >
-          <ArrowLeft size={24} strokeWidth={2.4} />
-        </Link>
-        <h1 className="m-0 flex flex-1 items-center justify-center pr-8 text-[16px] font-medium leading-6 text-[#3c5f7c]">
-          마음 챙김
-        </h1>
-      </header>
+      <SiteTopBar title="마음 챙김" backHref="/focus/current?duration=10" className="sticky top-0 z-[2]" />
 
       <section className="relative flex flex-1 flex-col px-5 pb-8 pt-12">
         <span

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
-import { ChevronLeft, CircleHelp, Mail } from 'lucide-react';
+import { CircleHelp, Mail } from 'lucide-react';
 import Link from 'next/link';
+import { SiteTopBar } from '@/shared/ui';
 
 export const metadata: Metadata = {
   title: '계정·결제·오류 문의',
@@ -56,19 +57,7 @@ const CONTACT_TYPES = [
 export default function Page() {
   return (
     <main className="flex min-h-screen flex-col gap-8 px-5 py-4">
-      {/* TODO: 페이지 헤더 영역 추후 분리 필요*/}
-      <header className="flex items-center gap-3">
-        <Link
-          href="/settings/help"
-          aria-label="도움말·피드백으로 돌아가기"
-          className="grid size-11 place-items-center rounded-full"
-        >
-          <ChevronLeft size={24} aria-hidden="true" />
-        </Link>
-
-        <h1 className="flex-1 text-center text-[24px] leading-8">계정/결제/오류</h1>
-        <span className="min-w-11" aria-hidden="true" />
-      </header>
+      <SiteTopBar title="계정/결제/오류" backHref="/settings/help" />
 
       <section className="rounded-[var(--radius-xxl)] bg-[var(--color-surface-container-low)] px-8 py-8 shadow-[var(--shadow-card)]">
         <span

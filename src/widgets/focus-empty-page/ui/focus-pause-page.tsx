@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { useState } from "react";
 import {
-  ArrowLeft,
   Frown,
   House,
   Maximize2,
   Pause
 } from "lucide-react";
+import { SiteTopBar } from "@/shared/ui";
 
 const pauseReasons = [
   {
@@ -43,18 +43,7 @@ export function FocusPausePage() {
         aria-hidden="true"
       />
 
-      <header className="sticky top-0 z-[3] flex h-16 w-full items-center bg-[#faf9fc] px-5 py-4">
-        <Link
-          href="/focus/current?duration=10"
-          aria-label="타이머로 돌아가기"
-          className="flex size-8 items-center justify-center rounded-full text-[#3c5f7c]"
-        >
-          <ArrowLeft size={24} strokeWidth={2.4} />
-        </Link>
-        <h1 className="m-0 flex flex-1 items-center justify-center pr-8 text-[16px] font-medium leading-6 text-[#3c5f7c]">
-          마음 챙김
-        </h1>
-      </header>
+      <SiteTopBar title="마음 챙김" backHref="/focus/current?duration=10" className="sticky top-0 z-[3]" />
 
       <section className="relative z-[1] flex flex-1 flex-col px-5 pt-[170px]">
         <section className="flex flex-col items-center text-center">

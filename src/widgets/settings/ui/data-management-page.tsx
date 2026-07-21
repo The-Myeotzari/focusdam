@@ -1,7 +1,8 @@
 // 데이터 관리 페이지
 
-import { ChevronLeft, Download, FileText, Info, Trash2 } from 'lucide-react';
+import { Download, FileText, Info, Trash2 } from 'lucide-react';
 import Link from 'next/link';
+import { SiteTopBar } from '@/shared/ui';
 
 type DataActionItemProps = {
   title: string;
@@ -66,17 +67,7 @@ export function DataManagementPage() {
   return (
     <main className="flex min-h-screen flex-col gap-8 px-5 py-4">
       {/* TODO: 페이지 헤더 영역 추후 분리 필요*/}
-      <header className="flex items-center gap-3">
-        <Link
-          href="/settings"
-          aria-label="설정으로 돌아가기"
-          className="grid size-11 place-items-center rounded-full"
-        >
-          <ChevronLeft size={24} aria-hidden="true" />
-        </Link>
-
-        <h1 className="text-center text-[24px] leading-8">데이터 관리</h1>
-      </header>
+      <SiteTopBar title="데이터 관리" backHref="/settings" />
 
       <section className="rounded-[var(--radius-xxl)] bg-[var(--color-surface-container-low)] px-8 py-8">
         <h2 className="text-[26px] font-medium leading-9 text-[var(--color-on-surface)]">

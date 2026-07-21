@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { ArrowLeft, BrainCog, Info, Scale, Sparkles } from "lucide-react";
+import { BrainCog, Info, Scale, Sparkles } from "lucide-react";
+import { SiteTopBar } from "@/shared/ui";
 
 export function FocusEmotionReframePage() {
   const router = useRouter();
@@ -21,18 +22,7 @@ export function FocusEmotionReframePage() {
 
   return (
     <main className="relative mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col overflow-hidden bg-[#faf9fc] pb-[132.5px] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
-      <header className="z-[2] flex h-16 w-full items-center bg-[#faf9fc] px-5 py-4">
-        <Link
-          href="/focus/emotion-reset/thought"
-          aria-label="이전 화면으로 돌아가기"
-          className="flex size-8 items-center justify-center rounded-full text-[#3c5f7c]"
-        >
-          <ArrowLeft size={24} strokeWidth={2.3} />
-        </Link>
-        <h1 className="m-0 flex flex-1 items-center justify-center pr-8 text-[16px] font-medium leading-6 tracking-normal text-[#3c5f7c]">
-          마음 챙김
-        </h1>
-      </header>
+      <SiteTopBar title="마음 챙김" backHref="/focus/emotion-reset/thought" className="z-[2]" />
 
       <section className="flex flex-1 flex-col gap-10 overflow-y-auto px-5 pb-[176px] pt-8">
         <section className="flex h-[199px] w-full flex-col items-center gap-4 text-center">

@@ -1,12 +1,12 @@
 import Link from "next/link";
 import {
-  ArrowLeft,
   CheckCircle2,
   Grid2X2,
   Hourglass,
   Lightbulb,
   PlusCircle
 } from "lucide-react";
+import { SiteTopBar } from "@/shared/ui";
 
 export function FocusOvertimePage() {
   return (
@@ -20,18 +20,7 @@ export function FocusOvertimePage() {
         aria-hidden="true"
       />
 
-      <header className="sticky top-0 z-[3] flex h-16 w-full items-center bg-[#faf9fc] px-5 py-4">
-        <Link
-          href="/focus/current?duration=10"
-          aria-label="타이머로 돌아가기"
-          className="flex size-8 items-center justify-center rounded-full text-[#3c5f7c]"
-        >
-          <ArrowLeft size={24} strokeWidth={2.4} />
-        </Link>
-        <h1 className="m-0 flex flex-1 items-center justify-center pr-8 text-[16px] font-medium leading-6 text-[#3c5f7c]">
-          마음 챙김
-        </h1>
-      </header>
+      <SiteTopBar title="마음 챙김" backHref="/focus/current?duration=10" className="sticky top-0 z-[3]" />
 
       <section className="relative z-[1] flex flex-col items-center px-5 pb-8 pt-10">
         <section

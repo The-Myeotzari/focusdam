@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowLeft, Circle, Search, Zap } from "lucide-react";
+import { Circle, Search, Zap } from "lucide-react";
+import { SiteTopBar } from "@/shared/ui";
 
 const categories = ["업무", "집안일", "공부", "소비"] as const;
 
@@ -35,16 +36,7 @@ export function StarterTemplatesPage() {
 
   return (
     <main className="relative isolate mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col overflow-hidden bg-[#faf9fc] pb-[176px] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
-      <header className="z-[2] flex h-[49px] w-full items-center justify-between bg-[#faf9fc] px-5 py-2">
-        <Link
-          href="/starter/new"
-          aria-label="이전 화면으로 돌아가기"
-          className="flex size-8 items-center justify-center rounded-full text-[#3c5f7c]"
-        >
-          <ArrowLeft size={24} strokeWidth={2.4} />
-        </Link>
-        <h1 className="m-0 text-[18px] font-medium leading-[34px] text-[#3c5f7c]">마음 챙김</h1>
-      </header>
+      <SiteTopBar title="마음 챙김" backHref="/starter/new" className="z-[2]" />
 
       <section className="flex flex-1 flex-col gap-8 px-5 pt-[64px]">
         <label className="relative flex h-14 w-full items-center rounded-full border border-[#c2c7ce] bg-white px-4 pl-12">

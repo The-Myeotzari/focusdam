@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
-import { ChevronLeft } from 'lucide-react';
-import Link from 'next/link';
+import { SiteTopBar } from '@/shared/ui';
 
 export const metadata: Metadata = {
   title: '전문기관/신뢰 연락처',
@@ -58,19 +57,7 @@ const CRISIS_CONTACT_SECTIONS = [
 export default function Page() {
   return (
     <main className="flex min-h-screen flex-col gap-8 px-5 py-4">
-      {/* TODO: 페이지 헤더 영역 추후 분리 필요*/}
-      <header className="flex items-center gap-3">
-        <Link
-          href="/settings/terms-safety"
-          aria-label="약관·안전 안내로 돌아가기"
-          className="grid size-11 place-items-center rounded-full"
-        >
-          <ChevronLeft size={24} aria-hidden="true" />
-        </Link>
-
-        <h1 className="flex-1 text-center text-[24px] leading-8">전문기관/신뢰 연락처</h1>
-        <span className="min-w-11" aria-hidden="true" />
-      </header>
+      <SiteTopBar title="전문기관/신뢰 연락처" backHref="/settings/terms-safety" />
 
       <section className="rounded-[var(--radius-xxl)] bg-[var(--ds-safety)] px-5 py-5">
         <p className="text-sm font-semibold leading-6 text-[var(--ds-safety-ink)]">

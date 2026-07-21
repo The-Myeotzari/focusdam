@@ -1,5 +1,5 @@
-import { ChevronLeft, ShieldCheck } from 'lucide-react';
-import Link from 'next/link';
+import { ShieldCheck } from 'lucide-react';
+import { SiteTopBar } from '@/shared/ui';
 
 import { getConsentSettings } from '@/entities/consent-settings';
 import { ConsentSettingsForm } from '@/features/update-consent-settings';
@@ -10,16 +10,7 @@ export async function ConsentManagementPage() {
   return (
     <main className="flex gap-8 flex-col px-5 py-4">
       {/* TODO: 페이지 헤더 영역 추후 분리 필요*/}
-      <header className="flex items-center gap-3">
-        <Link
-          href="/settings/account"
-          aria-label="계정 관리로 돌아가기"
-          className="grid size-11 place-items-center rounded-full"
-        >
-          <ChevronLeft size={24} aria-hidden="true" />
-        </Link>
-        <h1 className="text-center text-[24px] leading-8">선택동의 관리</h1>
-      </header>
+      <SiteTopBar title="선택동의 관리" backHref="/settings/account" />
 
       <section className="rounded-[var(--radius-xxl)] bg-[var(--ds-caution)] px-8 py-7">
         <p className="flex items-center gap-2 text-xs font-semibold">

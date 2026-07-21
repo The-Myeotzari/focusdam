@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
-  ArrowLeft,
   CheckCircle2,
   List,
   ListTodo,
   Play,
   Timer
 } from "lucide-react";
+import { SiteTopBar } from "@/shared/ui";
 
 const RECENT_STARTER_ACTIONS_STORAGE_KEY = "focusdam:recent-starter-actions";
 
@@ -55,16 +55,7 @@ export function StarterRecentPage() {
 
   return (
     <main className="relative isolate mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col overflow-hidden bg-[#faf9fc] pb-[156px] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
-      <header className="z-[2] flex h-16 w-full items-center bg-[#faf9fc] px-5 py-4">
-        <Link
-          href="/starter/new"
-          aria-label="이전 화면으로 돌아가기"
-          className="flex size-8 items-center justify-center rounded-full text-[#3c5f7c]"
-        >
-          <ArrowLeft size={24} strokeWidth={2.4} />
-        </Link>
-        <h1 className="m-0 ml-3 text-[16px] font-medium leading-6 text-[#3c5f7c]">마음 챙김</h1>
-      </header>
+      <SiteTopBar title="마음 챙김" backHref="/starter/new" className="z-[2]" />
 
       <section className="flex flex-1 flex-col px-5 pt-[72px]">
         <section className="flex flex-col items-center text-center">
