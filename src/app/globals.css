@@ -79,6 +79,7 @@
   --radius-full: 9999px;
   --page-max-width: 600px;
   --page-padding: 20px;
+  --bottom-nav-height: calc(80px + env(safe-area-inset-bottom));
 }
 
 *,
@@ -103,6 +104,25 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+body:has(> nav[aria-label='주요 메뉴']) > main::after {
+  display: block;
+  width: 100%;
+  height: var(--bottom-nav-height);
+  min-height: var(--bottom-nav-height);
+  flex: none;
+  content: '';
+}
+
+body > main {
+  width: 100%;
+  max-width: var(--page-max-width);
+  margin-inline: auto;
+}
+
+body > main[class] {
+  max-width: var(--page-max-width);
 }
 
 button,
