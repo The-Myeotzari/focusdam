@@ -10,7 +10,6 @@ import {
   Wind,
   Zap
 } from "lucide-react";
-import { FocusBottomNav } from "./focus-bottom-nav";
 
 const sampleRoutines = [
   {
@@ -163,7 +162,6 @@ export function FocusEmptyPage() {
         </section>
       </section>
 
-      <FocusBottomNav />
     </main>
   );
 }
