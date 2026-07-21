@@ -1,15 +1,11 @@
 import Link from "next/link";
 import {
   ArrowLeft,
-  CalendarDays,
   CheckCircle2,
   Grid2X2,
-  Home,
   Hourglass,
   Lightbulb,
-  PlusCircle,
-  Settings,
-  Timer
+  PlusCircle
 } from "lucide-react";
 
 export function FocusOvertimePage() {
@@ -104,39 +100,6 @@ export function FocusOvertimePage() {
         </aside>
       </section>
 
-      <OvertimeBottomNav />
     </main>
-  );
-}
-
-function OvertimeBottomNav() {
-  const items = [
-    { label: "홈", icon: Home, href: "/", active: false },
-    { label: "기록", icon: CalendarDays, href: "/starter/new", active: false },
-    { label: "타이머", icon: Timer, href: "/focus/current?duration=10", active: true },
-    { label: "설정", icon: Settings, href: "/settings", active: false }
-  ] as const;
-
-  return (
-    <nav className="fixed bottom-0 left-1/2 z-[4] flex h-20 w-full max-w-[390px] -translate-x-1/2 items-center justify-center gap-[27.8px] rounded-t-[32px] bg-white px-[29.91px] shadow-[0_-8px_30px_rgba(60,95,124,0.05)]">
-      {items.map((item) => {
-        const Icon = item.icon;
-
-        return (
-          <Link
-            key={item.label}
-            href={item.href}
-            aria-current={item.active ? "page" : undefined}
-            className={[
-              "flex flex-col items-center justify-center px-4 py-1.5 text-[13px] font-medium leading-[18px] tracking-[0.52px]",
-              item.active ? "h-[51px] w-[67px] rounded-full bg-[#557896] text-[#fcfcff]" : "h-12 text-[#5f656c]"
-            ].join(" ")}
-          >
-            <Icon size={item.active ? 21 : 20} strokeWidth={2.3} aria-hidden="true" />
-            <span className="mt-0.5 whitespace-nowrap">{item.label}</span>
-          </Link>
-        );
-      })}
-    </nav>
   );
 }
