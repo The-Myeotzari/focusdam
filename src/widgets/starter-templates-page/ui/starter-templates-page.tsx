@@ -124,7 +124,7 @@ export function StarterTemplatesPage() {
         </section>
       </section>
 
-      <div className="fixed bottom-0 left-1/2 z-[3] flex w-full max-w-[390px] -translate-x-1/2 flex-col gap-2 bg-gradient-to-t from-[#faf9fc] via-[#faf9fc]/95 to-[#faf9fc00] px-5 pb-8 pt-6">
+      <div className="fixed bottom-[var(--bottom-nav-height)] left-1/2 z-[3] flex w-full max-w-[390px] -translate-x-1/2 flex-col gap-2 bg-gradient-to-t from-[#faf9fc] via-[#faf9fc]/95 to-[#faf9fc00] px-5 pb-8 pt-6">
         <Link
           href="/starter/time"
           className="flex h-14 w-full items-center justify-center rounded-full bg-[#3c5f7c] text-[16px] font-medium leading-6 text-white shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.1)]"
