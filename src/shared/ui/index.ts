@@ -1,4 +1,5 @@
 export { SiteBadge } from './site-badge';
+export { SiteBottomNav } from './site-bottom-nav';
 export { SiteButton } from './site-button';
 export { SiteCard } from './site-card';
 export {

@@ -6,7 +6,6 @@ import {
   MessageSquare,
   PlayCircle
 } from "lucide-react";
-import { FocusBottomNav } from "./focus-bottom-nav";
 
 const tools = [
   {
@@ -99,7 +98,7 @@ export function FocusTemplateGuidePage() {
         </section>
       </section>
 
-      <div className="fixed bottom-[86px] left-1/2 z-[2] flex h-[108px] w-full max-w-[390px] -translate-x-1/2 items-start justify-center bg-[#faf9fccc] px-5 py-6 backdrop-blur">
+      <div className="fixed bottom-[var(--bottom-nav-height)] left-1/2 z-[2] flex h-[108px] w-full max-w-[390px] -translate-x-1/2 items-start justify-center bg-[#faf9fccc] px-5 py-6 backdrop-blur">
         <button
           type="button"
           className="flex h-[60px] w-full max-w-[448px] items-center justify-center rounded-full bg-[#3c5f7c] text-[18px] font-medium leading-7 text-white opacity-50 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.1)]"
@@ -108,7 +107,6 @@ export function FocusTemplateGuidePage() {
         </button>
       </div>
 
-      <FocusBottomNav />
     </main>
   );
 }

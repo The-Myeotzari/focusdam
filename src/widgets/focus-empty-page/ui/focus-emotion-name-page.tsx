@@ -1,18 +1,11 @@
 import Link from "next/link";
-import { ArrowLeft, CalendarDays, Home, Info, Settings, Timer } from "lucide-react";
+import { ArrowLeft, Info } from "lucide-react";
 
 const emotions = [
   { label: "불안", description: "가슴 답답함" },
   { label: "짜증", description: "예민함" },
   { label: "무기력", description: "몸이 무거움" },
   { label: "수치심", description: "자기비난" }
-] as const;
-
-const navItems = [
-  { label: "홈", icon: Home, href: "/", active: false },
-  { label: "기록", icon: CalendarDays, href: "/starter/recent", active: true },
-  { label: "타이머", icon: Timer, href: "/focus/current?duration=10", active: false },
-  { label: "설정", icon: Settings, href: "/settings", active: false }
 ] as const;
 
 export function FocusEmotionNamePage() {
@@ -48,7 +41,7 @@ export function FocusEmotionNamePage() {
         </aside>
       </section>
 
-      <div className="absolute bottom-20 left-0 z-[2] flex h-[164px] w-full flex-col justify-end bg-[linear-gradient(0deg,#faf9fc_0%,#faf9fc_50%,rgba(250,249,252,0)_100%)] px-5 pb-10 pt-4">
+      <div className="absolute bottom-[var(--bottom-nav-height)] left-0 z-[2] flex h-[164px] w-full flex-col justify-end bg-[linear-gradient(0deg,#faf9fc_0%,#faf9fc_50%,rgba(250,249,252,0)_100%)] px-5 pb-10 pt-4">
         <div className="flex w-full flex-col gap-3">
           <Link
             href="/focus/emotion-reset/thought"
@@ -65,7 +58,6 @@ export function FocusEmotionNamePage() {
         </div>
       </div>
 
-      <EmotionBottomNav />
     </main>
   );
 }
@@ -101,32 +93,5 @@ function EmotionOption({ label, description }: { label: string; description: str
         <span className="size-2 rounded-full bg-white opacity-0" />
       </span>
     </label>
-  );
-}
-
-function EmotionBottomNav() {
-  return (
-    <nav className="fixed bottom-0 left-1/2 z-[3] flex h-20 w-full max-w-[390px] -translate-x-1/2 items-center gap-[27.8px] rounded-t-[32px] bg-white px-[29.91px] shadow-[0_-8px_30px_rgba(60,95,124,0.05)]">
-      {navItems.map((item) => {
-        const Icon = item.icon;
-
-        return (
-          <Link
-            key={item.label}
-            href={item.href}
-            aria-current={item.active ? "page" : undefined}
-            className={[
-              "flex flex-col items-center justify-center px-4 py-1.5 text-[13px] font-medium leading-[18px] tracking-[0.52px]",
-              item.active ? "h-[54px] w-[55px] rounded-[48px] bg-[#557896] text-[#fcfcff]" : "h-[55px] text-[#5f656c]"
-            ]
-              .filter(Boolean)
-              .join(" ")}
-          >
-            <Icon size={item.active ? 20 : 21} strokeWidth={2.4} aria-hidden="true" />
-            <span className="mt-1 whitespace-nowrap">{item.label}</span>
-          </Link>
-        );
-      })}
-    </nav>
   );
 }
