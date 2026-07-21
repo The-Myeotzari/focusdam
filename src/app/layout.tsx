@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { SiteBottomNav } from '@/shared/ui';
 import { SiteProviders } from "./providers";
 import "./globals.css";
 
@@ -33,6 +34,7 @@ export default function RootLayout({
     <html lang="ko">
       <body>
         <SiteProviders>{children}</SiteProviders>
+        <SiteBottomNav />
       </body>
     </html>
   );
