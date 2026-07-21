@@ -5,15 +5,11 @@ import { useMemo, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
-  CalendarDays,
   ChevronRight,
-  Home,
   ListTodo,
   RotateCcw,
-  Settings,
   Shapes,
-  Star,
-  Timer
+  Star
 } from "lucide-react";
 
 const MAX_TASK_LENGTH = 50;
@@ -175,7 +171,7 @@ export function StarterCreatePage() {
         </section>
       </section>
 
-      <div className="fixed bottom-[51px] left-1/2 z-[2] flex w-full max-w-[390px] -translate-x-1/2 bg-gradient-to-t from-[#faf9fc] via-[#faf9fc] to-[#faf9fc00] px-5 pb-6 pt-6">
+      <div className="fixed bottom-0 left-1/2 z-[2] flex w-full max-w-[390px] -translate-x-1/2 bg-gradient-to-t from-[#faf9fc] via-[#faf9fc] to-[#faf9fc00] px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-6">
         <Link
           href="/starter/time"
           className="flex h-16 w-full items-center justify-center gap-3 rounded-full bg-[#3c5f7c] text-[18px] font-medium leading-7 text-white shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.1)]"
@@ -185,7 +181,6 @@ export function StarterCreatePage() {
         </Link>
       </div>
 
-      <StarterBottomNav />
     </main>
   );
 }
@@ -222,39 +217,5 @@ function StarterInput({
         className="h-10 rounded-2xl border border-[#c2c7ce33] bg-white px-4 text-[15px] font-medium text-[#1a1c1e] outline-none placeholder:text-[#c2c7ce]/60 focus:border-[#3c5f7c80]"
       />
     </label>
-  );
-}
-
-function StarterBottomNav() {
-  const items = [
-    { label: "홈", icon: Home, href: "/", active: false },
-    { label: "기록", icon: CalendarDays, href: "/starter/new", active: true },
-    { label: "타이머", icon: Timer, href: "/focus/current", active: false },
-    { label: "설정", icon: Settings, href: "/settings", active: false }
-  ] as const;
-
-  return (
-    <nav className="fixed bottom-0 left-1/2 z-[3] flex h-[51px] w-full max-w-[390px] -translate-x-1/2 items-center justify-center gap-[27.8px] rounded-t-[32px] bg-white px-[29.91px] shadow-[0_-8px_30px_rgba(60,95,124,0.05)]">
-      {items.map((item) => {
-        const Icon = item.icon;
-
-        return (
-          <Link
-            key={item.label}
-            href={item.href}
-            aria-current={item.active ? "page" : undefined}
-            className={[
-              "flex h-[50px] flex-col items-center justify-center px-4 py-1.5 text-[13px] font-medium leading-[18px] tracking-[0.52px]",
-              item.active ? "w-[55px] rounded-full bg-[#557896] text-[#fcfcff]" : "text-[#5f656c]"
-            ]
-              .filter(Boolean)
-              .join(" ")}
-          >
-            <Icon size={item.active ? 20 : 19} strokeWidth={2.3} aria-hidden="true" />
-            <span className="mt-0.5 whitespace-nowrap">{item.label}</span>
-          </Link>
-        );
-      })}
-    </nav>
   );
 }
