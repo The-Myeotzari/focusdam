@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
-import { ChevronLeft } from 'lucide-react';
-import Link from 'next/link';
+import { SiteTopBar } from '@/shared/ui';
 
 export const metadata: Metadata = {
   title: '자기관리 보조',
@@ -66,19 +65,7 @@ const SELF_CARE_SECTIONS = [
 export default function Page() {
   return (
     <main className="flex min-h-screen flex-col gap-8 px-5 py-4">
-      {/* TODO: 페이지 헤더 영역 추후 분리 필요*/}
-      <header className="flex items-center gap-3">
-        <Link
-          href="/settings/terms-safety"
-          aria-label="약관·안전 안내로 돌아가기"
-          className="grid size-11 place-items-center rounded-full"
-        >
-          <ChevronLeft size={24} aria-hidden="true" />
-        </Link>
-
-        <h1 className="flex-1 text-center text-[24px] leading-8">자기관리 보조</h1>
-        <span className="min-w-11" aria-hidden="true" />
-      </header>
+      <SiteTopBar title="자기관리 보조" backHref="/settings/terms-safety" />
 
       <section className="rounded-[var(--radius-xxl)] bg-[var(--color-surface-container-lowest)] px-5 py-6 shadow-[var(--shadow-card)]">
         <p className="text-xs font-semibold text-[var(--ds-safety-ink)]">

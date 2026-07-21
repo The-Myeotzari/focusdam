@@ -1,7 +1,7 @@
 // 약관·안전 안내 페이지
 
-import { ChevronLeft, Info, ShieldCheck } from 'lucide-react';
-import Link from 'next/link';
+import { Info, ShieldCheck } from 'lucide-react';
+import { SiteTopBar } from '@/shared/ui';
 
 import { TERMS_SAFETY_ITEMS } from '../model/settings-menu';
 import { SettingsMenuItem } from './settings-menu-item';
@@ -10,17 +10,7 @@ export function TermsSafetyPage() {
   return (
     <main className="flex min-h-screen flex-col gap-8 px-5 py-4">
       {/* TODO: 페이지 헤더 영역 추후 분리 필요*/}
-      <header className="flex items-center gap-3">
-        <Link
-          href="/settings"
-          aria-label="설정으로 돌아가기"
-          className="grid size-11 place-items-center rounded-full"
-        >
-          <ChevronLeft size={24} aria-hidden="true" />
-        </Link>
-
-        <h1 className="flex-1 text-center text-[24px] leading-8">약관·안전 안내</h1>
-      </header>
+      <SiteTopBar title="약관·안전 안내" backHref="/settings" />
 
       <section className="overflow-hidden rounded-[var(--radius-xxl)] bg-[var(--ds-safety)] px-7 py-8">
         <div>

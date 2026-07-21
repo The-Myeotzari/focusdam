@@ -1,11 +1,10 @@
-import Link from "next/link";
 import {
-  ArrowLeft,
   BanknoteX,
   Heart,
   MessageSquare,
   PlayCircle
 } from "lucide-react";
+import { SiteTopBar } from "@/shared/ui";
 
 const tools = [
   {
@@ -45,16 +44,7 @@ const tools = [
 export function FocusTemplateGuidePage() {
   return (
     <main className="relative isolate mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col bg-[#faf9fc] pb-[194px] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
-      <header className="z-[1] flex h-14 w-full items-center gap-4 bg-[#faf9fc] px-5 py-4">
-        <Link
-          href="/focus"
-          aria-label="이전 화면으로 돌아가기"
-          className="flex size-4 items-center justify-center text-[#3c5f7c]"
-        >
-          <ArrowLeft size={24} strokeWidth={2.4} />
-        </Link>
-        <h1 className="m-0 text-[16px] font-medium leading-6 text-[#3c5f7c]">집중이담</h1>
-      </header>
+      <SiteTopBar title="집중이담" backHref="/focus" variant="leading" className="z-[1]" />
 
       <section className="flex w-full flex-1 flex-col items-center px-5 pb-8 pt-8">
         <section className="flex w-full flex-col items-center gap-3 pb-10 text-center">

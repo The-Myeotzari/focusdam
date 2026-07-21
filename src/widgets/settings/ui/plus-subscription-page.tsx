@@ -3,14 +3,13 @@
 import {
   BadgeCheck,
   CalendarDays,
-  ChevronLeft,
   CreditCard,
   Info,
   LockKeyhole,
   RotateCcw,
   Sparkles,
 } from 'lucide-react';
-import Link from 'next/link';
+import { SiteTopBar } from '@/shared/ui';
 
 import type { PlusSubscription } from '@/entities/plus-subscription';
 import { getPlusSubscription } from '@/entities/plus-subscription';
@@ -162,18 +161,7 @@ export async function PlusSubscriptionPage() {
   return (
     <main className="flex min-h-screen flex-col gap-8 px-5 py-4">
       {/* TODO: 페이지 헤더 영역 추후 분리 필요*/}
-      <header className="flex items-center gap-3">
-        <Link
-          href="/settings"
-          aria-label="설정으로 돌아가기"
-          className="grid size-11 place-items-center rounded-full"
-        >
-          <ChevronLeft size={24} aria-hidden="true" />
-        </Link>
-
-        <h1 className="flex-1 text-center text-[24px] leading-8">Plus 구독</h1>
-        <span className="min-w-11" aria-hidden="true" />
-      </header>
+      <SiteTopBar title="Plus 구독" backHref="/settings" />
 
       <section className="grid justify-items-center gap-5 rounded-[var(--radius-xxl)] bg-[var(--color-surface-container-low)] px-7 py-8 text-center shadow-[var(--shadow-card)]">
         <span

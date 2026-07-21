@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
-  ArrowLeft,
   CalendarDays,
   ChevronRight,
   ChevronLeft,
@@ -12,6 +11,7 @@ import {
   Sparkles,
   Timer
 } from "lucide-react";
+import { SiteTopBar } from "@/shared/ui";
 
 const SCHEDULED_STARTER_ACTIONS_STORAGE_KEY = "focusdam:scheduled-starter-actions";
 
@@ -82,18 +82,7 @@ export function FocusActionListPage() {
         aria-hidden="true"
       />
 
-      <header className="relative z-[2] flex h-16 w-full items-center bg-[#faf9fc] px-5 py-4">
-        <Link
-          href="/focus/complete"
-          aria-label="완료 화면으로 돌아가기"
-          className="flex size-8 items-center justify-center rounded-full text-[#3c5f7c]"
-        >
-          <ArrowLeft size={24} strokeWidth={2.4} />
-        </Link>
-        <h1 className="m-0 flex flex-1 items-center justify-center pr-8 text-[16px] font-medium leading-6 text-[#3c5f7c]">
-          마음 챙김
-        </h1>
-      </header>
+      <SiteTopBar title="마음 챙김" backHref="/focus/complete" className="relative z-[2]" />
 
       <section className="relative z-[1] flex flex-1 flex-col overflow-y-auto px-5 pb-8 pt-8">
         <section className="rounded-[36px] bg-white p-7 shadow-[0_24px_48px_-20px_rgba(60,95,124,0.18)]">

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
-  ArrowLeft,
   ArrowRight,
   BrainCog,
   CalendarX2,
@@ -13,6 +12,7 @@ import {
   MoreVertical,
   Sparkles
 } from "lucide-react";
+import { SiteTopBar } from "@/shared/ui";
 
 const SUGGESTION_APPLIED_STORAGE_KEY = "focusdam:emotion-insight-suggestion-applied";
 
@@ -53,25 +53,20 @@ export function FocusEmotionInsightsPage() {
 
   return (
     <main className="relative isolate mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col overflow-hidden bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
-      <header className="relative z-[2] flex h-16 w-full shrink-0 items-center justify-between bg-[#faf9fc] px-5 py-4">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/focus/emotion-reset/record"
-            aria-label="이전 화면으로 돌아가기"
-            className="flex size-8 items-center justify-center rounded-full text-[#3c5f7c]"
+      <SiteTopBar
+        title="마음 챙김"
+        backHref="/focus/emotion-reset/record"
+        className="relative z-[2] shrink-0"
+        action={
+          <button
+            type="button"
+            aria-label="더보기"
+            className="flex size-8 items-center justify-center rounded-full text-[#72777e]"
           >
-            <ArrowLeft size={24} strokeWidth={2.4} />
-          </Link>
-          <h1 className="m-0 text-[16px] font-medium leading-6 text-[#3c5f7c]">마음 챙김</h1>
-        </div>
-        <button
-          type="button"
-          aria-label="더보기"
-          className="flex size-8 items-center justify-center rounded-full text-[#72777e]"
-        >
-          <MoreVertical size={22} strokeWidth={2.8} />
-        </button>
-      </header>
+            <MoreVertical size={22} strokeWidth={2.8} />
+          </button>
+        }
+      />
 
       <section className="relative z-[1] flex flex-1 flex-col gap-10 overflow-y-auto px-5 pb-[216px] pt-8">
         <section className="relative isolate flex min-h-52 w-full flex-col gap-4 overflow-hidden rounded-[48px] bg-[rgba(60,95,124,0.05)] p-8">

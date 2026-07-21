@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, RefreshCcw, Wind } from "lucide-react";
+import { RefreshCcw, Wind } from "lucide-react";
+import { SiteTopBar } from "@/shared/ui";
 
 const DEFAULT_DURATION_MINUTES = 10;
 const ACTIVE_STARTER_ACTION_STORAGE_KEY = "focusdam:active-starter-action";
@@ -55,18 +56,7 @@ export function FocusCurrentPage() {
         aria-hidden="true"
       />
 
-      <header className="relative z-[1] flex h-16 w-full items-center bg-[#faf9fc] px-5 py-4">
-        <Link
-          href="/starter/time"
-          aria-label="이전 화면으로 돌아가기"
-          className="flex size-8 items-center justify-center rounded-full text-[#3c5f7c]"
-        >
-          <ArrowLeft size={24} strokeWidth={2.4} />
-        </Link>
-        <h1 className="m-0 flex flex-1 items-center justify-center pr-8 text-[16px] font-medium leading-6 text-[#3c5f7c]">
-          타이머 실행
-        </h1>
-      </header>
+      <SiteTopBar title="타이머 실행" backHref="/starter/time" className="relative z-[1]" />
 
       <section className="relative z-[1] flex flex-1 flex-col items-center px-5 pb-12 pt-[72px]">
         <section className="relative isolate flex h-[288px] w-[288px] items-center justify-center p-0" aria-label="남은 시간">

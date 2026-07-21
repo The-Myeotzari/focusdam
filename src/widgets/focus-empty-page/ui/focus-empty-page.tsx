@@ -10,6 +10,7 @@ import {
   Wind,
   Zap
 } from "lucide-react";
+import { SiteTopBar } from "@/shared/ui";
 
 const sampleRoutines = [
   {
@@ -52,9 +53,7 @@ const templateChips = [
 export function FocusEmptyPage() {
   return (
     <main className="relative isolate mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col overflow-hidden bg-[#faf9fc] pb-[114px] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
-      <header className="z-[1] flex h-14 w-full items-center bg-[#faf9fc] px-5 py-4">
-        <h1 className="m-0 text-[16px] font-medium leading-6 text-[#3c5f7c]">집중이담</h1>
-      </header>
+      <SiteTopBar title="집중이담" variant="leading" className="z-[1]" />
 
       <section className="z-0 flex w-full flex-1 flex-col gap-12 px-5 pb-4 pt-8">
         <section className="relative isolate flex h-[364px] w-full flex-col overflow-hidden rounded-[32px] bg-white px-8 pb-8 pt-14 shadow-[0_10px_30px_-5px_rgba(107,142,173,0.08)]">

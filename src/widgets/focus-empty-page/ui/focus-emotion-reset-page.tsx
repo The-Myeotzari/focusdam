@@ -1,10 +1,10 @@
 import Link from "next/link";
 import {
-  ArrowLeft,
   EyeOff,
   ListChecks,
   Tag,
 } from "lucide-react";
+import { SiteTopBar } from "@/shared/ui";
 
 const steps = [
   {
@@ -36,18 +36,7 @@ export function FocusEmotionResetPage() {
         aria-hidden="true"
       />
 
-      <header className="relative z-[2] flex h-16 w-full shrink-0 items-center bg-[#faf9fc] px-5 py-4">
-        <Link
-          href="/focus/current?duration=10"
-          aria-label="타이머로 돌아가기"
-          className="flex size-8 items-center justify-center rounded-full text-[#3c5f7c]"
-        >
-          <ArrowLeft size={24} strokeWidth={2.4} />
-        </Link>
-        <h1 className="m-0 flex flex-1 items-center justify-center pr-8 text-[16px] font-medium leading-6 text-[#3c5f7c]">
-          마음 챙김
-        </h1>
-      </header>
+      <SiteTopBar title="마음 챙김" backHref="/focus/current?duration=10" className="relative z-[2] shrink-0" />
 
       <section className="relative z-[1] flex flex-1 flex-col items-center overflow-y-auto px-8 pb-10 pt-8">
         <section className="flex h-[218px] w-full shrink-0 flex-col items-center justify-center" aria-label="집중 유지 타이머">

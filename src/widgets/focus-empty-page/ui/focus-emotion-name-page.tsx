@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowLeft, Info } from "lucide-react";
+import { Info } from "lucide-react";
+import { SiteTopBar } from "@/shared/ui";
 
 const emotions = [
   { label: "불안", description: "가슴 답답함" },
@@ -63,20 +64,7 @@ export function FocusEmotionNamePage() {
 }
 
 function EmotionNameTopBar() {
-  return (
-    <header className="z-[3] flex h-16 w-full items-center bg-[#faf9fc] px-5 py-4">
-      <Link
-        href="/focus/emotion-reset"
-        aria-label="이전 화면으로 돌아가기"
-        className="flex size-8 items-center justify-center rounded-full text-[#3c5f7c]"
-      >
-        <ArrowLeft size={24} strokeWidth={2.3} />
-      </Link>
-      <h1 className="m-0 flex flex-1 items-center justify-center pr-8 text-[16px] font-medium leading-6 tracking-normal text-[#3c5f7c]">
-        마음 챙김
-      </h1>
-    </header>
-  );
+  return <SiteTopBar title="마음 챙김" backHref="/focus/emotion-reset" className="z-[3]" />;
 }
 
 function EmotionOption({ label, description }: { label: string; description: string }) {
