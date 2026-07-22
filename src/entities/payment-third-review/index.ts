@@ -38,4 +38,15 @@ export type {
 } from './model/payment-third-review.types';
 export { PaymentReviewInfoRow } from './ui/payment-review-info-row';
 export { PaymentReviewHistoryRow } from './ui/payment-review-history-row';
+export type { PaymentReviewHistoryRowItem } from './ui/payment-review-history-row';
 export { PaymentReviewStatusBadge } from './ui/payment-review-status-badge';
+export {
+  PaymentThirdReviewListItemSchema,
+  PaymentThirdReviewListQuerySchema,
+  PaymentThirdReviewListResponseSchema,
+} from './api/payment-third-review-list.schema';
+export type {
+  PaymentThirdReviewListItem,
+  PaymentThirdReviewListQuery,
+  PaymentThirdReviewListResponse,
+} from './api/payment-third-review-list.schema';
