@@ -2,6 +2,11 @@ import { z } from 'zod';
 
 import { PaginationMetaSchema, PaginationQuerySchema } from '@/shared/lib/api/pagination';
 
+const PaymentThirdReviewDatabaseIdSchema = z.string().regex(
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+  '올바른 결제 3심 ID가 아닙니다.',
+);
+
 export const PaymentReviewOutcomeTypeSchema = z.enum(['buy', 'hold', 'save']);
 
 export const PaymentReviewStatusSchema = z.enum([
@@ -26,7 +31,7 @@ export const PaymentThirdReviewListQuerySchema = PaginationQuerySchema.extend({
 });
 
 export const PaymentThirdReviewListItemSchema = z.object({
-  id: z.string().uuid(),
+  id: PaymentThirdReviewDatabaseIdSchema,
   itemName: z.string(),
   amountKrw: z.number().int().nonnegative(),
   impulseStrength: z.enum(['low', 'medium', 'high']),
@@ -35,7 +40,7 @@ export const PaymentThirdReviewListItemSchema = z.object({
   createdAt: z.string(),
   followUp: z
     .object({
-      id: z.string().uuid(),
+      id: PaymentThirdReviewDatabaseIdSchema,
       type: z.enum(['reminder', 'satisfaction']),
       sequence: z.number().int().positive(),
       status: z.enum(['scheduled', 'required', 'completed', 'canceled']),
