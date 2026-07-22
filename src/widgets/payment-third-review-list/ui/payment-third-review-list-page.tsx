@@ -1,4 +1,3 @@
-import { PAYMENT_REVIEW_HISTORY_ITEMS } from '@/entities/payment-third-review';
 import { SiteTopBar } from '@/shared/ui';
 
 import { PaymentThirdReviewListFilter } from './payment-third-review-list-filter';
@@ -21,7 +20,7 @@ export function PaymentThirdReviewListPage() {
             </p>
           </div>
 
-          <PaymentThirdReviewListFilter items={PAYMENT_REVIEW_HISTORY_ITEMS} />
+          <PaymentThirdReviewListFilter />
         </section>
       </main>
     </>
