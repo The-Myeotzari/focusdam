@@ -7,8 +7,13 @@ import { PaymentReviewStatusBadge } from '@/entities/payment-third-review/ui/pay
 
 type Props = {
   href?: string;
-  item: PaymentReviewHistoryItem;
+  item: PaymentReviewHistoryRowItem;
 };
+
+export type PaymentReviewHistoryRowItem = Pick<
+  PaymentReviewHistoryItem,
+  'id' | 'itemName' | 'date' | 'amount' | 'impulseStrength' | 'outcomeType' | 'status' | 'followUpLabel'
+>;
 
 export function PaymentReviewHistoryRow({ href, item }: Props) {
   const decisionMeta = getDecisionMeta(item.outcomeType);
