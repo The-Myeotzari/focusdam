@@ -47,18 +47,19 @@ export function PaymentThirdReviewListFilter() {
         .map((item) => mapPaymentThirdReviewListItemToHistoryRow(item)) ?? [],
     [listQuery.data],
   );
+  const { fetchNextPage, hasNextPage, isFetchingNextPage } = listQuery;
 
   useEffect(() => {
     const target = loadMoreRef.current;
 
-    if (!target || !listQuery.hasNextPage || listQuery.isFetchingNextPage) {
+    if (!target || !hasNextPage || isFetchingNextPage) {
       return;
     }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry?.isIntersecting) {
-          void listQuery.fetchNextPage();
+          void fetchNextPage();
         }
       },
       { rootMargin: '180px 0px' },
@@ -69,7 +70,7 @@ export function PaymentThirdReviewListFilter() {
     return () => {
       observer.disconnect();
     };
-  }, [listQuery.fetchNextPage, listQuery.hasNextPage, listQuery.isFetchingNextPage]);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   return (
     <div className="grid gap-3">
