@@ -1,3 +1,5 @@
+import React from 'react';
+
 type Props = {
   count?: number;
   label?: string;
