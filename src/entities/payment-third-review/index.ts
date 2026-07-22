@@ -50,3 +50,12 @@ export type {
   PaymentThirdReviewListQuery,
   PaymentThirdReviewListResponse,
 } from './api/payment-third-review-list.schema';
+export {
+  PaymentThirdReviewDetailResponseSchema,
+  PaymentThirdReviewDetailSchema,
+  PaymentThirdReviewIdSchema,
+} from './api/payment-third-review-detail.schema';
+export type {
+  PaymentThirdReviewDetail,
+  PaymentThirdReviewDetailResponse,
+} from './api/payment-third-review-detail.schema';
