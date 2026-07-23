@@ -59,3 +59,11 @@ export type {
   PaymentThirdReviewDetail,
   PaymentThirdReviewDetailResponse,
 } from './api/payment-third-review-detail.schema';
+export {
+  CompletePaymentThirdReviewSatisfactionRequestSchema,
+  CompletePaymentThirdReviewSatisfactionResponseSchema,
+} from './api/payment-third-review-satisfaction.schema';
+export type {
+  CompletePaymentThirdReviewSatisfactionRequest,
+  CompletePaymentThirdReviewSatisfactionResponse,
+} from './api/payment-third-review-satisfaction.schema';
