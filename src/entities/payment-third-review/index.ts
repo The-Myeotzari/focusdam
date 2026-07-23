@@ -67,3 +67,12 @@ export type {
   CompletePaymentThirdReviewSatisfactionRequest,
   CompletePaymentThirdReviewSatisfactionResponse,
 } from './api/payment-third-review-satisfaction.schema';
+export {
+  CompletePaymentThirdReviewReminderRequestSchema,
+  CompletePaymentThirdReviewReminderResponseSchema,
+  PaymentThirdReviewReminderDecisionSchema,
+} from './api/payment-third-review-reminder.schema';
+export type {
+  CompletePaymentThirdReviewReminderRequest,
+  CompletePaymentThirdReviewReminderResponse,
+} from './api/payment-third-review-reminder.schema';
