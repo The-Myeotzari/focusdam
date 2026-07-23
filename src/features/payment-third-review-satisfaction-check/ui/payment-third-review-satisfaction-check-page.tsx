@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-import { getPaymentThirdReviewDetailClient } from '@/entities/payment-third-review/api/payment-third-review-detail.client';
+import { paymentThirdReviewDetailQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import { completePaymentThirdReviewSatisfactionClient } from '@/entities/payment-third-review/api/payment-third-review-satisfaction.client';
 import { mapPaymentThirdReviewDetailToHistoryItem } from '@/entities/payment-third-review/lib/payment-review-detail-item';
 import { PaymentReviewInfoRow } from '@/entities/payment-third-review';
@@ -39,8 +39,7 @@ export function PaymentThirdReviewSatisfactionCheckPage({ id }: Props) {
   const [selectedScore, setSelectedScore] = useState<number | null>(null);
   const [memo, setMemo] = useState('');
   const detailQuery = useQuery({
-    queryKey: QUERY_KEYS.paymentThirdReviews.detail(id),
-    queryFn: () => getPaymentThirdReviewDetailClient(id),
+    ...paymentThirdReviewDetailQueryOptions(id),
     select: (response) => mapPaymentThirdReviewDetailToHistoryItem(response.item),
     retry: (failureCount, error) =>
       !(error instanceof ApiRequestError && error.body.status === 404) && failureCount < 2,
@@ -53,7 +52,7 @@ export function PaymentThirdReviewSatisfactionCheckPage({ id }: Props) {
         memo,
       }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['payment-third-reviews'] });
+      await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.paymentThirdReviews.all });
       router.replace(`/payment-third-review/list/${id}`);
     },
   });

@@ -5,17 +5,14 @@ import { FileSearch } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { PaymentReviewHistoryRow } from '@/entities/payment-third-review';
-import { getPaymentThirdReviewListClient } from '@/entities/payment-third-review/api/payment-third-review-list.client';
-import type { PaymentThirdReviewListItem } from '@/entities/payment-third-review/api/payment-third-review-list.schema';
+import {
+  paymentThirdReviewListInfiniteQueryOptions,
+  type PaymentThirdReviewListFilter,
+} from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import { mapPaymentThirdReviewListItemToHistoryRow } from '@/entities/payment-third-review/lib/payment-review-list-item';
-import { QUERY_KEYS } from '@/shared/constants/query-key';
 import { PaymentThirdReviewListSkeleton } from '@/widgets/payment-third-review-list/ui/payment-third-review-list-skeleton';
 
-const PAGE_SIZE = 6;
-
-type PaymentReviewListFilter = 'all' | PaymentThirdReviewListItem['outcomeType'];
-
-const filterOptions: Array<{ label: string; value: PaymentReviewListFilter }> = [
+const filterOptions: Array<{ label: string; value: PaymentThirdReviewListFilter }> = [
   { label: '전체', value: 'all' },
   { label: '저축', value: 'save' },
   { label: '결제', value: 'buy' },
@@ -24,22 +21,11 @@ const filterOptions: Array<{ label: string; value: PaymentReviewListFilter }> = 
 
 // 결제 3심 내역을 API에서 페이지 단위로 조회하고 판단 유형별로 보여줌
 export function PaymentThirdReviewListFilter() {
-  const [selectedFilter, setSelectedFilter] = useState<PaymentReviewListFilter>('all');
+  const [selectedFilter, setSelectedFilter] = useState<PaymentThirdReviewListFilter>('all');
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
-  const listQuery = useInfiniteQuery({
-    queryKey: QUERY_KEYS.paymentThirdReviews.list(selectedFilter),
-    queryFn: ({ pageParam }) =>
-      getPaymentThirdReviewListClient({
-        outcomeType: selectedFilter === 'all' ? undefined : selectedFilter,
-        page: pageParam,
-        size: PAGE_SIZE,
-      }),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) =>
-      lastPage.pagination.page < lastPage.pagination.totalPages
-        ? lastPage.pagination.page + 1
-        : undefined,
-  });
+  const listQuery = useInfiniteQuery(
+    paymentThirdReviewListInfiniteQueryOptions(selectedFilter),
+  );
   const items = useMemo(
     () =>
       listQuery.data?.pages
@@ -136,7 +122,7 @@ export function PaymentThirdReviewListFilter() {
   );
 }
 
-function PaymentThirdReviewListEmpty({ filter }: { filter: PaymentReviewListFilter }) {
+function PaymentThirdReviewListEmpty({ filter }: { filter: PaymentThirdReviewListFilter }) {
   const emptyState = {
     all: {
       title: '아직 결제 3심 내역이 없어요',

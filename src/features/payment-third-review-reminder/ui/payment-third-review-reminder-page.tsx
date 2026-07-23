@@ -6,13 +6,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-import { getPaymentThirdReviewDetailClient } from '@/entities/payment-third-review/api/payment-third-review-detail.client';
+import { paymentThirdReviewDetailQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import { mapPaymentThirdReviewDetailToHistoryItem } from '@/entities/payment-third-review/lib/payment-review-detail-item';
 import type {
   PaymentReviewHistoryItem,
   PaymentReviewReminderDecision,
 } from '@/entities/payment-third-review';
-import { QUERY_KEYS } from '@/shared/constants/query-key';
 import { ApiRequestError } from '@/shared/lib/api/api';
 import { SiteTopBar } from '@/shared/ui';
 
@@ -45,8 +44,7 @@ export function PaymentThirdReviewReminderPage({ id }: Props) {
   const [selectedDecision, setSelectedDecision] =
     useState<PaymentReviewReminderDecision | null>(null);
   const detailQuery = useQuery({
-    queryKey: QUERY_KEYS.paymentThirdReviews.detail(id),
-    queryFn: () => getPaymentThirdReviewDetailClient(id),
+    ...paymentThirdReviewDetailQueryOptions(id),
     select: (response) => mapPaymentThirdReviewDetailToHistoryItem(response.item),
     retry: (failureCount, error) =>
       !(error instanceof ApiRequestError && error.body.status === 404) && failureCount < 2,

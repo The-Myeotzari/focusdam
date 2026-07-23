@@ -1,5 +1,9 @@
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
+import { paymentThirdReviewDetailQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
+import { getPaymentThirdReviewDetailServer } from '@/entities/payment-third-review/api/payment-third-review.server';
 import { PaymentThirdReviewDetailPage } from '@/widgets/payment-third-review-detail';
 
 type Props = {
@@ -12,6 +16,20 @@ export const metadata: Metadata = {
 
 export default async function Page({ params }: Props) {
   const { id } = await params;
+  const response = await getPaymentThirdReviewDetailServer(id).catch(() => undefined);
 
-  return <PaymentThirdReviewDetailPage id={id} />;
+  if (response === null) {
+    notFound();
+  }
+
+  const queryClient = new QueryClient();
+  if (response) {
+    queryClient.setQueryData(paymentThirdReviewDetailQueryOptions(id).queryKey, response);
+  }
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <PaymentThirdReviewDetailPage id={id} />
+    </HydrationBoundary>
+  );
 }

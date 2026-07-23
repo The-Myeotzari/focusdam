@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { CalendarClock, CheckCircle2, PiggyBank } from 'lucide-react';
 import Link from 'next/link';
 
-import { getPaymentThirdReviewDetailClient } from '@/entities/payment-third-review/api/payment-third-review-detail.client';
+import { paymentThirdReviewDetailQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import { mapPaymentThirdReviewDetailToHistoryItem } from '@/entities/payment-third-review/lib/payment-review-detail-item';
 import {
   getPaymentReviewFollowUpDescription,
@@ -17,7 +17,6 @@ import type {
   PaymentReviewHistoryItem,
   PaymentReviewReminderResult,
 } from '@/entities/payment-third-review';
-import { QUERY_KEYS } from '@/shared/constants/query-key';
 import { ApiRequestError } from '@/shared/lib/api/api';
 import { SiteTopBar } from '@/shared/ui';
 
@@ -27,8 +26,7 @@ type Props = {
 
 export function PaymentThirdReviewDetailPage({ id }: Props) {
   const detailQuery = useQuery({
-    queryKey: QUERY_KEYS.paymentThirdReviews.detail(id),
-    queryFn: () => getPaymentThirdReviewDetailClient(id),
+    ...paymentThirdReviewDetailQueryOptions(id),
     select: (response) => mapPaymentThirdReviewDetailToHistoryItem(response.item),
     retry: (failureCount, error) =>
       !(error instanceof ApiRequestError && error.body.status === 404) && failureCount < 2,

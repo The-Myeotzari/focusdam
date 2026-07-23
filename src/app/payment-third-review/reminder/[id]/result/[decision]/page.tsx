@@ -1,7 +1,10 @@
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import type { PaymentReviewReminderDecision } from '@/entities/payment-third-review';
+import { paymentThirdReviewDetailQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
+import { getPaymentThirdReviewDetailServer } from '@/entities/payment-third-review/api/payment-third-review.server';
 import { PaymentThirdReviewReminderResultPage } from '@/features/payment-third-review-reminder';
 
 type Props = {
@@ -21,7 +24,22 @@ export default async function Page({ params }: Props) {
     notFound();
   }
 
-  return <PaymentThirdReviewReminderResultPage decision={decision} id={id} />;
+  const response = await getPaymentThirdReviewDetailServer(id).catch(() => undefined);
+
+  if (response === null) {
+    notFound();
+  }
+
+  const queryClient = new QueryClient();
+  if (response) {
+    queryClient.setQueryData(paymentThirdReviewDetailQueryOptions(id).queryKey, response);
+  }
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <PaymentThirdReviewReminderResultPage decision={decision} id={id} />
+    </HydrationBoundary>
+  );
 }
 
 // 리마인드 제출 경로의 decision 파라미터가 허용된 값인지 확인합니다.
