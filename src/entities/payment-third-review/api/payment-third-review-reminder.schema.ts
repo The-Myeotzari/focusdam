@@ -21,6 +21,7 @@ export const CompletePaymentThirdReviewReminderResponseSchema = z.object({
     completedAt: z.string(),
     nextFollowUpId: PaymentThirdReviewIdSchema.nullable(),
     savingEntryId: PaymentThirdReviewIdSchema.nullable(),
+    goalAchievementId: PaymentThirdReviewIdSchema.nullable().optional(),
   }),
 });
 
