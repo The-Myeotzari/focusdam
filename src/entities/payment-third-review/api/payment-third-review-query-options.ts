@@ -5,6 +5,10 @@ import { getPaymentThirdReviewDetailClient } from './payment-third-review-detail
 import { getPaymentThirdReviewHomeClient } from './payment-third-review-home.client';
 import { getPaymentThirdReviewListClient } from './payment-third-review-list.client';
 import { getActivePaymentSavingGoalClient } from './payment-saving-goal.client';
+import {
+  getPaymentGoalAchievementClient,
+  getPaymentGoalAchievementsClient,
+} from './payment-goal-achievement.client';
 import { QUERY_KEYS } from '@/shared/constants/query-key';
 
 export const PAYMENT_THIRD_REVIEW_LIST_PAGE_SIZE = 6;
@@ -14,6 +18,22 @@ export function activePaymentSavingGoalQueryOptions() {
   return queryOptions({
     queryKey: QUERY_KEYS.paymentThirdReviews.activeGoal,
     queryFn: getActivePaymentSavingGoalClient,
+    staleTime: PAYMENT_THIRD_REVIEW_STALE_TIME,
+  });
+}
+
+export function paymentGoalAchievementListQueryOptions() {
+  return queryOptions({
+    queryKey: QUERY_KEYS.paymentThirdReviews.goalAchievements,
+    queryFn: getPaymentGoalAchievementsClient,
+    staleTime: PAYMENT_THIRD_REVIEW_STALE_TIME,
+  });
+}
+
+export function paymentGoalAchievementDetailQueryOptions(id: string) {
+  return queryOptions({
+    queryKey: QUERY_KEYS.paymentThirdReviews.goalAchievement(id),
+    queryFn: () => getPaymentGoalAchievementClient(id),
     staleTime: PAYMENT_THIRD_REVIEW_STALE_TIME,
   });
 }
