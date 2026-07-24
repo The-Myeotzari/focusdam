@@ -54,6 +54,7 @@ describe('GET /api/payment-third-reviews/home', () => {
           savedAmountKrw: 86000,
         },
         activeGoal: null,
+        latestGoalAchievement: null,
         recentItems: [],
       },
     });
@@ -64,6 +65,9 @@ describe('GET /api/payment-third-reviews/home', () => {
 
     expect(getPaymentThirdReviewHomeMock).toHaveBeenCalledWith(supabase, 'user-1');
     expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toBe(
+      'private, no-store, max-age=0',
+    );
     await expect(response.json()).resolves.toMatchObject({
       ok: true,
       stats: { totalCount: 3, savedAmountKrw: 86000 },
