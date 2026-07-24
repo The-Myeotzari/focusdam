@@ -1,15 +1,13 @@
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 
+import type { PaymentThirdReviewListFilter } from '../model/payment-third-review-list-filter';
 import { getPaymentThirdReviewDetailClient } from './payment-third-review-detail.client';
 import { getPaymentThirdReviewListClient } from './payment-third-review-list.client';
-import type { PaymentThirdReviewListItem } from './payment-third-review-list.schema';
 import { getActivePaymentSavingGoalClient } from './payment-saving-goal.client';
 import { QUERY_KEYS } from '@/shared/constants/query-key';
 
 export const PAYMENT_THIRD_REVIEW_LIST_PAGE_SIZE = 6;
 export const PAYMENT_THIRD_REVIEW_STALE_TIME = 60_000;
-
-export type PaymentThirdReviewListFilter = 'all' | PaymentThirdReviewListItem['outcomeType'];
 
 export function activePaymentSavingGoalQueryOptions() {
   return queryOptions({
