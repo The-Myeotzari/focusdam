@@ -1,9 +1,11 @@
-import type { PaymentReviewHistoryItem } from '@/entities/payment-third-review';
-import { PaymentReviewHistoryRow } from '@/entities/payment-third-review';
+import {
+  PaymentReviewHistoryRow,
+  type PaymentReviewHistoryRowItem,
+} from '@/entities/payment-third-review';
 import { SiteButton } from '@/shared/ui';
 
 type Props = {
-  items: PaymentReviewHistoryItem[];
+  items: PaymentReviewHistoryRowItem[];
 };
 
 export function PaymentThirdReviewReportPreview({ items }: Props) {
@@ -22,15 +24,26 @@ export function PaymentThirdReviewReportPreview({ items }: Props) {
         </SiteButton>
       </div>
 
-      <div className="grid gap-2">
-        {items.slice(0, 3).map((item) => (
-          <PaymentReviewHistoryRow
-            key={item.id}
-            href={`/payment-third-review/list/${item.id}`}
-            item={item}
-          />
-        ))}
-      </div>
+      {items.length === 0 ? (
+        <div className="rounded-[24px] bg-white px-5 py-8 text-center shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+          <p className="text-[15px] font-semibold leading-6 text-[#1a1c1e]">
+            아직 결제 3심 내역이 없어요
+          </p>
+          <p className="mt-1 text-sm leading-6 text-[#72777e]">
+            결제 전 한 번 더 점검하면 최근 기록이 여기에 표시돼요.
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-2">
+          {items.slice(0, 3).map((item) => (
+            <PaymentReviewHistoryRow
+              key={item.id}
+              href={`/payment-third-review/list/${item.id}`}
+              item={item}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 }
