@@ -4,6 +4,10 @@ import { getPaymentThirdReviewDetail } from './get-payment-third-review-detail';
 import { getPaymentThirdReviewHome } from './get-payment-third-review-home';
 import { getPaymentThirdReviewList } from './get-payment-third-review-list';
 import { getActivePaymentSavingGoal } from './get-active-payment-saving-goal';
+import {
+  getPaymentGoalAchievement,
+  getPaymentGoalAchievements,
+} from './get-payment-goal-achievements';
 import type { PaymentThirdReviewListQuery } from './payment-third-review-list.schema';
 import { createServer } from '@/shared/lib/supabase/server';
 
@@ -53,6 +57,32 @@ export async function getActivePaymentSavingGoalServer() {
   const result = await getActivePaymentSavingGoal(supabase, userId);
 
   if (!result.ok) {
+    throw new Error(result.errorMessage);
+  }
+
+  return { ok: true as const, item: result.item };
+}
+
+export async function getPaymentGoalAchievementsServer() {
+  const { supabase, userId } = await getAuthenticatedPaymentReviewClient();
+  const result = await getPaymentGoalAchievements(supabase, userId);
+
+  if (!result.ok) {
+    throw new Error(result.errorMessage);
+  }
+
+  return { ok: true as const, items: result.items };
+}
+
+export async function getPaymentGoalAchievementServer(id: string) {
+  const { supabase, userId } = await getAuthenticatedPaymentReviewClient();
+  const result = await getPaymentGoalAchievement(supabase, userId, id);
+
+  if (!result.ok) {
+    if (result.reason === 'not_found') {
+      return null;
+    }
+
     throw new Error(result.errorMessage);
   }
 
