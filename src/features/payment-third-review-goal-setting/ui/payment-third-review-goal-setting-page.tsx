@@ -1,7 +1,6 @@
 import { ArrowRight, Flag } from 'lucide-react';
 
 import { SiteButton, SiteInput, SiteTopBar } from '@/shared/ui';
-import { PAYMENT_REVIEW_OVERVIEW } from '@/widgets/payment-third-review-home/model/payment-third-review-home.constants';
 
 // 결제 3심 목표 금액을 설정하는 UI 화면을 렌더링합니다.
 export function PaymentThirdReviewGoalSettingPage() {
@@ -31,7 +30,6 @@ export function PaymentThirdReviewGoalSettingPage() {
           <span className="text-xs font-medium leading-5 text-[#72777e]">목표 금액</span>
           <span className="relative block">
             <SiteInput
-              defaultValue={PAYMENT_REVIEW_OVERVIEW.goalAmount.replace('원', '')}
               inputMode="numeric"
               placeholder="예: 86,000"
               className="!min-h-[64px] !rounded-[24px] !border-transparent !py-0 !pl-5 !pr-12 !text-[24px] !font-semibold !leading-8 !shadow-[0_4px_12px_rgba(0,0,0,0.04)]"
