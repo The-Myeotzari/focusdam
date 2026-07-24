@@ -1,10 +1,11 @@
 'use client';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { createPaymentThirdReviewClient } from '@/entities/payment-third-review/api/payment-third-review-create.client';
+import { activePaymentSavingGoalQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import { useCreatePaymentThirdReviewDraft } from '@/features/create-payment-third-review/lib/use-create-payment-third-review-draft';
 import { createPaymentThirdReviewPayload } from '@/features/create-payment-third-review/model/create-payment-third-review.draft';
 import {
@@ -30,6 +31,10 @@ export function CreatePaymentThirdReviewStep({ step }: Props) {
   const queryClient = useQueryClient();
   const { draft, isHydrated, resetDraft, updateDraft } = useCreatePaymentThirdReviewDraft();
   const config = getCreatePaymentThirdReviewStepConfig(step);
+  const activeGoalQuery = useQuery({
+    ...activePaymentSavingGoalQueryOptions(),
+    enabled: config.step === 'step-4',
+  });
   const stepIndex = CREATE_PAYMENT_THIRD_REVIEW_PROGRESS_STEPS.findIndex(
     (item) => item.step === config.step,
   );
@@ -42,12 +47,16 @@ export function CreatePaymentThirdReviewStep({ step }: Props) {
       : config.secondaryHref;
   const isStepOneReady =
     draft.itemName.trim().length > 0 && draft.amount.trim().length > 0 && Boolean(draft.impulseStrength);
+  const isStepFourReady =
+    config.step !== 'step-4' || Boolean(activeGoalQuery.data?.item);
   const shouldShowHero = config.showHero ?? true;
   const shouldShowProgress = config.showProgress ?? true;
   const createMutation = useMutation({
     mutationFn: createPaymentThirdReviewClient,
-    onSuccess: async (response) => {
-      await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.paymentThirdReviews.all });
+    onSuccess: (response) => {
+      // 생성 직후 실행 중이던 재조회 오류가 홈 캐시에 남지 않도록 관련 캐시를 비웁니다.
+      // 다음 화면에서는 서버 프리패칭 또는 새 API 요청으로 확정된 데이터를 다시 채웁니다.
+      queryClient.removeQueries({ queryKey: QUERY_KEYS.paymentThirdReviews.all });
       resetDraft();
       router.replace(
         response.item.goalAchievementId
@@ -129,7 +138,9 @@ export function CreatePaymentThirdReviewStep({ step }: Props) {
 
         <CreatePaymentThirdReviewFooter
           isFinal={config.submitOnNext === true}
-          isNextDisabled={config.step === 'step-1' && !isStepOneReady}
+          isNextDisabled={
+            (config.step === 'step-1' && !isStepOneReady) || !isStepFourReady
+          }
           isSubmitting={createMutation.isPending}
           nextHref={nextHref}
           nextLabel={config.nextLabel}
