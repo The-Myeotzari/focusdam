@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { getActivePaymentSavingGoal } from './get-active-payment-saving-goal';
+import { getLatestPaymentGoalAchievement } from './get-payment-goal-achievements';
 import { getPaymentThirdReviewList } from './get-payment-third-review-list';
 import type {
   PaymentThirdReviewHomeResponse,
@@ -21,15 +22,17 @@ export async function getPaymentThirdReviewHome(
   supabase: SupabaseClient<Database>,
   userId: string,
 ): Promise<PaymentThirdReviewHomeResult> {
-  const [recentResult, goalResult, summaryResult] = await Promise.all([
-    getPaymentThirdReviewList(supabase, userId, { page: 1, size: 3 }),
-    getActivePaymentSavingGoal(supabase, userId),
-    supabase
-      .from('payment_reviews')
-      .select('amount_krw,outcome_type')
-      .eq('user_id', userId)
-      .is('deleted_at', null),
-  ]);
+  const [recentResult, goalResult, achievementResult, summaryResult] =
+    await Promise.all([
+      getPaymentThirdReviewList(supabase, userId, { page: 1, size: 3 }),
+      getActivePaymentSavingGoal(supabase, userId),
+      getLatestPaymentGoalAchievement(supabase, userId),
+      supabase
+        .from('payment_reviews')
+        .select('amount_krw,outcome_type')
+        .eq('user_id', userId)
+        .is('deleted_at', null),
+    ]);
 
   if (!recentResult.ok) {
     return { ok: false, errorMessage: recentResult.errorMessage };
@@ -37,6 +40,10 @@ export async function getPaymentThirdReviewHome(
 
   if (!goalResult.ok) {
     return { ok: false, errorMessage: goalResult.errorMessage };
+  }
+
+  if (!achievementResult.ok) {
+    return { ok: false, errorMessage: achievementResult.errorMessage };
   }
 
   if (summaryResult.error) {
@@ -51,6 +58,7 @@ export async function getPaymentThirdReviewHome(
         summaryResult.data satisfies PaymentReviewSummaryRow[],
       ),
       activeGoal: goalResult.item,
+      latestGoalAchievement: achievementResult.item,
       recentItems: recentResult.items,
     },
   };
