@@ -1,3 +1,5 @@
+import type { CreatePaymentThirdReviewRequest } from '@/entities/payment-third-review/api/payment-third-review-create.schema';
+
 export type PaymentImpulseStrength = 'low' | 'medium' | 'high';
 
 export type PaymentReviewDecision = 'hold' | 'buy' | 'memo';
@@ -44,9 +46,18 @@ export function createInitialPaymentThirdReviewDraft(): CreatePaymentThirdReview
 }
 
 // 저장된 드래프트를 백엔드 전송용 payload 형태로 정규화합니다.
-export function createPaymentThirdReviewPayload(draft: CreatePaymentThirdReviewDraft) {
+export function createPaymentThirdReviewPayload(
+  draft: CreatePaymentThirdReviewDraft,
+): CreatePaymentThirdReviewRequest | null {
+  const amount = Number(draft.amount.replace(/[^0-9]/g, ''));
+
+  if (!draft.impulseStrength || !Number.isSafeInteger(amount) || amount <= 0) {
+    return null;
+  }
+
   return {
     ...draft,
-    amount: Number(draft.amount.replace(/[^0-9]/g, '')),
+    amount,
+    impulseStrength: draft.impulseStrength,
   };
 }
