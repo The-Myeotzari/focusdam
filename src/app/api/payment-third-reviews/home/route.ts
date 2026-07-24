@@ -17,5 +17,9 @@ export async function GET(request: Request) {
     return apiError(request, 'INTERNAL_SERVER_ERROR', 500, result.errorMessage);
   }
 
-  return NextResponse.json(result.data);
+  return NextResponse.json(result.data, {
+    headers: {
+      'Cache-Control': 'private, no-store, max-age=0',
+    },
+  });
 }
