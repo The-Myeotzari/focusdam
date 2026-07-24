@@ -26,6 +26,14 @@ export const PaymentGoalAchievementDetailResponseSchema = z.object({
   item: PaymentGoalAchievementSchema,
 });
 
+export const PaymentGoalAchievementSummarySchema = PaymentGoalAchievementSchema.pick({
+  id: true,
+  goalId: true,
+  goalName: true,
+  targetAmount: true,
+  achievedAt: true,
+});
+
 export type PaymentReviewGoalAchievement = z.infer<
   typeof PaymentGoalAchievementSchema
 >;
@@ -34,4 +42,7 @@ export type PaymentGoalAchievementListResponse = z.infer<
 >;
 export type PaymentGoalAchievementDetailResponse = z.infer<
   typeof PaymentGoalAchievementDetailResponseSchema
+>;
+export type PaymentGoalAchievementSummary = z.infer<
+  typeof PaymentGoalAchievementSummarySchema
 >;
