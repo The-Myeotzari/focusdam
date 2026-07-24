@@ -31,9 +31,14 @@ export function PaymentThirdReviewGoalSummary({
             <Flag size={19} strokeWidth={2.1} aria-hidden="true" />
           </span>
           <div className="min-w-0">
-            <p className="text-xs font-medium leading-5 text-[#72777e]">목표 금액</p>
+            <p className="truncate text-xs font-medium leading-5 text-[#72777e]">
+              {overview.goalName}
+            </p>
             <p className="text-[24px] font-semibold leading-8 text-[#1a1c1e]">
               {overview.goalAmount}
+            </p>
+            <p className="mt-0.5 text-xs leading-5 text-[#72777e]">
+              {overview.description}
             </p>
           </div>
         </div>
