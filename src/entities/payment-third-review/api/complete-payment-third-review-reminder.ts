@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { CompletePaymentThirdReviewReminderRequest } from './payment-third-review-reminder.schema';
+import { getPaymentGoalAchievementIdBySavingEntryId } from './get-payment-goal-achievements';
 import type { PaymentReviewOutcomeType, PaymentReviewStatus } from '../model/payment-third-review.types';
 import type { Database, Tables } from '@/shared/types/database.types';
 
@@ -25,6 +26,7 @@ type CompleteReminderResult =
         completedAt: string;
         nextFollowUpId: string | null;
         savingEntryId: string | null;
+        goalAchievementId: string | null;
       };
     }
   | { ok: false; reason: 'not_found' | 'invalid_type' | 'not_ready' | 'already_completed' }
@@ -214,6 +216,10 @@ export async function completePaymentThirdReviewReminder(
     savingEntryId = savingEntry.data.id;
   }
 
+  const goalAchievementId = savingEntryId
+    ? await getPaymentGoalAchievementIdBySavingEntryId(supabase, userId, savingEntryId)
+    : null;
+
   return {
     ok: true,
     item: {
@@ -225,6 +231,7 @@ export async function completePaymentThirdReviewReminder(
       completedAt,
       nextFollowUpId,
       savingEntryId,
+      goalAchievementId,
     },
   };
 }
