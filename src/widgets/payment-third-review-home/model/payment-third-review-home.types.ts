@@ -1,9 +1,9 @@
 import type { LucideIcon } from 'lucide-react';
 
 export type PaymentReviewOverview = {
+  goalName: string;
   goalAmount: string;
-  currentSpend: string;
-  progressLabel: string;
+  description: string;
 };
 
 export type SummaryCard = {
