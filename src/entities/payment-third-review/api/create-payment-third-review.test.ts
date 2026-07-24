@@ -64,6 +64,7 @@ describe('createPaymentThirdReview', () => {
         followUpId,
         goalId: null,
         savingEntryId: null,
+        goalAchievementId: null,
       },
     });
   });
