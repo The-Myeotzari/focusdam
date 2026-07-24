@@ -2,6 +2,7 @@ import 'server-only';
 
 import { getPaymentThirdReviewDetail } from './get-payment-third-review-detail';
 import { getPaymentThirdReviewList } from './get-payment-third-review-list';
+import { getActivePaymentSavingGoal } from './get-active-payment-saving-goal';
 import type { PaymentThirdReviewListQuery } from './payment-third-review-list.schema';
 import { createServer } from '@/shared/lib/supabase/server';
 
@@ -33,6 +34,17 @@ export async function getPaymentThirdReviewListServer(query: PaymentThirdReviewL
     items: result.items,
     pagination: result.pagination,
   };
+}
+
+export async function getActivePaymentSavingGoalServer() {
+  const { supabase, userId } = await getAuthenticatedPaymentReviewClient();
+  const result = await getActivePaymentSavingGoal(supabase, userId);
+
+  if (!result.ok) {
+    throw new Error(result.errorMessage);
+  }
+
+  return { ok: true as const, item: result.item };
 }
 
 async function getAuthenticatedPaymentReviewClient() {
