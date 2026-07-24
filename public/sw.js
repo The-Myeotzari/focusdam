@@ -1,11 +1,10 @@
-const CACHE_NAME = "focusdam-shell-v4";
+const CACHE_NAME = "focusdam-shell-v5";
 const ASSETS = [
   "/",
   "/manifest.webmanifest",
-  "/focusdam_128.png",
-  "/focusdam_180.png",
-  "/focusdam_192.png",
-  "/focusdam_512.png"
+  "/logo_128.png",
+  "/logo_192.png",
+  "/logo_512.png"
 ];
 
 self.addEventListener("install", (event) => {

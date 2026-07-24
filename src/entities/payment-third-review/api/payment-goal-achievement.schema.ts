@@ -11,7 +11,7 @@ export const PaymentGoalAchievementSchema = z.object({
   achievedAmount: z.number().int().nonnegative(),
   savedAmount: z.number().int().nonnegative(),
   savedReviewCount: z.number().int().nonnegative(),
-  achievedAt: z.string().datetime(),
+  achievedAt: z.string().datetime({ offset: true }),
   triggerReviewId: PaymentThirdReviewIdSchema.nullable(),
   triggerStatus: PaymentReviewStatusSchema.nullable(),
 });
