@@ -26,11 +26,11 @@ export function PaymentThirdReviewHomePage() {
         <PaymentThirdReviewHero />
         {homeQuery.isPending ? (
           <PaymentThirdReviewHomeSkeleton />
-        ) : homeQuery.isError ? (
+        ) : homeQuery.isError && !homeQuery.data ? (
           <PaymentThirdReviewHomeError onRetry={() => void homeQuery.refetch()} />
-        ) : (
+        ) : homeQuery.data ? (
           <PaymentThirdReviewHomeContent data={homeQuery.data} />
-        )}
+        ) : null}
       </main>
     </>
   );
@@ -42,20 +42,33 @@ function PaymentThirdReviewHomeContent({
   data: PaymentThirdReviewHomeResponse;
 }) {
   const goal = data.activeGoal;
+  const latestAchievement = data.latestGoalAchievement;
   const progress = goal
     ? Math.min(100, Math.round((goal.currentSavedAmountKrw / goal.targetAmountKrw) * 100))
     : 0;
   const overview: PaymentReviewOverview = goal
     ? {
+        actionLabel: '목표 수정',
         goalName: goal.name,
         goalAmount: formatPaymentReviewWon(goal.targetAmountKrw),
         description: `${formatPaymentReviewWon(goal.currentSavedAmountKrw)} 모음 · ${progress}% 달성`,
+        status: 'active',
       }
-    : {
-        goalName: '활성 목표 없음',
-        goalAmount: '목표를 설정해주세요',
-        description: '절약한 금액을 모을 목표를 만들어보세요.',
-      };
+    : latestAchievement
+      ? {
+          actionLabel: '새 목표',
+          goalName: latestAchievement.goalName,
+          goalAmount: '목표 금액을 다 모았어요!',
+          description: `${formatPaymentReviewWon(latestAchievement.targetAmount)} 목표를 달성했어요. 새로운 목표를 설정해볼까요?`,
+          status: 'achieved',
+        }
+      : {
+          actionLabel: '목표 설정',
+          goalName: '활성 목표 없음',
+          goalAmount: '목표를 설정해주세요',
+          description: '절약한 금액을 모을 목표를 만들어보세요.',
+          status: 'empty',
+        };
   const summaryCards: SummaryCard[] = [
     {
       title: '절약 금액',
