@@ -4,6 +4,7 @@ import {
   PAYMENT_THIRD_REVIEW_LIST_PAGE_SIZE,
   PAYMENT_THIRD_REVIEW_STALE_TIME,
   paymentThirdReviewDetailQueryOptions,
+  paymentThirdReviewHomeQueryOptions,
   paymentThirdReviewListInfiniteQueryOptions,
 } from './payment-third-review-query-options';
 
@@ -12,6 +13,15 @@ describe('paymentThirdReviewDetailQueryOptions', () => {
     const options = paymentThirdReviewDetailQueryOptions('review-1');
 
     expect(options.queryKey).toEqual(['payment-third-reviews', 'detail', 'review-1']);
+    expect(options.staleTime).toBe(PAYMENT_THIRD_REVIEW_STALE_TIME);
+  });
+});
+
+describe('paymentThirdReviewHomeQueryOptions', () => {
+  it('홈 화면과 서버 hydration이 동일한 쿼리 키와 캐시 시간을 사용한다', () => {
+    const options = paymentThirdReviewHomeQueryOptions();
+
+    expect(options.queryKey).toEqual(['payment-third-reviews', 'home']);
     expect(options.staleTime).toBe(PAYMENT_THIRD_REVIEW_STALE_TIME);
   });
 });
