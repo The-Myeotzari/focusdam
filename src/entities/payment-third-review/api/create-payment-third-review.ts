@@ -5,6 +5,7 @@ import {
   type CreatePaymentThirdReviewRequest,
   type CreatePaymentThirdReviewResponse,
 } from './payment-third-review-create.schema';
+import { getPaymentGoalAchievementIdBySavingEntryId } from './get-payment-goal-achievements';
 import type { Database } from '@/shared/types/database.types';
 
 type CreatePaymentThirdReviewResult =
@@ -49,7 +50,15 @@ export async function createPaymentThirdReview(
     };
   }
 
-  return { ok: true, item: itemResult.data };
+  const goalAchievementId = itemResult.data.savingEntryId
+    ? await getPaymentGoalAchievementIdBySavingEntryId(
+        supabase,
+        userId,
+        itemResult.data.savingEntryId,
+      )
+    : null;
+
+  return { ok: true, item: { ...itemResult.data, goalAchievementId } };
 }
 
 function createDecisionReason(input: CreatePaymentThirdReviewRequest) {
