@@ -2,14 +2,16 @@
 
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { FileSearch } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { PaymentReviewHistoryRow } from '@/entities/payment-third-review';
-import {
-  paymentThirdReviewListInfiniteQueryOptions,
-  type PaymentThirdReviewListFilter,
-} from '@/entities/payment-third-review/api/payment-third-review-query-options';
+import { paymentThirdReviewListInfiniteQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import { mapPaymentThirdReviewListItemToHistoryRow } from '@/entities/payment-third-review/lib/payment-review-list-item';
+import {
+  getPaymentThirdReviewListHref,
+  type PaymentThirdReviewListFilter,
+} from '@/entities/payment-third-review/model/payment-third-review-list-filter';
 import { PaymentThirdReviewListSkeleton } from '@/widgets/payment-third-review-list/ui/payment-third-review-list-skeleton';
 
 const filterOptions: Array<{ label: string; value: PaymentThirdReviewListFilter }> = [
@@ -20,8 +22,14 @@ const filterOptions: Array<{ label: string; value: PaymentThirdReviewListFilter 
 ];
 
 // 결제 3심 내역을 API에서 페이지 단위로 조회하고 판단 유형별로 보여줌
-export function PaymentThirdReviewListFilter() {
-  const [selectedFilter, setSelectedFilter] = useState<PaymentThirdReviewListFilter>('all');
+export function PaymentThirdReviewListFilter({
+  initialFilter,
+}: {
+  initialFilter: PaymentThirdReviewListFilter;
+}) {
+  const router = useRouter();
+  const [selectedFilter, setSelectedFilter] =
+    useState<PaymentThirdReviewListFilter>(initialFilter);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const listQuery = useInfiniteQuery(
     paymentThirdReviewListInfiniteQueryOptions(selectedFilter),
@@ -34,6 +42,11 @@ export function PaymentThirdReviewListFilter() {
     [listQuery.data],
   );
   const { fetchNextPage, hasNextPage, isFetchingNextPage } = listQuery;
+
+  const handleFilterChange = (filter: PaymentThirdReviewListFilter) => {
+    setSelectedFilter(filter);
+    router.replace(getPaymentThirdReviewListHref(filter), { scroll: false });
+  };
 
   useEffect(() => {
     const target = loadMoreRef.current;
@@ -72,7 +85,7 @@ export function PaymentThirdReviewListFilter() {
             <button
               key={option.value}
               type="button"
-              onClick={() => setSelectedFilter(option.value)}
+              onClick={() => handleFilterChange(option.value)}
               className={[
                 'min-h-9 rounded-full text-sm font-semibold leading-5 transition-colors',
                 isSelected
@@ -100,7 +113,7 @@ export function PaymentThirdReviewListFilter() {
             {items.map((item) => (
               <PaymentReviewHistoryRow
                 key={item.id}
-                href={`/payment-third-review/list/${item.id}`}
+                href={`/payment-third-review/list/${item.id}?filter=${selectedFilter}`}
                 item={item}
               />
             ))}
