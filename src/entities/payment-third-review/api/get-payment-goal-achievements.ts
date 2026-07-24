@@ -1,6 +1,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { PaymentReviewGoalAchievement } from './payment-goal-achievement.schema';
+import type {
+  PaymentGoalAchievementSummary,
+  PaymentReviewGoalAchievement,
+} from './payment-goal-achievement.schema';
 import type { PaymentReviewStatus } from '../model/payment-third-review.types';
 import type { Database } from '@/shared/types/database.types';
 
@@ -21,6 +24,14 @@ type GoalAchievementResult =
   | { ok: true; items: PaymentReviewGoalAchievement[] }
   | { ok: false; errorMessage: string };
 
+type GoalAchievementSummaryRow = {
+  achieved_at: string;
+  goal_id: string;
+  id: string;
+  target_amount_krw: number;
+  payment_saving_goals: { name: string };
+};
+
 export async function getPaymentGoalAchievementIdBySavingEntryId(
   supabase: SupabaseClient<Database>,
   userId: string,
@@ -34,6 +45,51 @@ export async function getPaymentGoalAchievementIdBySavingEntryId(
     .maybeSingle();
 
   return result.error ? null : (result.data?.id ?? null);
+}
+
+export async function getLatestPaymentGoalAchievement(
+  supabase: SupabaseClient<Database>,
+  userId: string,
+): Promise<
+  | { ok: true; item: PaymentGoalAchievementSummary | null }
+  | { ok: false; errorMessage: string }
+> {
+  const result = await supabase
+    .from('payment_goal_achievements')
+    .select(
+      [
+        'id',
+        'goal_id',
+        'target_amount_krw',
+        'achieved_at',
+        'payment_saving_goals!inner(name)',
+      ].join(','),
+    )
+    .eq('user_id', userId)
+    .order('achieved_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (result.error) {
+    return { ok: false, errorMessage: result.error.message };
+  }
+
+  if (!result.data) {
+    return { ok: true, item: null };
+  }
+
+  const row = result.data as unknown as GoalAchievementSummaryRow;
+
+  return {
+    ok: true,
+    item: {
+      id: row.id,
+      goalId: row.goal_id,
+      goalName: row.payment_saving_goals.name,
+      targetAmount: row.target_amount_krw,
+      achievedAt: row.achieved_at,
+    },
+  };
 }
 
 export async function getPaymentGoalAchievements(
