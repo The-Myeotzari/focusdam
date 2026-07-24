@@ -3,10 +3,28 @@ import { describe, expect, it } from 'vitest';
 import {
   PAYMENT_THIRD_REVIEW_LIST_PAGE_SIZE,
   PAYMENT_THIRD_REVIEW_STALE_TIME,
+  paymentGoalAchievementDetailQueryOptions,
+  paymentGoalAchievementListQueryOptions,
   paymentThirdReviewDetailQueryOptions,
   paymentThirdReviewHomeQueryOptions,
   paymentThirdReviewListInfiniteQueryOptions,
 } from './payment-third-review-query-options';
+
+describe('paymentGoalAchievementQueryOptions', () => {
+  it('목록과 상세에서 서버 hydration과 동일한 쿼리 키를 사용한다', () => {
+    expect(paymentGoalAchievementListQueryOptions().queryKey).toEqual([
+      'payment-third-reviews',
+      'goal-achievements',
+    ]);
+    expect(
+      paymentGoalAchievementDetailQueryOptions('achievement-1').queryKey,
+    ).toEqual([
+      'payment-third-reviews',
+      'goal-achievements',
+      'achievement-1',
+    ]);
+  });
+});
 
 describe('paymentThirdReviewDetailQueryOptions', () => {
   it('상세 화면과 서버 hydration이 동일한 쿼리 키와 캐시 시간을 사용한다', () => {
