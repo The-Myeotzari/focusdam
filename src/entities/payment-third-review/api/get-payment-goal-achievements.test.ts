@@ -4,6 +4,7 @@ import {
   getPaymentGoalAchievement,
   getPaymentGoalAchievementIdBySavingEntryId,
   getPaymentGoalAchievements,
+  getLatestPaymentGoalAchievement,
 } from './get-payment-goal-achievements';
 
 const achievementRow = {
@@ -42,6 +43,24 @@ function createDetailQuery(result: unknown) {
 
   query.select.mockReturnValue(query);
   query.eq.mockReturnValue(query);
+  query.maybeSingle.mockResolvedValue(result);
+
+  return query;
+}
+
+function createLatestQuery(result: unknown) {
+  const query = {
+    eq: vi.fn(),
+    limit: vi.fn(),
+    maybeSingle: vi.fn(),
+    order: vi.fn(),
+    select: vi.fn(),
+  };
+
+  query.select.mockReturnValue(query);
+  query.eq.mockReturnValue(query);
+  query.order.mockReturnValue(query);
+  query.limit.mockReturnValue(query);
   query.maybeSingle.mockResolvedValue(result);
 
   return query;
@@ -144,5 +163,40 @@ describe('getPaymentGoalAchievementIdBySavingEntryId', () => {
       '50000000-0000-0000-0000-000000000001',
     );
     expect(result).toBe(achievementRow.id);
+  });
+});
+
+describe('getLatestPaymentGoalAchievement', () => {
+  it('홈 안내에 사용할 가장 최근 목표 달성 요약을 반환한다', async () => {
+    const query = createLatestQuery({ data: achievementRow, error: null });
+
+    const result = await getLatestPaymentGoalAchievement(
+      { from: vi.fn().mockReturnValue(query) } as never,
+      'user-1',
+    );
+
+    expect(query.order).toHaveBeenCalledWith('achieved_at', { ascending: false });
+    expect(query.limit).toHaveBeenCalledWith(1);
+    expect(result).toEqual({
+      ok: true,
+      item: {
+        id: achievementRow.id,
+        goalId: achievementRow.goal_id,
+        goalName: '여행비',
+        targetAmount: achievementRow.target_amount_krw,
+        achievedAt: achievementRow.achieved_at,
+      },
+    });
+  });
+
+  it('달성 이력이 없으면 null을 반환한다', async () => {
+    const query = createLatestQuery({ data: null, error: null });
+
+    await expect(
+      getLatestPaymentGoalAchievement(
+        { from: vi.fn().mockReturnValue(query) } as never,
+        'user-1',
+      ),
+    ).resolves.toEqual({ ok: true, item: null });
   });
 });
