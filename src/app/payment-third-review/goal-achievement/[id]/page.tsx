@@ -1,10 +1,9 @@
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-import {
-  getPaymentReviewGoalAchievementById,
-  PAYMENT_REVIEW_GOAL_ACHIEVEMENTS,
-} from '@/entities/payment-third-review';
+import { paymentGoalAchievementDetailQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
+import { getPaymentGoalAchievementServer } from '@/entities/payment-third-review/api/payment-third-review.server';
 import { PaymentThirdReviewGoalAchievementPage } from '@/features/payment-third-review-goal-achievement';
 
 type Props = {
@@ -15,17 +14,26 @@ export const metadata: Metadata = {
   title: '결제 3심 목표 달성',
 };
 
-export function generateStaticParams() {
-  return PAYMENT_REVIEW_GOAL_ACHIEVEMENTS.map((item) => ({ id: item.id }));
-}
-
 export default async function Page({ params }: Props) {
   const { id } = await params;
-  const achievement = getPaymentReviewGoalAchievementById(id);
+  const response = await getPaymentGoalAchievementServer(id).catch(() => undefined);
 
-  if (!achievement) {
+  if (response === null) {
     notFound();
   }
 
-  return <PaymentThirdReviewGoalAchievementPage achievement={achievement} />;
+  const queryClient = new QueryClient();
+
+  if (response) {
+    queryClient.setQueryData(
+      paymentGoalAchievementDetailQueryOptions(id).queryKey,
+      response,
+    );
+  }
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <PaymentThirdReviewGoalAchievementPage id={id} />
+    </HydrationBoundary>
+  );
 }
