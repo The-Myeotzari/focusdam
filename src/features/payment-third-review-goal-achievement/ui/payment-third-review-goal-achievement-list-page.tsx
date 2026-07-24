@@ -1,18 +1,21 @@
+'use client';
+
 import Link from 'next/link';
+import { useQuery } from '@tanstack/react-query';
 import { ArrowRight, Award } from 'lucide-react';
 
 import {
+  formatPaymentReviewGoalAchievementDate,
   formatPaymentReviewWon,
-  type PaymentReviewGoalAchievement,
 } from '@/entities/payment-third-review';
+import { paymentGoalAchievementListQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import { SiteTopBar } from '@/shared/ui';
 
-type Props = {
-  achievements: PaymentReviewGoalAchievement[];
-};
-
 // 목표 달성 기록 목록을 렌더링합니다.
-export function PaymentThirdReviewGoalAchievementListPage({ achievements }: Props) {
+export function PaymentThirdReviewGoalAchievementListPage() {
+  const achievementsQuery = useQuery(paymentGoalAchievementListQueryOptions());
+  const achievements = achievementsQuery.data?.items ?? [];
+
   return (
     <>
       <SiteTopBar
@@ -34,7 +37,25 @@ export function PaymentThirdReviewGoalAchievementListPage({ achievements }: Prop
             </p>
           </div>
 
-          {achievements.length === 0 ? (
+          {achievementsQuery.isPending ? (
+            <GoalAchievementListSkeleton />
+          ) : achievementsQuery.isError ? (
+            <div
+              role="alert"
+              className="rounded-[24px] bg-white px-5 py-10 text-center shadow-[0_4px_12px_rgba(0,0,0,0.04)]"
+            >
+              <p className="text-[16px] font-semibold leading-7 text-[#1a1c1e]">
+                달성 기록을 불러오지 못했어요.
+              </p>
+              <button
+                type="button"
+                onClick={() => achievementsQuery.refetch()}
+                className="mt-4 min-h-11 rounded-full bg-[#3c5f7c] px-5 text-sm font-semibold text-white"
+              >
+                다시 불러오기
+              </button>
+            </div>
+          ) : achievements.length === 0 ? (
             <div className="rounded-[24px] bg-white px-5 py-10 text-center shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
               <p className="text-[16px] font-semibold leading-7 text-[#1a1c1e]">
                 아직 목표 달성 내역이 없습니다.
@@ -58,7 +79,10 @@ export function PaymentThirdReviewGoalAchievementListPage({ achievements }: Prop
                           {achievement.goalName}
                         </p>
                         <p className="truncate text-xs font-medium leading-5 text-[#72777e]">
-                          {achievement.achievedAt} ·{' '}
+                          {formatPaymentReviewGoalAchievementDate(
+                            achievement.achievedAt,
+                          )}{' '}
+                          ·{' '}
                           {formatPaymentReviewWon(achievement.savedAmount)} 저축 반영
                         </p>
                       </div>
@@ -82,5 +106,25 @@ export function PaymentThirdReviewGoalAchievementListPage({ achievements }: Prop
         </section>
       </main>
     </>
+  );
+}
+
+function GoalAchievementListSkeleton() {
+  return (
+    <div aria-label="목표 달성 기록을 불러오는 중" className="grid gap-2">
+      {[0, 1, 2].map((item) => (
+        <div
+          key={item}
+          className="flex animate-pulse items-center gap-3 rounded-[22px] bg-white p-4"
+        >
+          <span className="size-10 shrink-0 rounded-full bg-[#edf0f2]" />
+          <div className="min-w-0 flex-1">
+            <span className="block h-4 w-28 rounded bg-[#edf0f2]" />
+            <span className="mt-2 block h-3 w-40 rounded bg-[#f1f2f3]" />
+          </div>
+          <span className="h-4 w-16 rounded bg-[#edf0f2]" />
+        </div>
+      ))}
+    </div>
   );
 }
