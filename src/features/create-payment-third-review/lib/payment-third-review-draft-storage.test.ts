@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   clearPaymentThirdReviewDraft,
+  hasPaymentThirdReviewDraftInput,
   isPaymentThirdReviewCreatePath,
   readPaymentThirdReviewDraft,
   savePaymentThirdReviewDraft,
@@ -55,5 +56,15 @@ describe('paymentThirdReviewDraftStorage', () => {
     expect(isPaymentThirdReviewCreatePath('/payment-third-review/create/report')).toBe(true);
     expect(isPaymentThirdReviewCreatePath('/payment-third-review')).toBe(false);
     expect(isPaymentThirdReviewCreatePath('/payment-third-review/list')).toBe(false);
+  });
+
+  it('사용자가 실제로 입력한 초안인지 구분한다', () => {
+    expect(hasPaymentThirdReviewDraftInput(createInitialPaymentThirdReviewDraft())).toBe(false);
+    expect(
+      hasPaymentThirdReviewDraftInput({
+        ...createInitialPaymentThirdReviewDraft(),
+        itemName: '무선 이어폰',
+      }),
+    ).toBe(true);
   });
 });

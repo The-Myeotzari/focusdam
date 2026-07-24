@@ -37,6 +37,15 @@ export function clearPaymentThirdReviewDraft() {
   window.localStorage.removeItem(CREATE_PAYMENT_THIRD_REVIEW_DRAFT_STORAGE_KEY);
 }
 
+export function hasPaymentThirdReviewDraftInput(draft: CreatePaymentThirdReviewDraft) {
+  return Boolean(
+    draft.itemName.trim() ||
+      draft.amount.trim() ||
+      draft.impulseStrength ||
+      draft.buyReason.trim(),
+  );
+}
+
 export function isPaymentThirdReviewCreatePath(pathname: string) {
   return (
     pathname === CREATE_PAYMENT_THIRD_REVIEW_PATH ||

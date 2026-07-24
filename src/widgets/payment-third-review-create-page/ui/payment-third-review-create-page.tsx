@@ -1,13 +1,9 @@
 'use client';
 
-import { useEffect, type MouseEvent } from 'react';
-
-import {
-  clearPaymentThirdReviewDraft,
-  isPaymentThirdReviewCreatePath,
-} from '@/features/create-payment-third-review/lib/payment-third-review-draft-storage';
+import { usePaymentThirdReviewExitGuard } from '@/features/create-payment-third-review/lib/use-payment-third-review-exit-guard';
 import type { CreatePaymentThirdReviewStep as CreatePaymentThirdReviewStepName } from '@/features/create-payment-third-review/model/create-payment-third-review.steps';
 import { CreatePaymentThirdReviewStep } from '@/features/create-payment-third-review/ui/create-payment-third-review-step';
+import { PaymentThirdReviewExitDialog } from '@/features/create-payment-third-review/ui/payment-third-review-exit-dialog';
 import { SiteTopBar } from '@/shared/ui/site-top-bar';
 
 type Props = {
@@ -15,38 +11,12 @@ type Props = {
 };
 
 export function PaymentThirdReviewCreatePage({ step }: Props) {
-  useEffect(() => {
-    const handleBrowserBack = () => {
-      if (!isPaymentThirdReviewCreatePath(window.location.pathname)) {
-        clearPaymentThirdReviewDraft();
-      }
-    };
-
-    window.addEventListener('popstate', handleBrowserBack);
-
-    return () => {
-      window.removeEventListener('popstate', handleBrowserBack);
-    };
-  }, []);
-
-  const handleNavigationCapture = (event: MouseEvent<HTMLElement>) => {
-    if (!(event.target instanceof Element)) {
-      return;
-    }
-
-    const link = event.target.closest('a');
-    const href = link?.getAttribute('href');
-
-    if (!href) {
-      return;
-    }
-
-    const destination = new URL(href, window.location.origin);
-
-    if (!isPaymentThirdReviewCreatePath(destination.pathname)) {
-      clearPaymentThirdReviewDraft();
-    }
-  };
+  const {
+    cancelExit,
+    confirmExit,
+    handleNavigationCapture,
+    isExitDialogOpen,
+  } = usePaymentThirdReviewExitGuard();
 
   return (
     <main
@@ -62,6 +32,12 @@ export function PaymentThirdReviewCreatePage({ step }: Props) {
       <div className="flex flex-1 flex-col px-5 pb-0 pt-4">
         <CreatePaymentThirdReviewStep step={step} />
       </div>
+
+      <PaymentThirdReviewExitDialog
+        open={isExitDialogOpen}
+        onCancel={cancelExit}
+        onConfirm={confirmExit}
+      />
     </main>
   );
 }
