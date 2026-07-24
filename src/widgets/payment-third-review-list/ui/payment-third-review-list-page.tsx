@@ -1,8 +1,13 @@
 import { SiteTopBar } from '@/shared/ui';
+import type { PaymentThirdReviewListFilter as PaymentThirdReviewListFilterValue } from '@/entities/payment-third-review/model/payment-third-review-list-filter';
 
 import { PaymentThirdReviewListFilter } from './payment-third-review-list-filter';
 
-export function PaymentThirdReviewListPage() {
+export function PaymentThirdReviewListPage({
+  initialFilter,
+}: {
+  initialFilter: PaymentThirdReviewListFilterValue;
+}) {
   return (
     <>
       <SiteTopBar title="결제 3심 내역" backHref="/payment-third-review" skipHref="/payment-third-review" />
@@ -20,7 +25,7 @@ export function PaymentThirdReviewListPage() {
             </p>
           </div>
 
-          <PaymentThirdReviewListFilter />
+          <PaymentThirdReviewListFilter initialFilter={initialFilter} />
         </section>
       </main>
     </>
