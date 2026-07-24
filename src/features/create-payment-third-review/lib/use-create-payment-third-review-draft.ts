@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   CREATE_PAYMENT_THIRD_REVIEW_DRAFT_STORAGE_KEY,
@@ -15,6 +15,7 @@ export function useCreatePaymentThirdReviewDraft() {
     createInitialPaymentThirdReviewDraft,
   );
   const [isHydrated, setIsHydrated] = useState(false);
+  const skipNextPersistenceRef = useRef(false);
 
   useEffect(() => {
     const storedDraft = window.localStorage.getItem(CREATE_PAYMENT_THIRD_REVIEW_DRAFT_STORAGE_KEY);
@@ -35,6 +36,11 @@ export function useCreatePaymentThirdReviewDraft() {
       return;
     }
 
+    if (skipNextPersistenceRef.current) {
+      skipNextPersistenceRef.current = false;
+      return;
+    }
+
     window.localStorage.setItem(
       CREATE_PAYMENT_THIRD_REVIEW_DRAFT_STORAGE_KEY,
       JSON.stringify(draft),
@@ -48,6 +54,7 @@ export function useCreatePaymentThirdReviewDraft() {
 
   // 생성 플로우가 끝난 뒤 드래프트와 저장소 값을 초기화합니다.
   const resetDraft = useCallback(() => {
+    skipNextPersistenceRef.current = true;
     setDraft(createInitialPaymentThirdReviewDraft());
     window.localStorage.removeItem(CREATE_PAYMENT_THIRD_REVIEW_DRAFT_STORAGE_KEY);
   }, []);
