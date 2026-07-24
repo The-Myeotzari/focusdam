@@ -1084,6 +1084,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_payment_third_review: {
+        Args: {
+          p_alternative_status: Database["public"]["Enums"]["payment_alternative_status"]
+          p_amount_krw: number
+          p_budget_category: string
+          p_buy_reason: string
+          p_decision: string
+          p_impulse_strength: Database["public"]["Enums"]["payment_impulse_strength"]
+          p_item_name: string
+          p_need_timing: Database["public"]["Enums"]["payment_need_timing"]
+          p_reason: string
+          p_reward: string
+          p_satisfaction_reminder: boolean
+          p_saving_target: Database["public"]["Enums"]["payment_saving_target"]
+          p_user_id: string
+        }
+        Returns: Json
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }
