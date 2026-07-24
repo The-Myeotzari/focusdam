@@ -69,6 +69,3 @@ export const FINAL_DECISION_OPTIONS: Array<PaymentReviewOption<PaymentReviewDeci
     description: '이유 메모',
   },
 ];
-
-export const BUDGET_GOAL_AMOUNT = '100,000원';
-export const BUDGET_PROGRESS = 58;
