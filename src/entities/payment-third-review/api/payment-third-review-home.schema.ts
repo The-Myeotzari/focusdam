@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { PaymentThirdReviewListItemSchema } from './payment-third-review-list.schema';
 import { PaymentSavingGoalSchema } from './payment-saving-goal.schema';
+import { PaymentGoalAchievementSummarySchema } from './payment-goal-achievement.schema';
 
 export const PaymentThirdReviewHomeStatsSchema = z.object({
   totalCount: z.number().int().nonnegative(),
@@ -15,6 +16,7 @@ export const PaymentThirdReviewHomeResponseSchema = z.object({
   ok: z.literal(true),
   stats: PaymentThirdReviewHomeStatsSchema,
   activeGoal: PaymentSavingGoalSchema.nullable(),
+  latestGoalAchievement: PaymentGoalAchievementSummarySchema.nullable(),
   recentItems: z.array(PaymentThirdReviewListItemSchema).max(3),
 });
 
