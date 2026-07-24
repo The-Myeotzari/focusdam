@@ -2,6 +2,9 @@ export const QUERY_KEYS = {
   paymentThirdReviews: {
     all: ['payment-third-reviews'] as const,
     activeGoal: ['payment-third-reviews', 'active-goal'] as const,
+    goalAchievements: ['payment-third-reviews', 'goal-achievements'] as const,
+    goalAchievement: (id: string) =>
+      ['payment-third-reviews', 'goal-achievements', id] as const,
     home: ['payment-third-reviews', 'home'] as const,
     list: (outcomeType: 'all' | 'buy' | 'hold' | 'save') =>
       ['payment-third-reviews', 'list', outcomeType] as const,
