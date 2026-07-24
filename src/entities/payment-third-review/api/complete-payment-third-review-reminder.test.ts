@@ -146,10 +146,15 @@ describe('completePaymentThirdReviewReminder', () => {
       data: { id: '40000000-0000-0000-0000-000000000001' },
       error: null,
     });
+    const goalAchievement = createQuery({
+      data: { id: '50000000-0000-0000-0000-000000000001' },
+      error: null,
+    });
     const from = createFrom({
       payment_reviews: [reviewQuery, reviewUpdate],
       payment_review_followups: [followUpQuery, followUpUpdate],
       payment_saving_entries: [savingEntry],
+      payment_goal_achievements: [goalAchievement],
     });
 
     const result = await completePaymentThirdReviewReminder(
@@ -170,7 +175,12 @@ describe('completePaymentThirdReviewReminder', () => {
     });
     expect(result).toMatchObject({
       ok: true,
-      item: { decision: 'cancel', status: 'hold_after_save', outcomeType: 'save' },
+      item: {
+        decision: 'cancel',
+        status: 'hold_after_save',
+        outcomeType: 'save',
+        goalAchievementId: '50000000-0000-0000-0000-000000000001',
+      },
     });
   });
 
