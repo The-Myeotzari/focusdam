@@ -37,7 +37,7 @@ async function request<T>(path: string, schema: ZodType<T>, init: ApiRequestInit
 
 export const Api = {
   get<T>(path: string, schema: ZodType<T>, init?: ApiRequestInit) {
-    return request(path, schema, { ...init, method: "GET" });
+    return request(path, schema, { cache: "no-store", ...init, method: "GET" });
   },
   post<T>(path: string, schema: ZodType<T>, init?: ApiRequestInit) {
     return request(path, schema, { ...init, method: "POST" });
