@@ -82,9 +82,13 @@ export function PaymentThirdReviewReminderResultPage({ decision, id, listFilter 
   });
   const reminderMutation = useMutation({
     mutationFn: () => completePaymentThirdReviewReminderClient(id, { decision, memo }),
-    onSuccess: async () => {
+    onSuccess: async (response) => {
       await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.paymentThirdReviews.all });
-      router.replace(detailHref);
+      router.replace(
+        response.item.goalAchievementId
+          ? `/payment-third-review/goal-achievement/${response.item.goalAchievementId}`
+          : detailHref,
+      );
     },
   });
   const item = detailQuery.data;
