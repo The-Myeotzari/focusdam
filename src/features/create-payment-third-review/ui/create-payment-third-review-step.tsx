@@ -49,7 +49,11 @@ export function CreatePaymentThirdReviewStep({ step }: Props) {
     onSuccess: async (response) => {
       await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.paymentThirdReviews.all });
       resetDraft();
-      router.replace(`/payment-third-review/list/${response.item.id}`);
+      router.replace(
+        response.item.goalAchievementId
+          ? `/payment-third-review/goal-achievement/${response.item.goalAchievementId}`
+          : `/payment-third-review/list/${response.item.id}`,
+      );
     },
   });
 
