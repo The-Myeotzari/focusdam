@@ -9,6 +9,11 @@ import { useState } from 'react';
 import { paymentThirdReviewDetailQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import { completePaymentThirdReviewSatisfactionClient } from '@/entities/payment-third-review/api/payment-third-review-satisfaction.client';
 import { mapPaymentThirdReviewDetailToHistoryItem } from '@/entities/payment-third-review/lib/payment-review-detail-item';
+import {
+  getPaymentThirdReviewDetailHref,
+  getPaymentThirdReviewListHref,
+  type PaymentThirdReviewListFilter,
+} from '@/entities/payment-third-review/model/payment-third-review-list-filter';
 import { PaymentReviewInfoRow } from '@/entities/payment-third-review';
 import type { PaymentReviewHistoryItem } from '@/entities/payment-third-review';
 import { QUERY_KEYS } from '@/shared/constants/query-key';
@@ -17,6 +22,7 @@ import { SiteTopBar } from '@/shared/ui';
 
 type Props = {
   id: string;
+  listFilter: PaymentThirdReviewListFilter;
 };
 
 type SatisfactionOption = {
@@ -33,8 +39,10 @@ const satisfactionOptions: SatisfactionOption[] = [
   { label: '매우 만족', score: 5, summary: '매우 만족' },
 ];
 
-export function PaymentThirdReviewSatisfactionCheckPage({ id }: Props) {
+export function PaymentThirdReviewSatisfactionCheckPage({ id, listFilter }: Props) {
   const router = useRouter();
+  const detailHref = getPaymentThirdReviewDetailHref(id, listFilter);
+  const listHref = getPaymentThirdReviewListHref(listFilter);
   const queryClient = useQueryClient();
   const [selectedScore, setSelectedScore] = useState<number | null>(null);
   const [memo, setMemo] = useState('');
@@ -53,7 +61,7 @@ export function PaymentThirdReviewSatisfactionCheckPage({ id }: Props) {
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.paymentThirdReviews.all });
-      router.replace(`/payment-third-review/list/${id}`);
+      router.replace(detailHref);
     },
   });
   const item = detailQuery.data;
@@ -71,13 +79,14 @@ export function PaymentThirdReviewSatisfactionCheckPage({ id }: Props) {
     <>
       <SiteTopBar
         title="만족도 체크"
-        backHref={`/payment-third-review/list/${id}`}
+        backHref={detailHref}
         skipHref="/payment-third-review"
       />
       {detailQuery.isPending ? (
         <SatisfactionCheckSkeleton />
       ) : detailQuery.isError || invalidSatisfactionTarget ? (
         <SatisfactionCheckLoadError
+          listHref={listHref}
           notFound={
             invalidSatisfactionTarget ||
             (detailQuery.error instanceof ApiRequestError && detailQuery.error.body.status === 404)
@@ -86,6 +95,7 @@ export function PaymentThirdReviewSatisfactionCheckPage({ id }: Props) {
         />
       ) : item ? (
         <SatisfactionCheckContent
+          detailHref={detailHref}
           item={item}
           memo={memo}
           selectedScore={selectedScore}
@@ -101,6 +111,7 @@ export function PaymentThirdReviewSatisfactionCheckPage({ id }: Props) {
 }
 
 function SatisfactionCheckContent({
+  detailHref,
   item,
   memo,
   selectedScore,
@@ -110,6 +121,7 @@ function SatisfactionCheckContent({
   onScoreChange,
   onSubmit,
 }: {
+  detailHref: string;
   item: PaymentReviewHistoryItem;
   memo: string;
   selectedScore: number | null;
@@ -229,7 +241,7 @@ function SatisfactionCheckContent({
           </button>
         ) : (
           <Link
-            href={`/payment-third-review/list/${item.id}`}
+            href={detailHref}
             className="flex min-h-[62px] w-full items-center justify-center rounded-full bg-[#3c5f7c] px-6 text-[17px] font-semibold leading-7 text-white shadow-[0_20px_25px_-5px_rgba(60,95,124,0.2)]"
           >
             상세로 돌아가기
@@ -315,9 +327,11 @@ function SatisfactionCheckSkeleton() {
 }
 
 function SatisfactionCheckLoadError({
+  listHref,
   notFound,
   onRetry,
 }: {
+  listHref: string;
   notFound: boolean;
   onRetry: () => void;
 }) {
@@ -334,7 +348,7 @@ function SatisfactionCheckLoadError({
       </p>
       {notFound ? (
         <Link
-          href="/payment-third-review/list"
+          href={listHref}
           className="mt-6 flex min-h-12 items-center justify-center rounded-full bg-[#3c5f7c] px-5 text-sm font-semibold text-white"
         >
           목록으로 돌아가기

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { PAYMENT_REVIEW_OUTCOME_TYPES } from '@/entities/payment-third-review/model/payment-third-review.types';
 import { PaginationMetaSchema, PaginationQuerySchema } from '@/shared/lib/api/pagination';
 
 const PaymentThirdReviewDatabaseIdSchema = z.string().regex(
@@ -7,7 +8,7 @@ const PaymentThirdReviewDatabaseIdSchema = z.string().regex(
   '올바른 결제 3심 ID가 아닙니다.',
 );
 
-export const PaymentReviewOutcomeTypeSchema = z.enum(['buy', 'hold', 'save']);
+export const PaymentReviewOutcomeTypeSchema = z.enum(PAYMENT_REVIEW_OUTCOME_TYPES);
 
 export const PaymentReviewStatusSchema = z.enum([
   'buy_satisfaction_scheduled',

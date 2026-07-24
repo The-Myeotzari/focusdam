@@ -5,10 +5,12 @@ import { notFound } from 'next/navigation';
 import type { PaymentReviewReminderDecision } from '@/entities/payment-third-review';
 import { paymentThirdReviewDetailQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import { getPaymentThirdReviewDetailServer } from '@/entities/payment-third-review/api/payment-third-review.server';
+import { parsePaymentThirdReviewListFilter } from '@/entities/payment-third-review/model/payment-third-review-list-filter';
 import { PaymentThirdReviewReminderResultPage } from '@/features/payment-third-review-reminder';
 
 type Props = {
   params: Promise<{ decision: string; id: string }>;
+  searchParams: Promise<{ filter?: string | string[] }>;
 };
 
 const reminderDecisions: PaymentReviewReminderDecision[] = ['buy', 'cancel', 'hold'];
@@ -17,8 +19,10 @@ export const metadata: Metadata = {
   title: '결제 3심 리마인드 제출',
 };
 
-export default async function Page({ params }: Props) {
+export default async function Page({ params, searchParams }: Props) {
   const { decision, id } = await params;
+  const { filter } = await searchParams;
+  const listFilter = parsePaymentThirdReviewListFilter(filter);
 
   if (!isReminderDecision(decision)) {
     notFound();
@@ -37,7 +41,11 @@ export default async function Page({ params }: Props) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <PaymentThirdReviewReminderResultPage decision={decision} id={id} />
+      <PaymentThirdReviewReminderResultPage
+        decision={decision}
+        id={id}
+        listFilter={listFilter}
+      />
     </HydrationBoundary>
   );
 }

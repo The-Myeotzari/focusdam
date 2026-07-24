@@ -4,18 +4,22 @@ import { notFound } from 'next/navigation';
 
 import { paymentThirdReviewDetailQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import { getPaymentThirdReviewDetailServer } from '@/entities/payment-third-review/api/payment-third-review.server';
+import { parsePaymentThirdReviewListFilter } from '@/entities/payment-third-review/model/payment-third-review-list-filter';
 import { PaymentThirdReviewReminderPage } from '@/features/payment-third-review-reminder';
 
 type Props = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ filter?: string | string[] }>;
 };
 
 export const metadata: Metadata = {
   title: '결제 3심 리마인드',
 };
 
-export default async function Page({ params }: Props) {
+export default async function Page({ params, searchParams }: Props) {
   const { id } = await params;
+  const { filter } = await searchParams;
+  const listFilter = parsePaymentThirdReviewListFilter(filter);
   const response = await getPaymentThirdReviewDetailServer(id).catch(() => undefined);
 
   if (response === null) {
@@ -29,7 +33,7 @@ export default async function Page({ params }: Props) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <PaymentThirdReviewReminderPage id={id} />
+      <PaymentThirdReviewReminderPage id={id} listFilter={listFilter} />
     </HydrationBoundary>
   );
 }

@@ -8,6 +8,12 @@ import { useState } from 'react';
 
 import { paymentThirdReviewDetailQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import { mapPaymentThirdReviewDetailToHistoryItem } from '@/entities/payment-third-review/lib/payment-review-detail-item';
+import {
+  getPaymentThirdReviewDetailHref,
+  getPaymentThirdReviewListHref,
+  type PaymentThirdReviewListFilter,
+  withPaymentThirdReviewListFilter,
+} from '@/entities/payment-third-review/model/payment-third-review-list-filter';
 import type {
   PaymentReviewHistoryItem,
   PaymentReviewReminderDecision,
@@ -15,7 +21,10 @@ import type {
 import { ApiRequestError } from '@/shared/lib/api/api';
 import { SiteTopBar } from '@/shared/ui';
 
-type Props = { id: string };
+type Props = {
+  id: string;
+  listFilter: PaymentThirdReviewListFilter;
+};
 
 const reminderDecisionOptions: Array<{
   description: string;
@@ -39,8 +48,10 @@ const reminderDecisionOptions: Array<{
   },
 ];
 
-export function PaymentThirdReviewReminderPage({ id }: Props) {
+export function PaymentThirdReviewReminderPage({ id, listFilter }: Props) {
   const router = useRouter();
+  const detailHref = getPaymentThirdReviewDetailHref(id, listFilter);
+  const listHref = getPaymentThirdReviewListHref(listFilter);
   const [selectedDecision, setSelectedDecision] =
     useState<PaymentReviewReminderDecision | null>(null);
   const detailQuery = useQuery({
@@ -54,7 +65,12 @@ export function PaymentThirdReviewReminderPage({ id }: Props) {
 
   const handleNext = () => {
     if (selectedDecision && item?.reminder?.status === 'required') {
-      router.push(`/payment-third-review/reminder/${id}/result/${selectedDecision}`);
+      router.push(
+        withPaymentThirdReviewListFilter(
+          `/payment-third-review/reminder/${id}/result/${selectedDecision}`,
+          listFilter,
+        ),
+      );
     }
   };
 
@@ -62,13 +78,14 @@ export function PaymentThirdReviewReminderPage({ id }: Props) {
     <>
       <SiteTopBar
         title="결제 3심"
-        backHref={`/payment-third-review/list/${id}`}
+        backHref={detailHref}
         skipHref="/payment-third-review"
       />
       {detailQuery.isPending ? (
         <ReminderPageSkeleton />
       ) : detailQuery.isError || invalidReminderTarget ? (
         <ReminderLoadError
+          listHref={listHref}
           notFound={
             invalidReminderTarget ||
             (detailQuery.error instanceof ApiRequestError && detailQuery.error.body.status === 404)
@@ -77,6 +94,7 @@ export function PaymentThirdReviewReminderPage({ id }: Props) {
         />
       ) : item ? (
         <ReminderContent
+          detailHref={detailHref}
           item={item}
           selectedDecision={selectedDecision}
           onDecisionChange={setSelectedDecision}
@@ -88,11 +106,13 @@ export function PaymentThirdReviewReminderPage({ id }: Props) {
 }
 
 function ReminderContent({
+  detailHref,
   item,
   selectedDecision,
   onDecisionChange,
   onNext,
 }: {
+  detailHref: string;
   item: PaymentReviewHistoryItem;
   selectedDecision: PaymentReviewReminderDecision | null;
   onDecisionChange: (decision: PaymentReviewReminderDecision) => void;
@@ -169,7 +189,7 @@ function ReminderContent({
           </button>
         ) : (
           <Link
-            href={`/payment-third-review/list/${item.id}`}
+            href={detailHref}
             className="flex min-h-[62px] items-center justify-center rounded-full bg-[#3c5f7c] px-6 text-[17px] font-semibold text-white"
           >
             상세로 돌아가기
@@ -243,7 +263,15 @@ function ReminderPageSkeleton() {
   );
 }
 
-function ReminderLoadError({ notFound, onRetry }: { notFound: boolean; onRetry: () => void }) {
+function ReminderLoadError({
+  listHref,
+  notFound,
+  onRetry,
+}: {
+  listHref: string;
+  notFound: boolean;
+  onRetry: () => void;
+}) {
   return (
     <main className="mx-auto grid min-h-[calc(100svh-56px)] w-full max-w-[430px] place-content-center px-5 py-10 text-center">
       <span className="mx-auto grid size-14 place-items-center rounded-full bg-[#fff2e0] text-[#94640a]">
@@ -257,7 +285,7 @@ function ReminderLoadError({ notFound, onRetry }: { notFound: boolean; onRetry: 
       </p>
       {notFound ? (
         <Link
-          href="/payment-third-review/list"
+          href={listHref}
           className="mt-6 flex min-h-12 items-center justify-center rounded-full bg-[#3c5f7c] px-5 text-sm font-semibold text-white"
         >
           목록으로 돌아가기

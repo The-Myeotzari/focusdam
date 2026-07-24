@@ -7,6 +7,11 @@ import Link from 'next/link';
 import { paymentThirdReviewDetailQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import { mapPaymentThirdReviewDetailToHistoryItem } from '@/entities/payment-third-review/lib/payment-review-detail-item';
 import {
+  getPaymentThirdReviewListHref,
+  type PaymentThirdReviewListFilter,
+  withPaymentThirdReviewListFilter,
+} from '@/entities/payment-third-review/model/payment-third-review-list-filter';
+import {
   getPaymentReviewFollowUpDescription,
   getPaymentReviewFollowUpMeta,
   getPaymentReviewFollowUpTitle,
@@ -22,9 +27,11 @@ import { SiteTopBar } from '@/shared/ui';
 
 type Props = {
   id: string;
+  listFilter: PaymentThirdReviewListFilter;
 };
 
-export function PaymentThirdReviewDetailPage({ id }: Props) {
+export function PaymentThirdReviewDetailPage({ id, listFilter }: Props) {
+  const listHref = getPaymentThirdReviewListHref(listFilter);
   const detailQuery = useQuery({
     ...paymentThirdReviewDetailQueryOptions(id),
     select: (response) => mapPaymentThirdReviewDetailToHistoryItem(response.item),
@@ -36,26 +43,33 @@ export function PaymentThirdReviewDetailPage({ id }: Props) {
     <>
       <SiteTopBar
         title="결제 3심 상세"
-        backHref="/payment-third-review/list"
+        backHref={listHref}
         skipHref="/payment-third-review"
       />
       {detailQuery.isPending ? (
         <PaymentThirdReviewDetailSkeleton />
       ) : detailQuery.isError ? (
         <PaymentThirdReviewDetailError
+          listHref={listHref}
           notFound={
             detailQuery.error instanceof ApiRequestError && detailQuery.error.body.status === 404
           }
           onRetry={() => void detailQuery.refetch()}
         />
       ) : (
-        <PaymentThirdReviewDetailContent item={detailQuery.data} />
+        <PaymentThirdReviewDetailContent item={detailQuery.data} listFilter={listFilter} />
       )}
     </>
   );
 }
 
-function PaymentThirdReviewDetailContent({ item }: { item: PaymentReviewHistoryItem }) {
+function PaymentThirdReviewDetailContent({
+  item,
+  listFilter,
+}: {
+  item: PaymentReviewHistoryItem;
+  listFilter: PaymentThirdReviewListFilter;
+}) {
   const decisionMeta = getDecisionMeta(item.outcomeType);
   const followUpMeta = getPaymentReviewFollowUpMeta(item);
   const Icon = decisionMeta.icon;
@@ -99,7 +113,7 @@ function PaymentThirdReviewDetailContent({ item }: { item: PaymentReviewHistoryI
         </h2>
 
         <div className="rounded-[28px] bg-white px-5 py-1 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
-          <PaymentReviewInfoRow label="결제 이유" value={item.reason} />
+          <PaymentReviewInfoRow label="결제 이유" value={item.reason} stacked />
           <PaymentReviewInfoRow label="목표 영향" value={item.progressLabel} />
           <PaymentReviewInfoRow label="예산 반영" value={item.budgetImpactLabel} />
         </div>
@@ -120,7 +134,10 @@ function PaymentThirdReviewDetailContent({ item }: { item: PaymentReviewHistoryI
         </p>
         {item.satisfaction?.status === 'required' ? (
           <Link
-            href={`/payment-third-review/satisfaction-check/${item.id}`}
+            href={withPaymentThirdReviewListFilter(
+              `/payment-third-review/satisfaction-check/${item.id}`,
+              listFilter,
+            )}
             className="mt-4 flex min-h-12 items-center justify-center rounded-full bg-[#3c5f7c] px-5 text-sm font-semibold leading-5 text-white"
           >
             만족도 체크하기
@@ -128,7 +145,10 @@ function PaymentThirdReviewDetailContent({ item }: { item: PaymentReviewHistoryI
         ) : null}
         {item.reminder?.status === 'required' ? (
           <Link
-            href={`/payment-third-review/reminder/${item.id}`}
+            href={withPaymentThirdReviewListFilter(
+              `/payment-third-review/reminder/${item.id}`,
+              listFilter,
+            )}
             className="mt-4 flex min-h-12 items-center justify-center rounded-full bg-[#3c5f7c] px-5 text-sm font-semibold leading-5 text-white"
           >
             리마인드 확인하기
@@ -207,9 +227,11 @@ function PaymentThirdReviewDetailSkeleton() {
 }
 
 function PaymentThirdReviewDetailError({
+  listHref,
   notFound,
   onRetry,
 }: {
+  listHref: string;
   notFound: boolean;
   onRetry: () => void;
 }) {
@@ -226,7 +248,7 @@ function PaymentThirdReviewDetailError({
       </p>
       {notFound ? (
         <Link
-          href="/payment-third-review/list"
+          href={listHref}
           className="mt-6 flex min-h-12 items-center justify-center rounded-full bg-[#3c5f7c] px-5 text-sm font-semibold text-white"
         >
           목록으로 돌아가기
