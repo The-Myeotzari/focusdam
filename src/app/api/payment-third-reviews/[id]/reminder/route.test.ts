@@ -63,6 +63,7 @@ describe('PATCH /api/payment-third-reviews/[id]/reminder', () => {
       completedAt: '2026-07-23T09:00:00.000Z',
       nextFollowUpId: '30000000-0000-0000-0000-000000000002',
       savingEntryId: null,
+      goalAchievementId: null,
     };
     getUserMock.mockResolvedValue({
       ok: true,
