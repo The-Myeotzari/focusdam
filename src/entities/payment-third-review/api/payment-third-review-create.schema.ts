@@ -29,6 +29,7 @@ export const CreatePaymentThirdReviewResponseSchema = z.object({
     followUpId: PaymentThirdReviewIdSchema.nullable(),
     goalId: PaymentThirdReviewIdSchema.nullable(),
     savingEntryId: PaymentThirdReviewIdSchema.nullable(),
+    goalAchievementId: PaymentThirdReviewIdSchema.nullable().optional(),
   }),
 });
 
