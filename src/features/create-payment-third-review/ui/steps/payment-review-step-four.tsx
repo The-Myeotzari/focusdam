@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, CircleDollarSign, Flag, TrendingUp } from 'lucide-react';
-import Link from 'next/link';
+import { useState } from 'react';
 
 import { activePaymentSavingGoalQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import type { PaymentSavingGoal } from '@/entities/payment-third-review/api/payment-saving-goal.schema';
@@ -10,6 +10,7 @@ import {
   type PaymentReviewGoalImpact,
 } from '@/features/create-payment-third-review/lib/payment-review-goal-impact';
 import type { CreatePaymentThirdReviewDraft } from '@/features/create-payment-third-review/model/create-payment-third-review.draft';
+import { PaymentSavingGoalDialog } from '@/features/create-payment-third-review/ui/payment-saving-goal-dialog';
 
 type Props = {
   draft: CreatePaymentThirdReviewDraft;
@@ -18,6 +19,7 @@ type Props = {
 // 활성 저축 목표와 입력 금액을 비교해 현재 및 예상 달성도를 보여줍니다.
 export function PaymentReviewStepFour({ draft }: Props) {
   const goalQuery = useQuery(activePaymentSavingGoalQueryOptions());
+  const [isGoalDialogOpen, setIsGoalDialogOpen] = useState(false);
 
   if (goalQuery.isPending) {
     return <PaymentReviewGoalImpactSkeleton />;
@@ -28,7 +30,18 @@ export function PaymentReviewStepFour({ draft }: Props) {
   }
 
   if (!goalQuery.data.item) {
-    return <PaymentReviewGoalEmpty amount={draft.amount} />;
+    return (
+      <>
+        <PaymentReviewGoalEmpty
+          amount={draft.amount}
+          onOpenGoalDialog={() => setIsGoalDialogOpen(true)}
+        />
+        <PaymentSavingGoalDialog
+          open={isGoalDialogOpen}
+          onOpenChange={setIsGoalDialogOpen}
+        />
+      </>
+    );
   }
 
   const amountKrw = Number(draft.amount.replace(/[^0-9]/g, '')) || 0;
@@ -196,7 +209,13 @@ function ProjectedProgressBar({
   );
 }
 
-function PaymentReviewGoalEmpty({ amount }: { amount: string }) {
+function PaymentReviewGoalEmpty({
+  amount,
+  onOpenGoalDialog,
+}: {
+  amount: string;
+  onOpenGoalDialog: () => void;
+}) {
   return (
     <section className="rounded-[28px] bg-white p-6 text-center shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
       <span className="mx-auto grid size-12 place-items-center rounded-full bg-[#f1f3f5] text-[#72777e]">
@@ -208,12 +227,13 @@ function PaymentReviewGoalEmpty({ amount }: { amount: string }) {
       <p className="mt-1 text-sm leading-6 text-[#72777e]">
         {formatPaymentAmount(amount)}이 목표에 미치는 영향을 확인하려면 목표를 먼저 설정해주세요.
       </p>
-      <Link
-        href="/payment-third-review/goal-setting"
+      <button
+        type="button"
+        onClick={onOpenGoalDialog}
         className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-[#3c5f7c] px-5 text-sm font-semibold text-white"
       >
         목표 설정하기
-      </Link>
+      </button>
     </section>
   );
 }
