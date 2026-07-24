@@ -1,14 +1,25 @@
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import type { Metadata } from 'next';
 
-import { PAYMENT_REVIEW_GOAL_ACHIEVEMENTS } from '@/entities/payment-third-review';
+import { paymentGoalAchievementListQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
+import { getPaymentGoalAchievementsServer } from '@/entities/payment-third-review/api/payment-third-review.server';
 import { PaymentThirdReviewGoalAchievementListPage } from '@/features/payment-third-review-goal-achievement';
 
 export const metadata: Metadata = {
   title: '결제 3심 목표 달성 기록',
 };
 
-export default function Page() {
+export default async function Page() {
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    ...paymentGoalAchievementListQueryOptions(),
+    queryFn: getPaymentGoalAchievementsServer,
+  });
+
   return (
-    <PaymentThirdReviewGoalAchievementListPage achievements={PAYMENT_REVIEW_GOAL_ACHIEVEMENTS} />
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <PaymentThirdReviewGoalAchievementListPage />
+    </HydrationBoundary>
   );
 }
