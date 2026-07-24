@@ -2,6 +2,7 @@ import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 
 import type { PaymentThirdReviewListFilter } from '../model/payment-third-review-list-filter';
 import { getPaymentThirdReviewDetailClient } from './payment-third-review-detail.client';
+import { getPaymentThirdReviewHomeClient } from './payment-third-review-home.client';
 import { getPaymentThirdReviewListClient } from './payment-third-review-list.client';
 import { getActivePaymentSavingGoalClient } from './payment-saving-goal.client';
 import { QUERY_KEYS } from '@/shared/constants/query-key';
@@ -21,6 +22,14 @@ export function paymentThirdReviewDetailQueryOptions(id: string) {
   return queryOptions({
     queryKey: QUERY_KEYS.paymentThirdReviews.detail(id),
     queryFn: () => getPaymentThirdReviewDetailClient(id),
+    staleTime: PAYMENT_THIRD_REVIEW_STALE_TIME,
+  });
+}
+
+export function paymentThirdReviewHomeQueryOptions() {
+  return queryOptions({
+    queryKey: QUERY_KEYS.paymentThirdReviews.home,
+    queryFn: getPaymentThirdReviewHomeClient,
     staleTime: PAYMENT_THIRD_REVIEW_STALE_TIME,
   });
 }
