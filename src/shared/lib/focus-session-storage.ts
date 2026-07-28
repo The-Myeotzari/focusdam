@@ -10,6 +10,7 @@ export type StoredFocusSession = {
   plannedDurationMinutes: number;
   recommendedMinutes: number;
   startedAt: string;
+  timerStartedAt: string;
 };
 
 export function readStoredFocusSession(): StoredFocusSession | null {
@@ -37,7 +38,8 @@ export function readStoredFocusSession(): StoredFocusSession | null {
       duration,
       plannedDurationMinutes: getPositiveNumber(parsed.plannedDurationMinutes, duration),
       recommendedMinutes: getPositiveNumber(parsed.recommendedMinutes, duration),
-      startedAt: parsed.startedAt
+      startedAt: parsed.startedAt,
+      timerStartedAt: parsed.timerStartedAt ?? parsed.startedAt
     };
   } catch {
     return null;

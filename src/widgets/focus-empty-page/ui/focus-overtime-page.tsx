@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import {
   CheckCircle2,
   Grid2X2,
@@ -6,9 +9,38 @@ import {
   Lightbulb,
   PlusCircle
 } from "lucide-react";
+import { readStoredFocusSession } from "@/shared/lib/focus-session-storage";
 import { SiteTopBar } from "@/shared/ui";
 
 export function FocusOvertimePage() {
+  const [extendHref, setExtendHref] = useState("/focus/current?duration=5&extend=1");
+
+  useEffect(() => {
+    const session = readStoredFocusSession();
+
+    if (!session) {
+      return;
+    }
+
+    const params = new URLSearchParams({
+      duration: "5",
+      plannedDuration: `${session.plannedDurationMinutes}`,
+      title: session.title,
+      subtitle: session.subtitle ?? "",
+      extend: "1"
+    });
+
+    if (session.starterActionId) {
+      params.set("starterActionId", session.starterActionId);
+    }
+
+    if (session.scheduleId) {
+      params.set("scheduleId", session.scheduleId);
+    }
+
+    setExtendHref(`/focus/current?${params.toString()}`);
+  }, []);
+
   return (
     <main className="relative isolate mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col overflow-y-auto bg-[#faf9fc] pb-28 font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
       <span
@@ -49,7 +81,7 @@ export function FocusOvertimePage() {
 
         <section className="mt-12 flex w-full flex-col gap-4">
           <Link
-            href="/focus/current?duration=15"
+            href={extendHref}
             className="flex h-[66px] w-full items-center justify-center gap-3 rounded-[32px] bg-[#3c5f7c] text-[18px] font-medium leading-7 text-white shadow-[0_12px_24px_rgba(60,95,124,0.12)]"
           >
             <PlusCircle size={20} strokeWidth={2.5} aria-hidden="true" />

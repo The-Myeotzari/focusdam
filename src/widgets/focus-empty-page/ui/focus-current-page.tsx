@@ -22,6 +22,7 @@ export function FocusCurrentPage() {
   const title = searchParams.get("title") ?? "보고서 목차만 정리하기";
   const subtitle = searchParams.get("subtitle") ?? "초안만 만들기";
   const shouldResume = searchParams.get("resume") === "1";
+  const shouldExtend = searchParams.get("extend") === "1";
   const [remainingSeconds, setRemainingSeconds] = useState(Math.max(duration * 60, 0));
   const [sessionError, setSessionError] = useState<string | null>(null);
   const hasInitialized = useRef(false);
@@ -35,9 +36,34 @@ export function FocusCurrentPage() {
 
     hasInitialized.current = true;
 
+    if (shouldExtend) {
+      const activeSession = readStoredFocusSession();
+
+      if (activeSession) {
+        const timerStartedAt = new Date().toISOString();
+        setRemainingSeconds(Math.max(duration * 60, 0));
+        writeStoredFocusSession({
+          ...activeSession,
+          duration,
+          timerStartedAt
+        });
+
+        if (activeSession.sessionId) {
+          void extendSession(activeSession.sessionId, duration).catch((error) => {
+            console.error(error);
+            setSessionError("연장 상태를 서버에 저장하지 못했어요.");
+          });
+        }
+
+        return;
+      }
+    }
+
     if (shouldResume) {
       const activeAction = readStoredFocusSession();
-      const startedAt = activeAction?.startedAt ? Date.parse(activeAction.startedAt) : Number.NaN;
+      const startedAt = activeAction?.timerStartedAt
+        ? Date.parse(activeAction.timerStartedAt)
+        : Number.NaN;
 
       if (Number.isFinite(startedAt)) {
         const elapsedSeconds = Math.max(Math.floor((Date.now() - startedAt) / 1000), 0);
@@ -57,7 +83,8 @@ export function FocusCurrentPage() {
       duration,
       plannedDurationMinutes: plannedDuration,
       recommendedMinutes: duration,
-      startedAt: localStartedAt
+      startedAt: localStartedAt,
+      timerStartedAt: localStartedAt
     });
 
     async function createSession() {
@@ -91,7 +118,8 @@ export function FocusCurrentPage() {
           duration,
           plannedDurationMinutes: plannedDuration,
           recommendedMinutes: duration,
-          startedAt: result.session.startedAt
+          startedAt: result.session.startedAt,
+          timerStartedAt: result.session.startedAt
         });
       } catch (error) {
         console.error(error);
@@ -104,6 +132,7 @@ export function FocusCurrentPage() {
     duration,
     plannedDuration,
     scheduleId,
+    shouldExtend,
     shouldResume,
     starterActionId,
     subtitle,
@@ -228,6 +257,22 @@ export function FocusCurrentPage() {
       </section>
     </main>
   );
+}
+
+async function extendSession(sessionId: string, extensionMinutes: number) {
+  const response = await fetch(`/api/focus/sessions/${sessionId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      status: "running",
+      eventType: "extended",
+      eventReason: `${extensionMinutes}분 연장`
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error("집중 세션 연장에 실패했습니다.");
+  }
 }
 
 function formatRemainingTime(totalSeconds: number) {

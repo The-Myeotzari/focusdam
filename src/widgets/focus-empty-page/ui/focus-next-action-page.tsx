@@ -85,15 +85,23 @@ export function FocusNextActionPage() {
           };
 
           if (result.session && !canceled) {
+            const storedSession = readStoredFocusSession();
+            const isSameStoredSession = storedSession?.sessionId === result.session.id;
+            const activeTimerDuration = isSameStoredSession
+              ? storedSession.duration
+              : result.session.recommendedDurationMinutes ??
+                result.session.plannedDurationMinutes;
+            const activeTimerStartedAt = isSameStoredSession
+              ? storedSession.timerStartedAt
+              : result.session.startedAt;
             const runningAction: ActiveAction = {
               starterActionId: result.session.starterActionId,
               scheduleId: result.session.scheduleId,
               title: result.session.title,
               subtitle: result.session.subtitle ?? "진행 중인 행동",
               duration: result.session.plannedDurationMinutes,
-              recommended:
-                result.session.recommendedDurationMinutes ?? result.session.plannedDurationMinutes,
-              startedAt: result.session.startedAt
+              recommended: activeTimerDuration,
+              startedAt: activeTimerStartedAt
             };
             writeStoredFocusSession({
               sessionId: result.session.id,
@@ -103,8 +111,11 @@ export function FocusNextActionPage() {
               subtitle: result.session.subtitle,
               duration: runningAction.recommended,
               plannedDurationMinutes: runningAction.duration,
-              recommendedMinutes: runningAction.recommended,
-              startedAt: result.session.startedAt
+              recommendedMinutes: isSameStoredSession
+                ? storedSession.recommendedMinutes
+                : runningAction.recommended,
+              startedAt: result.session.startedAt,
+              timerStartedAt: activeTimerStartedAt
             });
             setAction(runningAction);
             setActiveAction(runningAction);
