@@ -1,7 +1,6 @@
 import {
   Banknote,
   ChartNoAxesCombined,
-  Heart,
   MessageSquare,
   Zap,
   type LucideIcon,
@@ -15,7 +14,6 @@ type QuickStartItem = {
   icon: LucideIcon;
   iconClassName: string;
   href?: string;
-  fullWidth?: boolean;
 };
 
 const QUICK_START_ITEMS: QuickStartItem[] = [
@@ -25,12 +23,6 @@ const QUICK_START_ITEMS: QuickStartItem[] = [
     icon: Zap,
     iconClassName: 'bg-[#eeeae7] text-[#8a6221]',
     href: '/focus/actions',
-  },
-  {
-    title: 'Emotion',
-    description: '감정',
-    icon: Heart,
-    iconClassName: 'bg-[#ffe5ef] text-[#e91668]',
   },
   {
     title: 'Spend',
@@ -51,7 +43,6 @@ const QUICK_START_ITEMS: QuickStartItem[] = [
     icon: ChartNoAxesCombined,
     iconClassName: 'bg-[#eee9ff] text-[#645785]',
     href: '/review',
-    fullWidth: true,
   },
 ];
 
@@ -88,7 +79,7 @@ export function QuickStartMenu() {
           );
 
           const cardClassName =
-            `flex min-h-[118px] flex-col items-start rounded-[32px] bg-[#f4f3f6e6] p-5 text-left ${item.fullWidth ? 'col-span-2' : ''}`;
+            'flex min-h-[118px] flex-col items-start rounded-[32px] bg-[#f4f3f6e6] p-5 text-left';
 
           if (item.href) {
             return (
