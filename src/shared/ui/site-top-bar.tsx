@@ -26,13 +26,16 @@ export function SiteTopBar({
       <header
         data-site-header="true"
         className={[
-          "mx-auto grid h-14 w-full max-w-[var(--page-max-width)] grid-cols-[48px_minmax(0,1fr)_48px] items-center bg-[#faf9fc] px-5 py-4",
+          "mx-auto grid h-14 w-full max-w-[var(--page-max-width)] items-center bg-[#faf9fc] px-5 py-4",
+          backHref
+            ? "grid-cols-[48px_minmax(0,1fr)_48px]"
+            : "grid-cols-[minmax(0,1fr)_48px]",
           className
         ]
           .filter(Boolean)
           .join(" ")}
       >
-        <HeaderBackSlot href={backHref} />
+        {backHref ? <HeaderBackSlot href={backHref} /> : null}
         <h1 className="m-0 min-w-0 truncate text-left text-[16px] font-medium leading-6 text-[#3c5f7c]">
           {title}
         </h1>

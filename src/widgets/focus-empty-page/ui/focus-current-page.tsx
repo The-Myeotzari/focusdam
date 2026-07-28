@@ -13,24 +13,43 @@ export function FocusCurrentPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const duration = Number(searchParams.get("duration") ?? DEFAULT_DURATION_MINUTES);
-  const initialRemainingSeconds = Math.max(duration * 60 - 79, 0);
-  const [remainingSeconds, setRemainingSeconds] = useState(initialRemainingSeconds);
+  const title = searchParams.get("title") ?? "보고서 목차만 정리하기";
+  const subtitle = searchParams.get("subtitle") ?? "초안만 만들기";
+  const shouldResume = searchParams.get("resume") === "1";
+  const [remainingSeconds, setRemainingSeconds] = useState(Math.max(duration * 60, 0));
   const remainingTime = formatRemainingTime(remainingSeconds);
 
   useEffect(() => {
-    setRemainingSeconds(initialRemainingSeconds);
-  }, [initialRemainingSeconds]);
+    if (shouldResume) {
+      try {
+        const activeActionValue = window.localStorage.getItem(ACTIVE_STARTER_ACTION_STORAGE_KEY);
+        const activeAction = activeActionValue
+          ? (JSON.parse(activeActionValue) as { startedAt?: string })
+          : null;
+        const startedAt = activeAction?.startedAt ? Date.parse(activeAction.startedAt) : Number.NaN;
 
-  useEffect(() => {
+        if (Number.isFinite(startedAt)) {
+          const elapsedSeconds = Math.max(Math.floor((Date.now() - startedAt) / 1000), 0);
+          setRemainingSeconds(Math.max(duration * 60 - elapsedSeconds, 0));
+          return;
+        }
+      } catch {
+        // 저장된 진행 상태가 손상된 경우 새 타이머로 시작합니다.
+      }
+    }
+
+    setRemainingSeconds(Math.max(duration * 60, 0));
     window.localStorage.setItem(
       ACTIVE_STARTER_ACTION_STORAGE_KEY,
       JSON.stringify({
-        title: "보고서 목차만 정리하기",
+        title,
+        subtitle,
         duration,
+        recommendedMinutes: duration,
         startedAt: new Date().toISOString()
       })
     );
-  }, [duration]);
+  }, [duration, shouldResume, subtitle, title]);
 
   useEffect(() => {
     if (remainingSeconds <= 0) {
@@ -85,7 +104,7 @@ export function FocusCurrentPage() {
         </section>
 
         <h2 className="m-0 mt-12 text-center text-[16px] font-medium leading-6 text-[#3c5f7c]">
-          보고서 목차만 정리하기
+          {title}
         </h2>
 
         <section className="mt-20 flex w-full max-w-[320px] flex-col items-center gap-3" aria-label="빠른 도움">
