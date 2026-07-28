@@ -1,9 +1,11 @@
 'use client';
 
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { getGoalAchievementHrefAfterSaving } from '@/entities/payment-third-review';
+import { createPaymentThirdReviewClient } from '@/entities/payment-third-review/api/payment-third-review-create.client';
+import { activePaymentSavingGoalQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import { useCreatePaymentThirdReviewDraft } from '@/features/create-payment-third-review/lib/use-create-payment-third-review-draft';
 import { createPaymentThirdReviewPayload } from '@/features/create-payment-third-review/model/create-payment-third-review.draft';
 import {
@@ -16,6 +18,8 @@ import {
 import { CreatePaymentThirdReviewFooter } from '@/features/create-payment-third-review/ui/create-payment-third-review-footer';
 import { CreatePaymentThirdReviewProgress } from '@/features/create-payment-third-review/ui/create-payment-third-review-progress';
 import { CreatePaymentThirdReviewStepBody } from '@/features/create-payment-third-review/ui/create-payment-third-review-step-body';
+import { QUERY_KEYS } from '@/shared/constants/query-key';
+import { ApiRequestError } from '@/shared/lib/api/api';
 
 type Props = {
   step: CreatePaymentThirdReviewStep;
@@ -24,8 +28,13 @@ type Props = {
 // 결제 3심 생성의 헤더, 본문, 하단 액션을 하나의 스텝 화면으로 조합합니다.
 export function CreatePaymentThirdReviewStep({ step }: Props) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { draft, isHydrated, resetDraft, updateDraft } = useCreatePaymentThirdReviewDraft();
   const config = getCreatePaymentThirdReviewStepConfig(step);
+  const activeGoalQuery = useQuery({
+    ...activePaymentSavingGoalQueryOptions(),
+    enabled: config.step === 'step-4',
+  });
   const stepIndex = CREATE_PAYMENT_THIRD_REVIEW_PROGRESS_STEPS.findIndex(
     (item) => item.step === config.step,
   );
@@ -38,8 +47,24 @@ export function CreatePaymentThirdReviewStep({ step }: Props) {
       : config.secondaryHref;
   const isStepOneReady =
     draft.itemName.trim().length > 0 && draft.amount.trim().length > 0 && Boolean(draft.impulseStrength);
+  const isStepFourReady =
+    config.step !== 'step-4' || Boolean(activeGoalQuery.data?.item);
   const shouldShowHero = config.showHero ?? true;
   const shouldShowProgress = config.showProgress ?? true;
+  const createMutation = useMutation({
+    mutationFn: createPaymentThirdReviewClient,
+    onSuccess: (response) => {
+      // 생성 직후 실행 중이던 재조회 오류가 홈 캐시에 남지 않도록 관련 캐시를 비웁니다.
+      // 다음 화면에서는 서버 프리패칭 또는 새 API 요청으로 확정된 데이터를 다시 채웁니다.
+      queryClient.removeQueries({ queryKey: QUERY_KEYS.paymentThirdReviews.all });
+      resetDraft();
+      router.replace(
+        response.item.goalAchievementId
+          ? `/payment-third-review/goal-achievement/${response.item.goalAchievementId}`
+          : `/payment-third-review/list/${response.item.id}`,
+      );
+    },
+  });
 
   useEffect(() => {
     const isDraftEmpty = !draft.itemName.trim() && !draft.amount.trim();
@@ -52,24 +77,12 @@ export function CreatePaymentThirdReviewStep({ step }: Props) {
   // 완료 단계에서 누적 입력값을 전송 payload로 만들고 플로우를 종료합니다.
   const handleSubmit = () => {
     const payload = createPaymentThirdReviewPayload(draft);
-    const goalAchievementHref =
-      draft.decision === 'memo' && draft.savingTarget === 'goal'
-        ? getGoalAchievementHrefAfterSaving({
-            savedAmount: payload.amount,
-            triggerStatus: 'save_completed',
-          })
-        : null;
 
-    console.groupCollapsed('[결제 3심 생성] 제출 payload');
-    console.info('draft', draft);
-    console.info('payload', payload);
-    console.info('goalAchievementHref', goalAchievementHref);
-    console.groupEnd();
+    if (!payload || createMutation.isPending) {
+      return;
+    }
 
-    // TODO: 백엔드 연동 시 여기에서 payload를 Server Action 또는 mutation으로 넘기면 됩니다.
-    // TODO: 저축 반영 후 목표 달성 시 백엔드 응답의 achievementId로 목표 달성 화면에 이동하면 됩니다.
-    resetDraft();
-    router.replace(goalAchievementHref ?? config.nextHref);
+    createMutation.mutate(payload);
   };
 
   return (
@@ -114,9 +127,21 @@ export function CreatePaymentThirdReviewStep({ step }: Props) {
           />
         </div>
 
+        {createMutation.isError ? (
+          <p
+            className="mx-5 mb-2 rounded-2xl bg-[#f9e9e6] px-4 py-3 text-sm leading-6 text-[#9f3e30]"
+            role="alert"
+          >
+            {getCreateErrorMessage(createMutation.error)}
+          </p>
+        ) : null}
+
         <CreatePaymentThirdReviewFooter
           isFinal={config.submitOnNext === true}
-          isNextDisabled={config.step === 'step-1' && !isStepOneReady}
+          isNextDisabled={
+            (config.step === 'step-1' && !isStepOneReady) || !isStepFourReady
+          }
+          isSubmitting={createMutation.isPending}
           nextHref={nextHref}
           nextLabel={config.nextLabel}
           onSubmit={handleSubmit}
@@ -128,4 +153,12 @@ export function CreatePaymentThirdReviewStep({ step }: Props) {
       </section>
     </div>
   );
+}
+
+function getCreateErrorMessage(error: unknown) {
+  if (error instanceof ApiRequestError) {
+    return error.body.detail;
+  }
+
+  return '결제 3심 기록을 저장하지 못했어요. 잠시 후 다시 시도해주세요.';
 }

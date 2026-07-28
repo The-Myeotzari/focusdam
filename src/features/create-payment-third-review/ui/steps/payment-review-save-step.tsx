@@ -1,6 +1,8 @@
+import { useQuery } from '@tanstack/react-query';
 import { Gift, GraduationCap, PiggyBank } from 'lucide-react';
 
 import type { ReactNode } from 'react';
+import { activePaymentSavingGoalQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import type {
   CreatePaymentThirdReviewDraft,
   CreatePaymentThirdReviewDraftUpdater,
@@ -13,34 +15,42 @@ type Props = {
   updateDraft: CreatePaymentThirdReviewDraftUpdater;
 };
 
-const savingTargetOptions: Array<{
+type SavingTargetOption = {
   description: string;
   icon: ReactNode;
   id: PaymentSavingTarget;
   title: string;
-}> = [
-  {
-    id: 'goal',
-    icon: <PiggyBank size={22} strokeWidth={2.1} />,
-    title: '목표 저축',
-    description: '여행비 / 비상금',
-  },
-  {
-    id: 'reward',
-    icon: <Gift size={22} strokeWidth={2.1} />,
-    title: '자기보상',
-    description: '주간 보상으로 저장',
-  },
-  {
-    id: 'benefit',
-    icon: <GraduationCap size={22} strokeWidth={2.1} />,
-    title: '제휴 혜택',
-    description: '교육 / 건강 / 복지 후보',
-  },
-];
+};
 
 // 취소 후 목표 저축 판단에 필요한 반영 위치 선택 화면을 렌더링합니다.
 export function PaymentReviewSaveStep({ draft, updateDraft }: Props) {
+  const goalQuery = useQuery(activePaymentSavingGoalQueryOptions());
+  const goalDescription = goalQuery.isPending
+    ? '목표 확인 중...'
+    : goalQuery.isError
+      ? '목표를 불러오지 못했어요'
+      : (goalQuery.data.item?.name ?? '설정된 목표가 없어요');
+  const savingTargetOptions: SavingTargetOption[] = [
+    {
+      id: 'goal',
+      icon: <PiggyBank size={22} strokeWidth={2.1} />,
+      title: '목표 저축',
+      description: goalDescription,
+    },
+    {
+      id: 'reward',
+      icon: <Gift size={22} strokeWidth={2.1} />,
+      title: '자기보상',
+      description: '주간 보상으로 저장',
+    },
+    {
+      id: 'benefit',
+      icon: <GraduationCap size={22} strokeWidth={2.1} />,
+      title: '제휴 혜택',
+      description: '교육 / 건강 / 복지 후보',
+    },
+  ];
+
   return (
     <div className="grid gap-4">
       <section className="rounded-[32px] bg-[#e6f4f1] px-5 py-6">

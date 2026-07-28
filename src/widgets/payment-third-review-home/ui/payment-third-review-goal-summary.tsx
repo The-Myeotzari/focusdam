@@ -1,4 +1,4 @@
-import { Flag } from 'lucide-react';
+import { Award, Flag } from 'lucide-react';
 
 import { SiteButton } from '@/shared/ui';
 import type {
@@ -19,21 +19,38 @@ export function PaymentThirdReviewGoalSummary({
   items,
   overview,
 }: Props) {
+  const GoalIcon = overview.status === 'achieved' ? Award : Flag;
+
   return (
     <section aria-labelledby="spend-summary-title" className="grid gap-3">
       <h2 id="spend-summary-title" className="text-lg font-semibold leading-7 text-[#1a1c1e]">
         소비 요약
       </h2>
 
-      <article className="flex items-center justify-between gap-4 rounded-[24px] bg-white p-4 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+      <article
+        className={`flex items-center justify-between gap-4 rounded-[24px] p-4 shadow-[0_4px_12px_rgba(0,0,0,0.04)] ${
+          overview.status === 'achieved' ? 'bg-[#eef8f5]' : 'bg-white'
+        }`}
+      >
         <div className="flex min-w-0 items-center gap-3">
-          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#e0f1ff] text-[#3c5f7c]">
-            <Flag size={19} strokeWidth={2.1} aria-hidden="true" />
+          <span
+            className={`grid size-10 shrink-0 place-items-center rounded-full ${
+              overview.status === 'achieved'
+                ? 'bg-white text-[#2d6a4f]'
+                : 'bg-[#e0f1ff] text-[#3c5f7c]'
+            }`}
+          >
+            <GoalIcon size={19} strokeWidth={2.1} aria-hidden="true" />
           </span>
           <div className="min-w-0">
-            <p className="text-xs font-medium leading-5 text-[#72777e]">목표 금액</p>
+            <p className="truncate text-xs font-medium leading-5 text-[#72777e]">
+              {overview.goalName}
+            </p>
             <p className="text-[24px] font-semibold leading-8 text-[#1a1c1e]">
               {overview.goalAmount}
+            </p>
+            <p className="mt-0.5 text-xs leading-5 text-[#72777e]">
+              {overview.description}
             </p>
           </div>
         </div>
@@ -43,7 +60,7 @@ export function PaymentThirdReviewGoalSummary({
             variant="secondary"
             className="!min-h-10 !gap-1.5 !rounded-full !px-4 !text-xs !font-semibold"
           >
-            설정하기
+            {overview.actionLabel}
           </SiteButton>
           <SiteButton
             href={goalAchievementHref}

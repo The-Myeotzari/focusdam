@@ -1,11 +1,10 @@
-const CACHE_NAME = "focusdam-shell-v3";
+const CACHE_NAME = "focusdam-shell-v5";
 const ASSETS = [
   "/",
   "/manifest.webmanifest",
-  "/focusdam_128.png",
-  "/focusdam_180.png",
-  "/focusdam_192.png",
-  "/focusdam_512.png"
+  "/logo_128.png",
+  "/logo_192.png",
+  "/logo_512.png"
 ];
 
 self.addEventListener("install", (event) => {
@@ -30,6 +29,11 @@ self.addEventListener("fetch", (event) => {
 
   const requestUrl = new URL(event.request.url);
   if (requestUrl.origin !== self.location.origin) {
+    return;
+  }
+
+  // 사용자별 최신 데이터가 필요한 API 응답은 서비스 워커에 저장하지 않습니다.
+  if (requestUrl.pathname.startsWith("/api/")) {
     return;
   }
 

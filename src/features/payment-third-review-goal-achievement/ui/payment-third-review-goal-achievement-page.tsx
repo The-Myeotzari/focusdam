@@ -2,26 +2,47 @@
 
 import Link from 'next/link';
 import { useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { toPng } from 'html-to-image';
 import { Award, Download, ListChecks, Sparkles } from 'lucide-react';
 
 import {
+  formatPaymentReviewGoalAchievementDate,
   formatPaymentReviewWon,
   getPaymentReviewGoalAchievementTriggerLabel,
-  type PaymentReviewGoalAchievement,
 } from '@/entities/payment-third-review';
+import { paymentGoalAchievementDetailQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import { SiteTopBar } from '@/shared/ui';
 
 type Props = {
-  achievement: PaymentReviewGoalAchievement;
+  id: string;
 };
 
 // 결제 3심 저축 반영으로 목표를 달성했을 때 축하 화면을 렌더링합니다.
-export function PaymentThirdReviewGoalAchievementPage({ achievement }: Props) {
+export function PaymentThirdReviewGoalAchievementPage({ id }: Props) {
   const shareCardRef = useRef<HTMLElement>(null);
+  const achievementQuery = useQuery(paymentGoalAchievementDetailQueryOptions(id));
+  const achievement = achievementQuery.data?.item;
+
+  if (achievementQuery.isPending) {
+    return <GoalAchievementDetailState kind="loading" />;
+  }
+
+  if (achievementQuery.isError || !achievement) {
+    return (
+      <GoalAchievementDetailState
+        kind="error"
+        onRetry={() => achievementQuery.refetch()}
+      />
+    );
+  }
+
   const formattedTargetAmount = formatPaymentReviewWon(achievement.targetAmount);
   const formattedSavedAmount = formatPaymentReviewWon(achievement.savedAmount);
   const formattedAchievedAmount = formatPaymentReviewWon(achievement.achievedAmount);
+  const formattedAchievedAt = formatPaymentReviewGoalAchievementDate(
+    achievement.achievedAt,
+  );
   const triggerStatusLabel = getPaymentReviewGoalAchievementTriggerLabel(
     achievement.triggerStatus,
   );
@@ -81,7 +102,7 @@ export function PaymentThirdReviewGoalAchievementPage({ achievement }: Props) {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-sm font-semibold leading-6 text-[#3c5f7c]">
-                  {achievement.achievedAt}
+                  {formattedAchievedAt}
                 </p>
                 <h2 className="mt-1 text-[30px] font-semibold leading-[38px] text-[#1a1c1e]">
                   {achievement.goalName}
@@ -105,7 +126,7 @@ export function PaymentThirdReviewGoalAchievementPage({ achievement }: Props) {
               총 {achievement.savedReviewCount}번의 소비를 목표로 바꿨어요.
             </p>
             <div className="mt-5 grid gap-3 border-t border-[#edf0f2] pt-5">
-              <TicketSummaryRow label="달성일" value={achievement.achievedAt} />
+              <TicketSummaryRow label="달성일" value={formattedAchievedAt} />
               <TicketSummaryRow label="달성 방식" value={triggerStatusLabel} />
             </div>
           </div>
@@ -166,6 +187,52 @@ export function PaymentThirdReviewGoalAchievementPage({ achievement }: Props) {
             }
           }
         `}</style>
+      </main>
+    </>
+  );
+}
+
+function GoalAchievementDetailState({
+  kind,
+  onRetry,
+}: {
+  kind: 'loading' | 'error';
+  onRetry?: () => void;
+}) {
+  return (
+    <>
+      <SiteTopBar
+        title="목표 달성"
+        backHref="/payment-third-review"
+        skipHref="/payment-third-review"
+      />
+      <main className="mx-auto flex min-h-[calc(100svh-56px)] w-full max-w-[430px] flex-col px-5 py-8">
+        {kind === 'loading' ? (
+          <div
+            aria-label="목표 달성 기록을 불러오는 중"
+            className="animate-pulse rounded-[32px] bg-white p-6"
+          >
+            <span className="mx-auto block size-20 rounded-full bg-[#edf0f2]" />
+            <span className="mx-auto mt-6 block h-7 w-36 rounded bg-[#edf0f2]" />
+            <span className="mt-10 block h-64 rounded-[24px] bg-[#f1f2f3]" />
+          </div>
+        ) : (
+          <div
+            role="alert"
+            className="rounded-[24px] bg-white px-5 py-10 text-center shadow-[0_4px_12px_rgba(0,0,0,0.04)]"
+          >
+            <p className="text-[16px] font-semibold leading-7 text-[#1a1c1e]">
+              목표 달성 기록을 불러오지 못했어요.
+            </p>
+            <button
+              type="button"
+              onClick={onRetry}
+              className="mt-4 min-h-11 rounded-full bg-[#3c5f7c] px-5 text-sm font-semibold text-white"
+            >
+              다시 불러오기
+            </button>
+          </div>
+        )}
       </main>
     </>
   );

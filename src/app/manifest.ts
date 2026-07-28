@@ -12,19 +12,19 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#3c5f7c",
     icons: [
       {
-        src: "/focusdam_128.png",
+        src: "/logo_128.png",
         sizes: "128x128",
         type: "image/png",
         purpose: "any"
       },
       {
-        src: "/focusdam_192.png",
+        src: "/logo_192.png",
         sizes: "192x192",
         type: "image/png",
         purpose: "maskable"
       },
       {
-        src: "/focusdam_512.png",
+        src: "/logo_512.png",
         sizes: "512x512",
         type: "image/png",
         purpose: "maskable"

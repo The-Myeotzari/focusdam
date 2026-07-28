@@ -64,9 +64,8 @@ const paymentReviewStatusMeta = {
   },
 } satisfies Record<PaymentReviewHistoryItem['status'], PaymentReviewFollowUpMeta>;
 
-// 결제 3심 세부 상태에 맞는 배지 메타를 반환합니다.
 export function getPaymentReviewFollowUpMeta(
-  item: PaymentReviewHistoryItem,
+  item: Pick<PaymentReviewHistoryItem, 'status'>,
 ): PaymentReviewFollowUpMeta {
   return paymentReviewStatusMeta[item.status];
 }

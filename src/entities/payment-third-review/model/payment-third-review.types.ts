@@ -4,7 +4,9 @@ export type PaymentReviewReminderStatus = 'scheduled' | 'required' | 'completed'
 
 export type PaymentReviewReminderDecision = 'buy' | 'cancel' | 'hold';
 
-export type PaymentReviewOutcomeType = 'buy' | 'hold' | 'save';
+export const PAYMENT_REVIEW_OUTCOME_TYPES = ['buy', 'hold', 'save'] as const;
+
+export type PaymentReviewOutcomeType = (typeof PAYMENT_REVIEW_OUTCOME_TYPES)[number];
 
 export type PaymentReviewReminderCompletedType = 'after-first-hold' | 'after-rehold';
 

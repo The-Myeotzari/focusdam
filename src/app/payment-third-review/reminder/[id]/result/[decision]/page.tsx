@@ -1,15 +1,16 @@
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import type { PaymentReviewReminderDecision } from '@/entities/payment-third-review';
-import {
-  getPaymentReviewHistoryItemById,
-  PAYMENT_REVIEW_HISTORY_ITEMS,
-} from '@/entities/payment-third-review';
+import { paymentThirdReviewDetailQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
+import { getPaymentThirdReviewDetailServer } from '@/entities/payment-third-review/api/payment-third-review.server';
+import { parsePaymentThirdReviewListFilter } from '@/entities/payment-third-review/model/payment-third-review-list-filter';
 import { PaymentThirdReviewReminderResultPage } from '@/features/payment-third-review-reminder';
 
 type Props = {
   params: Promise<{ decision: string; id: string }>;
+  searchParams: Promise<{ filter?: string | string[] }>;
 };
 
 const reminderDecisions: PaymentReviewReminderDecision[] = ['buy', 'cancel', 'hold'];
@@ -18,21 +19,35 @@ export const metadata: Metadata = {
   title: '결제 3심 리마인드 제출',
 };
 
-export function generateStaticParams() {
-  return PAYMENT_REVIEW_HISTORY_ITEMS.filter((item) => item.followUpType === 'reminder').flatMap(
-    (item) => reminderDecisions.map((decision) => ({ decision, id: item.id })),
-  );
-}
-
-export default async function Page({ params }: Props) {
+export default async function Page({ params, searchParams }: Props) {
   const { decision, id } = await params;
-  const item = getPaymentReviewHistoryItemById(id);
+  const { filter } = await searchParams;
+  const listFilter = parsePaymentThirdReviewListFilter(filter);
 
-  if (!item || item.followUpType !== 'reminder' || !isReminderDecision(decision)) {
+  if (!isReminderDecision(decision)) {
     notFound();
   }
 
-  return <PaymentThirdReviewReminderResultPage decision={decision} item={item} />;
+  const response = await getPaymentThirdReviewDetailServer(id).catch(() => undefined);
+
+  if (response === null) {
+    notFound();
+  }
+
+  const queryClient = new QueryClient();
+  if (response) {
+    queryClient.setQueryData(paymentThirdReviewDetailQueryOptions(id).queryKey, response);
+  }
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <PaymentThirdReviewReminderResultPage
+        decision={decision}
+        id={id}
+        listFilter={listFilter}
+      />
+    </HydrationBoundary>
+  );
 }
 
 // 리마인드 제출 경로의 decision 파라미터가 허용된 값인지 확인합니다.

@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 type Props = {
   isFinal: boolean;
   isNextDisabled?: boolean;
+  isSubmitting?: boolean;
   nextHref: string;
   nextLabel: string;
   onSubmit: () => void;
@@ -22,6 +23,7 @@ const disabledPrimaryActionClassName =
 export function CreatePaymentThirdReviewFooter({
   isFinal,
   isNextDisabled = false,
+  isSubmitting = false,
   nextHref,
   nextLabel,
   onSubmit,
@@ -37,10 +39,14 @@ export function CreatePaymentThirdReviewFooter({
           <button
             type="button"
             onClick={onSubmit}
-            disabled={isNextDisabled}
-            className={isNextDisabled ? disabledPrimaryActionClassName : primaryActionClassName}
+            disabled={isNextDisabled || isSubmitting}
+            className={
+              isNextDisabled || isSubmitting
+                ? disabledPrimaryActionClassName
+                : primaryActionClassName
+            }
           >
-            {nextLabel}
+            {isSubmitting ? '저장 중...' : nextLabel}
             <ArrowRight size={18} strokeWidth={2.2} aria-hidden="true" />
           </button>
         ) : isNextDisabled ? (

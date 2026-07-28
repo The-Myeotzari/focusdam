@@ -20,7 +20,10 @@ describe('Api', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(Api.get('/example', responseSchema)).resolves.toEqual({ ok: true });
-    expect(fetchMock).toHaveBeenCalledWith('/api/example', { method: 'GET' });
+    expect(fetchMock).toHaveBeenCalledWith('/api/example', {
+      cache: 'no-store',
+      method: 'GET',
+    });
   });
 
   it('preserves a valid standard error response', async () => {
