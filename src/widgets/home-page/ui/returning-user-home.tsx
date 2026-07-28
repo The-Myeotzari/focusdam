@@ -45,7 +45,7 @@ export function ReturningUserHome() {
           </p>
 
           <SiteButton
-            href="/focus/next-action"
+            href="/focus/actions"
             className="relative mt-6 !min-h-[50px] !w-fit !gap-2 !px-7 !text-xs !font-semibold"
           >
             Start Now

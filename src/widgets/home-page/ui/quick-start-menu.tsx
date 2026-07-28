@@ -7,6 +7,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import Link from 'next/link';
+import React from 'react';
 
 type QuickStartItem = {
   title: string;
@@ -23,7 +24,7 @@ const QUICK_START_ITEMS: QuickStartItem[] = [
     description: '실행',
     icon: Zap,
     iconClassName: 'bg-[#eeeae7] text-[#8a6221]',
-    href: '/starter/new',
+    href: '/focus/actions',
   },
   {
     title: 'Emotion',

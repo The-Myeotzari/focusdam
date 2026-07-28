@@ -3,6 +3,7 @@
 import { CalendarDays, Home, Settings, Timer, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import React from 'react';
 
 type BottomNavItem = {
   href: string;
@@ -25,10 +26,10 @@ const BOTTOM_NAV_ITEMS: BottomNavItem[] = [
     label: '기록',
   },
   {
-    href: '/focus/current?duration=10',
+    href: '/focus/actions',
     icon: Timer,
-    isActive: (pathname) => pathname.startsWith('/focus/current'),
-    label: '타이머',
+    isActive: (pathname) => pathname.startsWith('/focus'),
+    label: '집중',
   },
   {
     href: '/settings',
