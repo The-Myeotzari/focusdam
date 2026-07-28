@@ -48,7 +48,7 @@ export function OnboardingStartPage() {
             시작하기
           </SiteButton>
           <SiteButton
-            href="/onboarding/account"
+            href="/onboarding/account?mode=login"
             variant="secondary"
             className="!mt-4 !min-h-14 !w-[280px] !max-w-full !rounded-full !bg-[rgba(221,227,235,0.3)] !px-0 !py-4 !text-[16px] !font-medium !leading-6 !text-[#3c5f7c] !shadow-[0_10px_30px_-5px_rgba(107,142,173,0.06)]"
           >

@@ -1102,6 +1102,10 @@ export type Database = {
         }
         Returns: Json
       }
+      delete_current_user_account: {
+        Args: never
+        Returns: undefined
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }

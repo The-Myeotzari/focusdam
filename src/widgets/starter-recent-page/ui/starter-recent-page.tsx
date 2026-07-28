@@ -10,8 +10,7 @@ import {
   Timer
 } from "lucide-react";
 import { SiteTopBar } from "@/shared/ui";
-
-const RECENT_STARTER_ACTIONS_STORAGE_KEY = "focusdam:recent-starter-actions";
+import { writeStarterActionDraft } from "@/shared/lib/starter-action-draft";
 
 const actions = [
   {
@@ -29,29 +28,92 @@ const actions = [
 ] as const;
 
 export function StarterRecentPage() {
-  const [savedActions, setSavedActions] = useState<string[]>([]);
+  const [savedActions, setSavedActions] = useState<
+    Array<{
+      id: string;
+      title: string;
+      subtitle: string | null;
+      plannedDurationMinutes: number;
+      recommendedDurationMinutes: number;
+    }>
+  >([]);
   const [selectedAction, setSelectedAction] = useState<string>(actions[0].title);
   const recentActions = [
-    ...savedActions.map((title) => ({
-      title,
+    ...savedActions.map((action) => ({
+      ...action,
       icon: ListTodo
     })),
-    ...actions.filter((action) => !savedActions.includes(action.title))
+    ...actions
+      .filter((action) => !savedActions.some((savedAction) => savedAction.title === action.title))
+      .map((action) => ({
+        ...action,
+        id: action.title,
+        subtitle: "최근 추천 행동",
+        plannedDurationMinutes: 25,
+        recommendedDurationMinutes: 10
+      }))
   ];
 
   useEffect(() => {
-    try {
-      const storedActions = window.localStorage.getItem(RECENT_STARTER_ACTIONS_STORAGE_KEY);
-      const parsedActions = storedActions ? (JSON.parse(storedActions) as string[]) : [];
+    const controller = new AbortController();
 
-      if (parsedActions.length > 0) {
-        setSavedActions(parsedActions);
-        setSelectedAction(parsedActions[0]);
+    async function loadRecentActions() {
+      try {
+        const response = await fetch("/api/starter/actions?kind=recent&limit=10", {
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          throw new Error("최근 행동 조회에 실패했습니다.");
+        }
+
+        const result = (await response.json()) as {
+          actions: Array<{
+            id: string;
+            title: string;
+            subtitle: string | null;
+            plannedDurationMinutes: number;
+            recommendedDurationMinutes: number;
+          }>;
+        };
+        setSavedActions(result.actions);
+
+        if (result.actions[0]) {
+          setSelectedAction(result.actions[0].title);
+        }
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          console.error(error);
+        }
       }
-    } catch {
-      setSavedActions([]);
     }
+
+    void loadRecentActions();
+
+    return () => controller.abort();
   }, []);
+
+  const saveSelectedAction = () => {
+    const action = recentActions.find((candidate) => candidate.title === selectedAction);
+
+    if (!action) {
+      return;
+    }
+
+    writeStarterActionDraft({
+      title: action.title,
+      subtitle: action.subtitle,
+      target: null,
+      microAction: null,
+      verb: null,
+      category: null,
+      templateId: null,
+      source: "recent",
+      plannedDurationMinutes: action.plannedDurationMinutes,
+      recommendedDurationMinutes: action.recommendedDurationMinutes,
+      isFavorite: false
+    });
+  };
 
   return (
     <main className="relative isolate mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col overflow-hidden bg-[#faf9fc] pb-[156px] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
@@ -78,7 +140,7 @@ export function StarterRecentPage() {
 
             return (
               <button
-                key={`${action.title}-${savedActions.includes(action.title) ? "saved" : "default"}`}
+                key={action.id}
                 type="button"
                 aria-pressed={isSelected}
                 onClick={() => setSelectedAction(action.title)}
@@ -118,6 +180,7 @@ export function StarterRecentPage() {
       <div className="fixed bottom-[var(--bottom-nav-height)] left-1/2 z-[2] flex w-full max-w-[390px] -translate-x-1/2 bg-gradient-to-t from-[#faf9fc] via-[#faf9fc] to-[#faf9fc00] px-5 pb-6 pt-6">
         <Link
           href="/starter/time"
+          onClick={saveSelectedAction}
           className="flex h-16 w-full items-center justify-center gap-2 rounded-full bg-[#3c5f7c] text-[18px] font-medium leading-7 text-white shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.1)]"
         >
           이 행동으로 시작

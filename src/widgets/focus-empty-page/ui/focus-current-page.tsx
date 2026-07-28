@@ -1,58 +1,135 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { RefreshCcw, Wind } from "lucide-react";
 import { SiteTopBar } from "@/shared/ui";
+import {
+  readStoredFocusSession,
+  writeStoredFocusSession
+} from "@/shared/lib/focus-session-storage";
 
 const DEFAULT_DURATION_MINUTES = 10;
-const ACTIVE_STARTER_ACTION_STORAGE_KEY = "focusdam:active-starter-action";
 
 export function FocusCurrentPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const duration = Number(searchParams.get("duration") ?? DEFAULT_DURATION_MINUTES);
+  const plannedDuration = Number(searchParams.get("plannedDuration") ?? duration);
+  const starterActionId = searchParams.get("starterActionId");
+  const scheduleId = searchParams.get("scheduleId");
   const title = searchParams.get("title") ?? "보고서 목차만 정리하기";
   const subtitle = searchParams.get("subtitle") ?? "초안만 만들기";
   const shouldResume = searchParams.get("resume") === "1";
   const [remainingSeconds, setRemainingSeconds] = useState(Math.max(duration * 60, 0));
+  const [sessionError, setSessionError] = useState<string | null>(null);
+  const hasInitialized = useRef(false);
+  const hasEnteredOvertime = useRef(false);
   const remainingTime = formatRemainingTime(remainingSeconds);
 
   useEffect(() => {
-    if (shouldResume) {
-      try {
-        const activeActionValue = window.localStorage.getItem(ACTIVE_STARTER_ACTION_STORAGE_KEY);
-        const activeAction = activeActionValue
-          ? (JSON.parse(activeActionValue) as { startedAt?: string })
-          : null;
-        const startedAt = activeAction?.startedAt ? Date.parse(activeAction.startedAt) : Number.NaN;
+    if (hasInitialized.current) {
+      return;
+    }
 
-        if (Number.isFinite(startedAt)) {
-          const elapsedSeconds = Math.max(Math.floor((Date.now() - startedAt) / 1000), 0);
-          setRemainingSeconds(Math.max(duration * 60 - elapsedSeconds, 0));
-          return;
-        }
-      } catch {
-        // 저장된 진행 상태가 손상된 경우 새 타이머로 시작합니다.
+    hasInitialized.current = true;
+
+    if (shouldResume) {
+      const activeAction = readStoredFocusSession();
+      const startedAt = activeAction?.startedAt ? Date.parse(activeAction.startedAt) : Number.NaN;
+
+      if (Number.isFinite(startedAt)) {
+        const elapsedSeconds = Math.max(Math.floor((Date.now() - startedAt) / 1000), 0);
+        setRemainingSeconds(Math.max(duration * 60 - elapsedSeconds, 0));
+        return;
       }
     }
 
     setRemainingSeconds(Math.max(duration * 60, 0));
-    window.localStorage.setItem(
-      ACTIVE_STARTER_ACTION_STORAGE_KEY,
-      JSON.stringify({
-        title,
-        subtitle,
-        duration,
-        recommendedMinutes: duration,
-        startedAt: new Date().toISOString()
-      })
-    );
-  }, [duration, shouldResume, subtitle, title]);
+    const localStartedAt = new Date().toISOString();
+    writeStoredFocusSession({
+      sessionId: null,
+      starterActionId,
+      scheduleId,
+      title,
+      subtitle,
+      duration,
+      plannedDurationMinutes: plannedDuration,
+      recommendedMinutes: duration,
+      startedAt: localStartedAt
+    });
+
+    async function createSession() {
+      try {
+        const response = await fetch("/api/focus/sessions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            starterActionId,
+            scheduleId,
+            title,
+            subtitle,
+            plannedDurationMinutes: plannedDuration,
+            recommendedDurationMinutes: duration
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error("집중 세션 생성에 실패했습니다.");
+        }
+
+        const result = (await response.json()) as {
+          session: { id: string; startedAt: string };
+        };
+        writeStoredFocusSession({
+          sessionId: result.session.id,
+          starterActionId,
+          scheduleId,
+          title,
+          subtitle,
+          duration,
+          plannedDurationMinutes: plannedDuration,
+          recommendedMinutes: duration,
+          startedAt: result.session.startedAt
+        });
+      } catch (error) {
+        console.error(error);
+        setSessionError("진행 상태를 서버에 저장하지 못했어요.");
+      }
+    }
+
+    void createSession();
+  }, [
+    duration,
+    plannedDuration,
+    scheduleId,
+    shouldResume,
+    starterActionId,
+    subtitle,
+    title
+  ]);
 
   useEffect(() => {
     if (remainingSeconds <= 0) {
+      if (hasEnteredOvertime.current) {
+        return;
+      }
+
+      hasEnteredOvertime.current = true;
+      const activeSession = readStoredFocusSession();
+
+      if (activeSession?.sessionId) {
+        void fetch(`/api/focus/sessions/${activeSession.sessionId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            status: "overtime",
+            eventType: "overtime_started"
+          })
+        });
+      }
+
       router.push(`/focus/overtime?duration=${duration}&overrunSeconds=324`);
       return;
     }
@@ -106,6 +183,11 @@ export function FocusCurrentPage() {
         <h2 className="m-0 mt-12 text-center text-[16px] font-medium leading-6 text-[#3c5f7c]">
           {title}
         </h2>
+        {sessionError ? (
+          <p role="alert" className="m-0 mt-3 text-center text-[13px] font-medium text-[#ba1a1a]">
+            {sessionError}
+          </p>
+        ) : null}
 
         <section className="mt-20 flex w-full max-w-[320px] flex-col items-center gap-3" aria-label="빠른 도움">
           <p className="m-0 text-[16px] font-medium uppercase leading-6 tracking-[0.8px] text-[#72777e]">

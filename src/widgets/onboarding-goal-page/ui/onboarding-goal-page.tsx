@@ -1,6 +1,10 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { useState } from "react";
 import { ArrowRight, Hand, Heart, Sparkles } from "lucide-react";
 import { SiteButton, SiteTopBar } from "@/shared/ui";
+import { updateOnboardingDraft } from "@/shared/lib/onboarding-draft";
 
 const goals = [
   {
@@ -30,6 +34,8 @@ const goals = [
 ] as const;
 
 export function OnboardingGoalPage() {
+  const [selectedGoal, setSelectedGoal] = useState<string>(goals[0].title);
+
   return (
     <main
       aria-labelledby="goal-title"
@@ -62,7 +68,12 @@ export function OnboardingGoalPage() {
 
         <section className="flex w-full flex-col items-start gap-4 pb-12" aria-label="첫 목표 추천">
           {goals.map((goal) => (
-            <GoalCard key={goal.title} {...goal} />
+            <GoalCard
+              key={goal.title}
+              {...goal}
+              selected={selectedGoal === goal.title}
+              onClick={() => setSelectedGoal(goal.title)}
+            />
           ))}
         </section>
 
@@ -71,6 +82,7 @@ export function OnboardingGoalPage() {
         <div className="flex h-[108px] w-full flex-col items-start pt-5">
           <SiteButton
             href="/onboarding/notifications"
+            onClick={() => updateOnboardingDraft({ goal: selectedGoal })}
             className="!flex !h-[68px] !min-h-[68px] !w-full !items-center !justify-center !gap-3 !rounded-full !bg-[#3c5f7c] !px-0 !py-5 !text-[18px] !font-medium !leading-7 !text-white !shadow-[0_20px_25px_-5px_rgba(60,95,124,0.2),0_8px_10px_-6px_rgba(60,95,124,0.2)]"
           >
             <span>이 목표로 시작</span>
@@ -88,7 +100,9 @@ function GoalCard({
   icon,
   iconClassName,
   eyebrowClassName,
-  titleClassName
+  titleClassName,
+  selected,
+  onClick
 }: {
   eyebrow: string;
   title: string;
@@ -96,9 +110,19 @@ function GoalCard({
   iconClassName: string;
   eyebrowClassName: string;
   titleClassName: string;
+  selected: boolean;
+  onClick: () => void;
 }) {
   return (
-    <article className="box-border flex min-h-[100px] w-full flex-col items-start rounded-[28px] bg-[#f4f3f6] p-5 sm:rounded-[32px] sm:p-6">
+    <button
+      type="button"
+      aria-pressed={selected}
+      onClick={onClick}
+      className={[
+        "box-border flex min-h-[100px] w-full flex-col items-start rounded-[28px] bg-[#f4f3f6] p-5 text-left sm:rounded-[32px] sm:p-6",
+        selected ? "border-2 border-[#3c5f7c]" : "border border-transparent"
+      ].join(" ")}
+    >
       <div className="flex h-[50px] w-full items-center gap-4">
         <span className={`flex h-12 w-12 flex-[0_0_48px] items-center justify-center rounded-full ${iconClassName}`} aria-hidden="true">
           {icon}
@@ -112,6 +136,6 @@ function GoalCard({
           </h3>
         </div>
       </div>
-    </article>
+    </button>
   );
 }

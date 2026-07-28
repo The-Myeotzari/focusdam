@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Circle, Search, Zap } from "lucide-react";
 import { SiteTopBar } from "@/shared/ui";
+import { writeStarterActionDraft } from "@/shared/lib/starter-action-draft";
 
 const categories = ["업무", "집안일", "공부", "소비"] as const;
 
-const templates = [
+const fallbackTemplates = [
   {
     label: "완성보다 착수",
     title: "보고서 목차만 정리하기",
@@ -32,7 +33,100 @@ const templates = [
 
 export function StarterTemplatesPage() {
   const [selectedCategory, setSelectedCategory] = useState<(typeof categories)[number]>("업무");
-  const [selectedTemplate, setSelectedTemplate] = useState<string>(templates[0].title);
+  const [selectedTemplate, setSelectedTemplate] = useState<string>(fallbackTemplates[0].title);
+  const [search, setSearch] = useState("");
+  const [savedTemplates, setSavedTemplates] = useState<
+    Array<{
+      id: string;
+      category: string;
+      label: string | null;
+      title: string;
+      description: string | null;
+      difficulty: string | null;
+      defaultDurationMinutes: number;
+      recommendedDurationMinutes: number;
+    }>
+  >([]);
+  const templates = useMemo(() => {
+    const source =
+      savedTemplates.length > 0
+        ? savedTemplates
+        : fallbackTemplates.map((template) => ({
+            ...template,
+            id: template.title,
+            category: "업무",
+            description: null,
+            defaultDurationMinutes: 25,
+            recommendedDurationMinutes: 10
+          }));
+    const normalizedSearch = search.trim().toLocaleLowerCase("ko-KR");
+    const hasSelectedCategory = savedTemplates.some(
+      (template) => template.category === selectedCategory
+    );
+
+    return source.filter(
+      (template) =>
+        (!normalizedSearch ||
+          template.title.toLocaleLowerCase("ko-KR").includes(normalizedSearch)) &&
+        (savedTemplates.length === 0 ||
+          !hasSelectedCategory ||
+          template.category === selectedCategory)
+    );
+  }, [savedTemplates, search, selectedCategory]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadTemplates() {
+      try {
+        const response = await fetch("/api/starter/templates", { signal: controller.signal });
+
+        if (!response.ok) {
+          throw new Error("템플릿 조회에 실패했습니다.");
+        }
+
+        const result = (await response.json()) as { templates: typeof savedTemplates };
+        setSavedTemplates(result.templates);
+
+        if (result.templates[0]) {
+          setSelectedTemplate(result.templates[0].title);
+          if (categories.includes(result.templates[0].category as (typeof categories)[number])) {
+            setSelectedCategory(result.templates[0].category as (typeof categories)[number]);
+          }
+        }
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          console.error(error);
+        }
+      }
+    }
+
+    void loadTemplates();
+
+    return () => controller.abort();
+  }, []);
+
+  const saveSelectedTemplate = () => {
+    const template = templates.find((candidate) => candidate.title === selectedTemplate);
+
+    if (!template) {
+      return;
+    }
+
+    writeStarterActionDraft({
+      title: template.title,
+      subtitle: template.description ?? template.label,
+      target: null,
+      microAction: null,
+      verb: null,
+      category: template.category,
+      templateId: savedTemplates.length > 0 ? template.id : null,
+      source: "template",
+      plannedDurationMinutes: template.defaultDurationMinutes,
+      recommendedDurationMinutes: template.recommendedDurationMinutes,
+      isFavorite: false
+    });
+  };
 
   return (
     <main className="relative isolate mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col overflow-hidden bg-[#faf9fc] pb-[176px] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
@@ -48,6 +142,8 @@ export function StarterTemplatesPage() {
           />
           <input
             aria-label="템플릿 검색"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
             placeholder="검색 예: 보고서, 메일, 정리"
             className="h-full w-full bg-transparent text-[16px] font-medium leading-[19px] text-[#1a1c1e] outline-none placeholder:text-[#6b7280]"
           />
@@ -119,6 +215,7 @@ export function StarterTemplatesPage() {
       <div className="fixed bottom-[var(--bottom-nav-height)] left-1/2 z-[3] flex w-full max-w-[390px] -translate-x-1/2 flex-col gap-2 bg-gradient-to-t from-[#faf9fc] via-[#faf9fc]/95 to-[#faf9fc00] px-5 pb-8 pt-6">
         <Link
           href="/starter/time"
+          onClick={saveSelectedTemplate}
           className="flex h-14 w-full items-center justify-center rounded-full bg-[#3c5f7c] text-[16px] font-medium leading-6 text-white shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.1)]"
         >
           이 템플릿 선택

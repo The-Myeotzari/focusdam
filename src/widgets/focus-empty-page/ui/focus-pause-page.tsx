@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   Frown,
@@ -9,6 +9,7 @@ import {
   Pause
 } from "lucide-react";
 import { SiteTopBar } from "@/shared/ui";
+import { readStoredFocusSession } from "@/shared/lib/focus-session-storage";
 
 const pauseReasons = [
   {
@@ -34,7 +35,36 @@ const pauseReasons = [
 type PauseReasonTitle = (typeof pauseReasons)[number]["title"];
 
 export function FocusPausePage() {
+  const router = useRouter();
   const [selectedReason, setSelectedReason] = useState<PauseReasonTitle>(pauseReasons[0].title);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const leavePausePage = async (nextPath: string) => {
+    if (isSaving) {
+      return;
+    }
+
+    setIsSaving(true);
+    const session = readStoredFocusSession();
+
+    if (session?.sessionId) {
+      try {
+        await fetch(`/api/focus/sessions/${session.sessionId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            status: "paused",
+            eventType: "paused",
+            eventReason: selectedReason
+          })
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    router.push(nextPath);
+  };
 
   return (
     <main className="relative isolate mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col overflow-y-auto bg-[#faf9fc] pb-8 font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
@@ -90,18 +120,26 @@ export function FocusPausePage() {
         </section>
 
         <section className="mt-16 flex flex-col gap-4">
-          <Link
-            href="/focus/current?duration=3"
+          <button
+            type="button"
+            disabled={isSaving}
+            onClick={() =>
+              void leavePausePage(
+                `/focus/current?duration=3&plannedDuration=3&title=${encodeURIComponent("3분으로 줄인 행동")}&subtitle=${encodeURIComponent(selectedReason)}`
+              )
+            }
             className="flex h-[66px] w-full items-center justify-center rounded-[32px] bg-[#3c5f7c] text-[18px] font-medium leading-7 text-white shadow-[0_12px_24px_rgba(60,95,124,0.14)]"
           >
             3분 행동으로 재시작
-          </Link>
-          <Link
-            href="/focus/emotion-reset"
+          </button>
+          <button
+            type="button"
+            disabled={isSaving}
+            onClick={() => void leavePausePage("/focus/emotion-reset")}
             className="flex h-[66px] w-full items-center justify-center rounded-[32px] bg-[#dde3eb] text-[18px] font-medium leading-7 text-[#5f656c]"
           >
             감정 리셋 먼저
-          </Link>
+          </button>
         </section>
       </section>
 

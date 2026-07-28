@@ -5,11 +5,16 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Clock3, FileText, ListTodo, Timer } from "lucide-react";
 import { SiteTopBar } from "@/shared/ui";
+import {
+  readStoredFocusSession,
+  writeStoredFocusSession
+} from "@/shared/lib/focus-session-storage";
 
-const ACTIVE_STARTER_ACTION_STORAGE_KEY = "focusdam:active-starter-action";
 const SCHEDULED_STARTER_ACTIONS_STORAGE_KEY = "focusdam:scheduled-starter-actions";
 
 type NextAction = {
+  starterActionId?: string | null;
+  scheduleId?: string | null;
   title: string;
   subtitle: string;
   duration: number;
@@ -38,6 +43,8 @@ export function FocusNextActionPage() {
   const requestedSubtitle = searchParams.get("subtitle");
   const requestedDuration = searchParams.get("duration");
   const requestedRecommended = searchParams.get("recommended");
+  const requestedStarterActionId = searchParams.get("starterActionId");
+  const requestedScheduleId = searchParams.get("scheduleId");
   const [action, setAction] = useState<NextAction>(DEFAULT_ACTION);
   const [activeAction, setActiveAction] = useState<ActiveAction | null>(null);
   const [hasResolvedStoredAction, setHasResolvedStoredAction] = useState(false);
@@ -45,6 +52,8 @@ export function FocusNextActionPage() {
   useEffect(() => {
     if (requestedTitle) {
       setAction({
+        starterActionId: requestedStarterActionId,
+        scheduleId: requestedScheduleId,
         title: requestedTitle,
         subtitle: requestedSubtitle ?? DEFAULT_ACTION.subtitle,
         duration: parsePositiveNumber(requestedDuration, DEFAULT_ACTION.duration),
@@ -55,12 +64,119 @@ export function FocusNextActionPage() {
       return;
     }
 
-    const preferredAction = getPreferredStoredAction();
+    let canceled = false;
 
-    setAction(preferredAction.action);
-    setActiveAction(preferredAction.activeAction);
-    setHasResolvedStoredAction(true);
-  }, [requestedDuration, requestedRecommended, requestedSubtitle, requestedTitle]);
+    async function resolvePreferredAction() {
+      try {
+        const response = await fetch("/api/focus/sessions");
+
+        if (response.ok) {
+          const result = (await response.json()) as {
+            session: {
+              id: string;
+              starterActionId: string | null;
+              scheduleId: string | null;
+              title: string;
+              subtitle: string | null;
+              plannedDurationMinutes: number;
+              recommendedDurationMinutes: number | null;
+              startedAt: string;
+            } | null;
+          };
+
+          if (result.session && !canceled) {
+            const runningAction: ActiveAction = {
+              starterActionId: result.session.starterActionId,
+              scheduleId: result.session.scheduleId,
+              title: result.session.title,
+              subtitle: result.session.subtitle ?? "진행 중인 행동",
+              duration: result.session.plannedDurationMinutes,
+              recommended:
+                result.session.recommendedDurationMinutes ?? result.session.plannedDurationMinutes,
+              startedAt: result.session.startedAt
+            };
+            writeStoredFocusSession({
+              sessionId: result.session.id,
+              starterActionId: result.session.starterActionId,
+              scheduleId: result.session.scheduleId,
+              title: result.session.title,
+              subtitle: result.session.subtitle,
+              duration: runningAction.recommended,
+              plannedDurationMinutes: runningAction.duration,
+              recommendedMinutes: runningAction.recommended,
+              startedAt: result.session.startedAt
+            });
+            setAction(runningAction);
+            setActiveAction(runningAction);
+            setHasResolvedStoredAction(true);
+            return;
+          }
+        }
+
+        const from = new Date();
+        from.setHours(0, 0, 0, 0);
+        const to = new Date(from);
+        to.setDate(to.getDate() + 14);
+        const scheduleParams = new URLSearchParams({
+          from: from.toISOString(),
+          to: to.toISOString()
+        });
+        const schedulesResponse = await fetch(
+          `/api/starter/schedules?${scheduleParams.toString()}`
+        );
+
+        if (schedulesResponse.ok) {
+          const schedulesResult = (await schedulesResponse.json()) as {
+            schedules: Array<{
+              id: string;
+              starterActionId: string;
+              title: string;
+              subtitle: string | null;
+              plannedDurationMinutes: number;
+              recommendedDurationMinutes: number;
+            }>;
+          };
+          const nextSchedule = schedulesResult.schedules[0];
+
+          if (nextSchedule && !canceled) {
+            setAction({
+              starterActionId: nextSchedule.starterActionId,
+              scheduleId: nextSchedule.id,
+              title: nextSchedule.title,
+              subtitle: nextSchedule.subtitle ?? DEFAULT_ACTION.subtitle,
+              duration: nextSchedule.plannedDurationMinutes,
+              recommended: nextSchedule.recommendedDurationMinutes
+            });
+            setActiveAction(null);
+            setHasResolvedStoredAction(true);
+            return;
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+
+      if (!canceled) {
+        const preferredAction = getPreferredStoredAction();
+        setAction(preferredAction.action);
+        setActiveAction(preferredAction.activeAction);
+        setHasResolvedStoredAction(true);
+      }
+    }
+
+    void resolvePreferredAction();
+
+    return () => {
+      canceled = true;
+    };
+  }, [
+    requestedDuration,
+    requestedRecommended,
+    requestedScheduleId,
+    requestedStarterActionId,
+    requestedSubtitle,
+    requestedTitle
+  ]);
 
   if (!requestedTitle && !hasResolvedStoredAction) {
     return <FocusActionLoadingShell />;
@@ -71,7 +187,22 @@ export function FocusNextActionPage() {
   }
 
   const { title, subtitle, duration, recommended } = action;
-  const startHref = `/focus/current?duration=${recommended}&title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent(subtitle)}`;
+  const startParams = new URLSearchParams({
+    duration: `${recommended}`,
+    plannedDuration: `${duration}`,
+    title,
+    subtitle
+  });
+
+  if (action.starterActionId) {
+    startParams.set("starterActionId", action.starterActionId);
+  }
+
+  if (action.scheduleId) {
+    startParams.set("scheduleId", action.scheduleId);
+  }
+
+  const startHref = `/focus/current?${startParams.toString()}`;
 
   return (
     <main className="relative isolate mx-auto flex min-h-[100svh] w-full max-w-[var(--page-max-width)] flex-col overflow-hidden bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
@@ -165,8 +296,25 @@ function ActiveActionResumePage({ action }: { action: ActiveAction }) {
   const progress = totalSeconds > 0 ? remainingSeconds / totalSeconds : 0;
   const radius = 112;
   const circumference = 2 * Math.PI * radius;
-  const resumeHref = `/focus/current?resume=1&duration=${action.recommended}&title=${encodeURIComponent(action.title)}&subtitle=${encodeURIComponent(action.subtitle)}`;
-  const restartHref = `/focus/current?duration=${action.recommended}&title=${encodeURIComponent(action.title)}&subtitle=${encodeURIComponent(action.subtitle)}`;
+  const baseParams = new URLSearchParams({
+    duration: `${action.recommended}`,
+    plannedDuration: `${action.duration}`,
+    title: action.title,
+    subtitle: action.subtitle
+  });
+
+  if (action.starterActionId) {
+    baseParams.set("starterActionId", action.starterActionId);
+  }
+
+  if (action.scheduleId) {
+    baseParams.set("scheduleId", action.scheduleId);
+  }
+
+  const resumeParams = new URLSearchParams(baseParams);
+  resumeParams.set("resume", "1");
+  const resumeHref = `/focus/current?${resumeParams.toString()}`;
+  const restartHref = `/focus/current?${baseParams.toString()}`;
 
   return (
     <main className="relative isolate mx-auto flex min-h-[100svh] w-full max-w-[var(--page-max-width)] flex-col overflow-hidden bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
@@ -274,24 +422,20 @@ function FocusActionLoadingShell() {
 
 function getPreferredStoredAction(): PreferredActionResult {
   try {
-    const activeActionValue = window.localStorage.getItem(ACTIVE_STARTER_ACTION_STORAGE_KEY);
+    const storedFocusSession = readStoredFocusSession();
 
-    if (activeActionValue) {
-      const activeAction = JSON.parse(activeActionValue) as Partial<{
-        title: string;
-        subtitle: string;
-        duration: number;
-        recommendedMinutes: number;
-        startedAt: string;
-      }>;
+    if (storedFocusSession) {
+      const activeAction = storedFocusSession;
 
       if (activeAction.title) {
         const action = {
+          starterActionId: activeAction.starterActionId,
+          scheduleId: activeAction.scheduleId,
           title: activeAction.title,
           subtitle: activeAction.subtitle ?? "진행 중인 행동",
           duration: parsePositiveNumber(activeAction.duration, DEFAULT_ACTION.duration),
           recommended: parsePositiveNumber(
-            activeAction.recommendedMinutes ?? activeAction.duration,
+            activeAction.recommendedMinutes,
             DEFAULT_ACTION.recommended
           )
         };

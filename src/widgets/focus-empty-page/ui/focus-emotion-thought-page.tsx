@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import { CheckCircle, Info } from "lucide-react";
 import { SiteTopBar } from "@/shared/ui";
 
@@ -10,6 +13,8 @@ const thoughtPatterns = [
 ] as const;
 
 export function FocusEmotionThoughtPage() {
+  const [selectedPattern, setSelectedPattern] = useState<string>(thoughtPatterns[0].title);
+
   return (
     <main className="relative mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col overflow-hidden bg-[#faf9fc] pb-[134px] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
       <SiteTopBar title="마음 챙김" backHref="/focus/emotion-reset/name" className="z-[2]" />
@@ -26,7 +31,12 @@ export function FocusEmotionThoughtPage() {
 
         <section className="flex w-full flex-col gap-4" aria-label="사고 패턴 선택">
           {thoughtPatterns.map((pattern) => (
-            <ThoughtPatternCard key={pattern.title} {...pattern} />
+            <ThoughtPatternCard
+              key={pattern.title}
+              {...pattern}
+              selected={selectedPattern === pattern.title}
+              onClick={() => setSelectedPattern(pattern.title)}
+            />
           ))}
         </section>
 
@@ -42,6 +52,12 @@ export function FocusEmotionThoughtPage() {
         <div className="flex w-full flex-col gap-3">
           <Link
             href="/focus/emotion-reset/reframe"
+            onClick={() =>
+              window.localStorage.setItem(
+                "focusdam:emotion-reset-thought-pattern",
+                selectedPattern
+              )
+            }
             className="flex h-14 w-full items-center justify-center rounded-full bg-[#3c5f7c] text-[16px] font-medium leading-6 text-white shadow-[0_10px_15px_-3px_rgba(60,95,124,0.1),0_4px_6px_-4px_rgba(60,95,124,0.1)]"
           >
             문장 바꿔보기
@@ -58,17 +74,37 @@ export function FocusEmotionThoughtPage() {
   );
 }
 
-function ThoughtPatternCard({ title, quote }: { title: string; quote: string }) {
+function ThoughtPatternCard({
+  title,
+  quote,
+  selected,
+  onClick
+}: {
+  title: string;
+  quote: string;
+  selected: boolean;
+  onClick: () => void;
+}) {
   return (
     <button
       type="button"
-      className="flex h-[140px] w-full flex-col items-start rounded-[32px] border border-[#c2c7ce] bg-white p-6 text-left"
+      aria-pressed={selected}
+      onClick={onClick}
+      className={[
+        "flex h-[140px] w-full flex-col items-start rounded-[32px] bg-white p-6 text-left",
+        selected ? "border-2 border-[#3c5f7c]" : "border border-[#c2c7ce]"
+      ].join(" ")}
     >
       <span className="mb-3 flex w-full items-center justify-between">
         <span className="rounded-full bg-[rgba(237,190,133,0.2)] px-3 py-1 text-[13px] font-medium leading-[18px] tracking-[0.52px] text-[#785526]">
           사고 패턴
         </span>
-        <CheckCircle size={20} strokeWidth={2.4} className="text-[#72777e]" aria-hidden="true" />
+        <CheckCircle
+          size={20}
+          strokeWidth={2.4}
+          className={selected ? "text-[#3c5f7c]" : "text-[#72777e]"}
+          aria-hidden="true"
+        />
       </span>
       <span className="pb-1 text-[16px] font-medium leading-6 text-[#1a1c1e]">{title}</span>
       <span className="text-[16px] font-medium leading-6 text-[#42474d]">{quote}</span>

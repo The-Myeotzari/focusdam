@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   AlertTriangle,
@@ -9,25 +9,77 @@ import {
   Pencil
 } from "lucide-react";
 import { SiteTopBar } from "@/shared/ui";
+import {
+  clearStarterActionDraft,
+  readStarterActionDraft,
+  type StarterActionDraft
+} from "@/shared/lib/starter-action-draft";
 
 const ACTIVE_STARTER_ACTION_STORAGE_KEY = "focusdam:active-starter-action";
-const SCHEDULED_STARTER_ACTIONS_STORAGE_KEY = "focusdam:scheduled-starter-actions";
-
 export function StarterTimePage() {
   const router = useRouter();
   const defaultSchedule = useMemo(() => getRoundedScheduleDate(), []);
   const [scheduledDate, setScheduledDate] = useState(formatDateValue(defaultSchedule));
   const [scheduledTime, setScheduledTime] = useState(formatTimeValue(defaultSchedule));
   const [showActiveActionAlert, setShowActiveActionAlert] = useState(false);
+  const [draft, setDraft] = useState<StarterActionDraft | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const scheduledDateTime = useMemo(() => {
     return new Date(`${scheduledDate}T${scheduledTime}`);
   }, [scheduledDate, scheduledTime]);
   const displayDate = useMemo(() => formatDisplayDate(scheduledDateTime), [scheduledDateTime]);
   const displayTime = useMemo(() => formatDisplayTime(scheduledDateTime), [scheduledDateTime]);
-  const timerHref = `/focus/current?scheduledAtDate=${scheduledDate}&scheduledAtTime=${scheduledTime}&duration=10`;
+  useEffect(() => {
+    setDraft(readStarterActionDraft());
+  }, []);
 
-  const startAction = () => {
-    router.push(timerHref);
+  const createAction = async (scheduledAt: string | null) => {
+    const actionDraft = draft ?? readStarterActionDraft();
+    const response = await fetch("/api/starter/actions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...actionDraft,
+        scheduledAt
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error("행동을 저장하지 못했습니다.");
+    }
+
+    return (await response.json()) as {
+      actionId: string;
+      scheduleId: string | null;
+    };
+  };
+
+  const startAction = async () => {
+    if (isSaving) {
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      const actionDraft = draft ?? readStarterActionDraft();
+      const created = await createAction(null);
+      clearStarterActionDraft();
+      const params = new URLSearchParams({
+        starterActionId: created.actionId,
+        duration: `${actionDraft.recommendedDurationMinutes}`,
+        plannedDuration: `${actionDraft.plannedDurationMinutes}`,
+        title: actionDraft.title,
+        subtitle: actionDraft.subtitle ?? ""
+      });
+      router.push(`/focus/current?${params.toString()}`);
+    } catch (error) {
+      console.error(error);
+      setSaveError("행동을 저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
+      setIsSaving(false);
+    }
   };
 
   const handleStartClick = () => {
@@ -38,40 +90,32 @@ export function StarterTimePage() {
       return;
     }
 
-    startAction();
+    void startAction();
   };
 
   const handleConfirmStart = () => {
     window.localStorage.removeItem(ACTIVE_STARTER_ACTION_STORAGE_KEY);
     setShowActiveActionAlert(false);
-    startAction();
+    void startAction();
   };
 
-  const handleCreateAction = () => {
-    const nextAction = {
-      id: `${Date.now()}`,
-      title: "보고서 목차만 정리하기",
-      subtitle: "초안만 만들기",
-      durationMinutes: 25,
-      recommendedMinutes: 10,
-      scheduledDate,
-      scheduledTime,
-      createdAt: new Date().toISOString()
-    };
-
-    try {
-      const storedActions = window.localStorage.getItem(SCHEDULED_STARTER_ACTIONS_STORAGE_KEY);
-      const parsedActions = storedActions ? (JSON.parse(storedActions) as typeof nextAction[]) : [];
-
-      window.localStorage.setItem(
-        SCHEDULED_STARTER_ACTIONS_STORAGE_KEY,
-        JSON.stringify([nextAction, ...parsedActions].slice(0, 20))
-      );
-    } catch {
-      window.localStorage.setItem(SCHEDULED_STARTER_ACTIONS_STORAGE_KEY, JSON.stringify([nextAction]));
+  const handleCreateAction = async () => {
+    if (isSaving) {
+      return;
     }
 
-    router.push("/focus/actions");
+    setIsSaving(true);
+    setSaveError(null);
+    try {
+      const scheduledAt = new Date(`${scheduledDate}T${scheduledTime}`).toISOString();
+      await createAction(scheduledAt);
+      clearStarterActionDraft();
+      router.push("/focus/actions");
+    } catch (error) {
+      console.error(error);
+      setSaveError("예약 행동을 저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -164,15 +208,17 @@ export function StarterTimePage() {
         <section className="mt-12 flex flex-col gap-4" aria-label="행동 시작">
           <button
             type="button"
+            disabled={isSaving}
             onClick={handleStartClick}
-            className="flex h-[54px] w-full items-center justify-center rounded-full bg-[#3c5f7c] text-[18px] font-medium leading-[34px] text-white shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.1)]"
+            className="flex h-[54px] w-full items-center justify-center rounded-full bg-[#3c5f7c] text-[18px] font-medium leading-[34px] text-white shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.1)] disabled:opacity-60"
           >
-            행동 바로 시작
+            {isSaving ? "저장 중..." : "행동 바로 시작"}
           </button>
           <button
             type="button"
-            onClick={handleCreateAction}
-            className="flex h-[54px] w-full items-center justify-center rounded-full bg-[#dde3eb] text-[18px] font-medium leading-7 text-[#5f656c]"
+            disabled={isSaving}
+            onClick={() => void handleCreateAction()}
+            className="flex h-[54px] w-full items-center justify-center rounded-full bg-[#dde3eb] text-[18px] font-medium leading-7 text-[#5f656c] disabled:opacity-60"
           >
             행동 생성
           </button>
@@ -182,6 +228,11 @@ export function StarterTimePage() {
           >
             행동 다시 선택
           </Link>
+          {saveError ? (
+            <p role="alert" className="m-0 text-center text-[13px] font-medium text-[#ba1a1a]">
+              {saveError}
+            </p>
+          ) : null}
         </section>
       </section>
 
