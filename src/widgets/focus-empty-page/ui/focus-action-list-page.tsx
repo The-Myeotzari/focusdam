@@ -72,7 +72,7 @@ export function FocusActionListPage() {
   };
 
   return (
-    <main className="relative isolate mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col overflow-hidden bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
+    <main className="relative isolate mx-auto flex min-h-[100svh] w-full max-w-[var(--page-max-width)] flex-col overflow-hidden bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
       <span
         className="pointer-events-none absolute -right-24 top-[132px] h-72 w-72 rounded-full bg-[#cce5ff]/30 blur-[50px]"
         aria-hidden="true"
