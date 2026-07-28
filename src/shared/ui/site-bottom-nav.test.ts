@@ -28,10 +28,10 @@ describe('shouldHideBottomNav', () => {
 });
 
 describe('SiteBottomNav', () => {
-  it('집중 메뉴에서 행동 목록으로 이동한다', () => {
+  it('타이머 메뉴에서 진행 중인 집중 확인 화면으로 이동한다', () => {
     const html = renderToStaticMarkup(createElement(SiteBottomNav));
 
-    expect(html).toContain('href="/focus/actions"');
-    expect(html).toContain('>집중<');
+    expect(html).toContain('href="/focus/next-action"');
+    expect(html).toContain('>타이머<');
   });
 });

@@ -26,10 +26,10 @@ const BOTTOM_NAV_ITEMS: BottomNavItem[] = [
     label: '기록',
   },
   {
-    href: '/focus/actions',
+    href: '/focus/next-action',
     icon: Timer,
     isActive: (pathname) => pathname.startsWith('/focus'),
-    label: '집중',
+    label: '타이머',
   },
   {
     href: '/settings',
