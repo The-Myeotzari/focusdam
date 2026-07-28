@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CheckCircle2,
   Heart,
@@ -11,6 +11,7 @@ import {
   Wind
 } from "lucide-react";
 import { SiteTopBar } from "@/shared/ui";
+import { writeStarterActionDraft } from "@/shared/lib/starter-action-draft";
 
 const favoriteActions = [
   {
@@ -32,6 +33,82 @@ const favoriteActions = [
 
 export function StarterFavoritesPage() {
   const [selectedAction, setSelectedAction] = useState<string>(favoriteActions[0].title);
+  const [savedActions, setSavedActions] = useState<
+    Array<{
+      id: string;
+      title: string;
+      subtitle: string | null;
+      plannedDurationMinutes: number;
+      recommendedDurationMinutes: number;
+    }>
+  >([]);
+  const visibleActions =
+    savedActions.length > 0
+      ? savedActions.map((action) => ({
+          ...action,
+          description: action.subtitle ?? "즐겨찾기 행동",
+          icon: Star
+        }))
+      : favoriteActions.map((action) => ({
+          ...action,
+          id: action.title,
+          subtitle: action.description,
+          plannedDurationMinutes: 25,
+          recommendedDurationMinutes: 10
+        }));
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadFavoriteActions() {
+      try {
+        const response = await fetch("/api/starter/actions?kind=favorite&limit=20", {
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          throw new Error("즐겨찾기 조회에 실패했습니다.");
+        }
+
+        const result = (await response.json()) as { actions: typeof savedActions };
+        setSavedActions(result.actions);
+
+        if (result.actions[0]) {
+          setSelectedAction(result.actions[0].title);
+        }
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          console.error(error);
+        }
+      }
+    }
+
+    void loadFavoriteActions();
+
+    return () => controller.abort();
+  }, []);
+
+  const saveSelectedAction = () => {
+    const action = visibleActions.find((candidate) => candidate.title === selectedAction);
+
+    if (!action) {
+      return;
+    }
+
+    writeStarterActionDraft({
+      title: action.title,
+      subtitle: action.subtitle,
+      target: null,
+      microAction: null,
+      verb: null,
+      category: null,
+      templateId: null,
+      source: "favorite",
+      plannedDurationMinutes: action.plannedDurationMinutes,
+      recommendedDurationMinutes: action.recommendedDurationMinutes,
+      isFavorite: true
+    });
+  };
 
   return (
     <main className="relative isolate mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col overflow-hidden bg-[#faf9fc] pb-[156px] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
@@ -54,13 +131,13 @@ export function StarterFavoritesPage() {
         </section>
 
         <section className="mt-[72px] flex flex-col gap-6" aria-label="즐겨찾기 루틴 추천">
-          {favoriteActions.map((action) => {
+          {visibleActions.map((action) => {
             const Icon = action.icon;
             const isSelected = selectedAction === action.title;
 
             return (
               <button
-                key={action.title}
+                key={action.id}
                 type="button"
                 aria-pressed={isSelected}
                 onClick={() => setSelectedAction(action.title)}
@@ -103,6 +180,7 @@ export function StarterFavoritesPage() {
       <div className="fixed bottom-[var(--bottom-nav-height)] left-1/2 z-[2] flex w-full max-w-[390px] -translate-x-1/2 bg-gradient-to-t from-[#faf9fc] via-[#faf9fc] to-[#faf9fc00] px-5 pb-6 pt-6">
         <Link
           href="/starter/time"
+          onClick={saveSelectedAction}
           className="flex h-16 w-full items-center justify-center gap-2 rounded-full bg-[#3c5f7c] text-[18px] font-medium leading-7 text-white shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.1)]"
         >
           이 루틴으로 시작

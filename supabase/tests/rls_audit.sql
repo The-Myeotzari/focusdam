@@ -37,3 +37,25 @@ left join pg_policies policy
   and policy.policyname = 'own_select'
   and policy.cmd = 'SELECT'
 where policy.policyname is null;
+
+-- starter/focus 관계가 같은 사용자의 행만 참조하도록 복합 FK를 가져야 한다.
+with expected(table_name, constraint_name) as (
+  values
+    ('starter_schedules', 'starter_schedules_action_owner_fkey'),
+    ('focus_sessions', 'focus_sessions_action_owner_fkey'),
+    ('focus_sessions', 'focus_sessions_schedule_action_owner_fkey'),
+    ('focus_session_events', 'focus_session_events_session_owner_fkey'),
+    ('emotion_records', 'emotion_records_session_owner_fkey')
+)
+select expected.table_name, expected.constraint_name
+from expected
+left join pg_constraint constraint_info
+  on constraint_info.conname = expected.constraint_name
+left join pg_class table_info
+  on table_info.oid = constraint_info.conrelid
+left join pg_namespace schema_info
+  on schema_info.oid = table_info.relnamespace
+  and schema_info.nspname = 'public'
+where constraint_info.oid is null
+   or table_info.relname <> expected.table_name
+   or schema_info.oid is null;

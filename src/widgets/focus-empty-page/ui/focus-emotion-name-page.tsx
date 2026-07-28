@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import { Info } from "lucide-react";
 import { SiteTopBar } from "@/shared/ui";
 
@@ -10,6 +13,16 @@ const emotions = [
 ] as const;
 
 export function FocusEmotionNamePage() {
+  const [selectedEmotions, setSelectedEmotions] = useState<string[]>([emotions[0].label]);
+
+  const toggleEmotion = (label: string) => {
+    setSelectedEmotions((current) =>
+      current.includes(label)
+        ? current.filter((emotion) => emotion !== label)
+        : [...current, label]
+    );
+  };
+
   return (
     <main className="relative mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col overflow-hidden bg-[#faf9fc] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
       <EmotionNameTopBar />
@@ -30,7 +43,12 @@ export function FocusEmotionNamePage() {
 
         <section className="flex w-full flex-col gap-4 pt-2" aria-label="감정 선택">
           {emotions.map((emotion) => (
-            <EmotionOption key={emotion.label} {...emotion} />
+            <EmotionOption
+              key={emotion.label}
+              {...emotion}
+              selected={selectedEmotions.includes(emotion.label)}
+              onToggle={() => toggleEmotion(emotion.label)}
+            />
           ))}
         </section>
 
@@ -46,6 +64,18 @@ export function FocusEmotionNamePage() {
         <div className="flex w-full flex-col gap-3">
           <Link
             href="/focus/emotion-reset/thought"
+            aria-disabled={selectedEmotions.length === 0}
+            onClick={(event) => {
+              if (selectedEmotions.length === 0) {
+                event.preventDefault();
+                return;
+              }
+
+              window.localStorage.setItem(
+                "focusdam:emotion-reset-emotions",
+                JSON.stringify(selectedEmotions)
+              );
+            }}
             className="flex h-14 w-full items-center justify-center rounded-[32px] bg-[#3c5f7c] text-[16px] font-medium leading-6 text-white shadow-[0_10px_40px_-10px_rgba(60,95,124,0.06)]"
           >
             다음
@@ -67,19 +97,42 @@ function EmotionNameTopBar() {
   return <SiteTopBar title="마음 챙김" backHref="/focus/emotion-reset" className="z-[3]" />;
 }
 
-function EmotionOption({ label, description }: { label: string; description: string }) {
+function EmotionOption({
+  label,
+  description,
+  selected,
+  onToggle
+}: {
+  label: string;
+  description: string;
+  selected: boolean;
+  onToggle: () => void;
+}) {
   return (
-    <label className="flex h-[98px] w-full cursor-pointer items-center justify-between rounded-[32px] border border-[rgba(194,199,206,0.3)] bg-white p-6 shadow-[0_10px_40px_-10px_rgba(60,95,124,0.06)]">
+    <button
+      type="button"
+      aria-pressed={selected}
+      onClick={onToggle}
+      className={[
+        "flex h-[98px] w-full cursor-pointer items-center justify-between rounded-[32px] bg-white p-6 text-left shadow-[0_10px_40px_-10px_rgba(60,95,124,0.06)]",
+        selected ? "border-2 border-[#3c5f7c]" : "border border-[rgba(194,199,206,0.3)]"
+      ].join(" ")}
+    >
       <span className="flex flex-col">
         <span className="text-[18px] font-medium leading-7 text-[#1a1c1e]">{label}</span>
         <span className="mt-0.5 text-[13px] font-medium leading-[18px] tracking-[0.52px] text-[#42474d]">
           {description}
         </span>
       </span>
-      <input type="checkbox" className="sr-only" aria-label={`${label} 선택`} />
-      <span className="flex size-6 items-center justify-center rounded-full border-2 border-[#c2c7ce]" aria-hidden="true">
-        <span className="size-2 rounded-full bg-white opacity-0" />
+      <span
+        className={[
+          "flex size-6 items-center justify-center rounded-full border-2",
+          selected ? "border-[#3c5f7c] bg-[#3c5f7c]" : "border-[#c2c7ce]"
+        ].join(" ")}
+        aria-hidden="true"
+      >
+        <span className={`size-2 rounded-full bg-white ${selected ? "opacity-100" : "opacity-0"}`} />
       </span>
-    </label>
+    </button>
   );
 }

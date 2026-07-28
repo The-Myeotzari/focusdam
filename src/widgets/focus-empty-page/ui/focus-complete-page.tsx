@@ -1,22 +1,76 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { SiteTopBar } from "@/shared/ui";
-
-const ACTIVE_STARTER_ACTION_STORAGE_KEY = "focusdam:active-starter-action";
+import {
+  clearStoredFocusSession,
+  readStoredFocusSession,
+  type StoredFocusSession
+} from "@/shared/lib/focus-session-storage";
 
 const completionOptions = ["가벼움", "보통", "힘듦"] as const;
 const focusOptions = ["낮음", "보통", "높음"] as const;
 
 export function FocusCompletePage() {
+  const router = useRouter();
   const [completionMood, setCompletionMood] = useState<string>("가벼움");
   const [focusLevel, setFocusLevel] = useState<string>("보통");
+  const [session, setSession] = useState<StoredFocusSession | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
-    window.localStorage.removeItem(ACTIVE_STARTER_ACTION_STORAGE_KEY);
+    setSession(readStoredFocusSession());
   }, []);
+
+  const actualDurationSeconds = session
+    ? Math.max(Math.floor((Date.now() - Date.parse(session.startedAt)) / 1000), 0)
+    : 0;
+  const actualDurationMinutes = Math.max(Math.round(actualDurationSeconds / 60), 1);
+
+  const completeSession = async (nextPath: string) => {
+    if (isSaving) {
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      if (session?.sessionId) {
+        const moodByLabel = { 가벼움: "light", 보통: "neutral", 힘듦: "hard" } as const;
+        const focusByLabel = { 낮음: "low", 보통: "medium", 높음: "high" } as const;
+        const response = await fetch(`/api/focus/sessions/${session.sessionId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            status: "completed",
+            eventType: "completed",
+            actualDurationSeconds,
+            overrunSeconds: Math.max(
+              actualDurationSeconds - session.recommendedMinutes * 60,
+              0
+            ),
+            completionMood: moodByLabel[completionMood as keyof typeof moodByLabel],
+            focusLevel: focusByLabel[focusLevel as keyof typeof focusByLabel]
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error("완료 상태 저장에 실패했습니다.");
+        }
+      }
+
+      clearStoredFocusSession();
+      router.push(nextPath);
+    } catch (error) {
+      console.error(error);
+      setSaveError("완료 기록을 저장하지 못했어요. 다시 시도해 주세요.");
+      setIsSaving(false);
+    }
+  };
 
   return (
     <main className="relative isolate mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col overflow-y-auto bg-[#faf9fc] pb-24 font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
@@ -36,17 +90,17 @@ export function FocusCompletePage() {
           </div>
 
           <h2 className="m-0 mt-6 w-[239px] text-center text-[32px] font-medium leading-[38px] tracking-[-0.32px] text-[#1a1c1e]">
-            12분 만에 완료했어요
+            {actualDurationMinutes}분 만에 완료했어요
           </h2>
 
           <p className="m-0 mt-5 w-[210px] text-center text-[18px] font-medium leading-7 text-[#595f66]">
-            예상보다 13분 빨랐습니다. 다음 계획에 반영할게요.
+            실행 기록을 다음 계획에 반영할게요.
           </p>
 
           <div className="mt-8 flex h-[88px] w-full items-center justify-center gap-4 rounded-[48px] bg-[#eeedf0] px-6 py-4">
-            <TimeStat label="예상" value="25분" muted />
+            <TimeStat label="예상" value={`${session?.plannedDurationMinutes ?? 25}분`} muted />
             <span className="h-8 w-px bg-[#c2c7ce]" aria-hidden="true" />
-            <TimeStat label="실제" value="12분" />
+            <TimeStat label="실제" value={`${actualDurationMinutes}분`} />
           </div>
 
           <FeedbackGroup
@@ -65,18 +119,27 @@ export function FocusCompletePage() {
         </section>
 
         <section className="relative z-[1] mt-12 flex flex-col gap-4">
-          <Link
-            href="/focus/actions"
+          <button
+            type="button"
+            disabled={isSaving}
+            onClick={() => void completeSession("/focus/actions")}
             className="flex h-[68px] w-full items-center justify-center rounded-full bg-[#3c5f7c] text-[18px] font-medium leading-7 text-white shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
           >
             다음 행동 보기
-          </Link>
-          <Link
-            href="/focus"
+          </button>
+          <button
+            type="button"
+            disabled={isSaving}
+            onClick={() => void completeSession("/focus")}
             className="flex h-[68px] w-full items-center justify-center rounded-full bg-[#dde3eb] text-[18px] font-medium leading-7 text-[#5f656c]"
           >
             오늘은 여기까지
-          </Link>
+          </button>
+          {saveError ? (
+            <p role="alert" className="m-0 text-center text-[13px] font-medium text-[#ba1a1a]">
+              {saveError}
+            </p>
+          ) : null}
         </section>
       </section>
 

@@ -1,6 +1,10 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { useState } from "react";
 import { Check, Frown, Lightbulb, MessageSquare, ShoppingCart, Timer } from "lucide-react";
 import { SiteButton, SiteTopBar } from "@/shared/ui";
+import { updateOnboardingDraft } from "@/shared/lib/onboarding-draft";
 
 const options = [
   {
@@ -22,6 +26,8 @@ const options = [
 ] as const;
 
 export function OnboardingReasonPage() {
+  const [selectedReason, setSelectedReason] = useState<string>(options[0].label);
+
   return (
     <main
       aria-labelledby="reason-title"
@@ -49,7 +55,12 @@ export function OnboardingReasonPage() {
 
         <section className="grid w-full gap-6 pb-12" aria-label="문제 선택">
           {options.map((option) => (
-            <OptionCard key={option.label} icon={option.icon}>
+            <OptionCard
+              key={option.label}
+              icon={option.icon}
+              selected={selectedReason === option.label}
+              onClick={() => setSelectedReason(option.label)}
+            >
               {option.label}
             </OptionCard>
           ))}
@@ -69,6 +80,7 @@ export function OnboardingReasonPage() {
 
         <SiteButton
           href="/onboarding/safety"
+          onClick={() => updateOnboardingDraft({ reason: selectedReason })}
           className="!h-[67px] !min-h-[67px] !w-full !rounded-full !bg-[#3c5f7c] !px-0 !py-5 !text-[18px] !font-medium !leading-[27px] !text-white !shadow-[0_10px_40px_-10px_rgba(107,142,173,0.15)]"
         >
           다음
@@ -78,17 +90,38 @@ export function OnboardingReasonPage() {
   );
 }
 
-function OptionCard({ children, icon }: { children: ReactNode; icon: ReactNode }) {
+function OptionCard({
+  children,
+  icon,
+  selected,
+  onClick
+}: {
+  children: ReactNode;
+  icon: ReactNode;
+  selected: boolean;
+  onClick: () => void;
+}) {
   return (
     <button
       type="button"
-      className="box-border flex min-h-[96px] w-full cursor-pointer items-center gap-3 rounded-[28px] border border-[#c2c7ce] bg-white p-4 text-left font-inherit text-[#1a1c1e] sm:min-h-[106px] sm:gap-6 sm:rounded-[32px] sm:p-6"
+      aria-pressed={selected}
+      onClick={onClick}
+      className={[
+        "box-border flex min-h-[96px] w-full cursor-pointer items-center gap-3 rounded-[28px] bg-white p-4 text-left font-inherit text-[#1a1c1e] sm:min-h-[106px] sm:gap-6 sm:rounded-[32px] sm:p-6",
+        selected ? "border-2 border-[#3c5f7c]" : "border border-[#c2c7ce]"
+      ].join(" ")}
     >
       <span className="flex h-12 w-12 flex-[0_0_48px] items-center justify-center rounded-full bg-[#dde3eb] text-[#3c5f7c] sm:h-14 sm:w-14 sm:flex-basis-[56px]" aria-hidden="true">
         {icon}
       </span>
       <span className="flex-1 text-[18px] font-medium leading-7 text-[#1a1c1e]">{children}</span>
-      <span className="flex h-5 w-5 flex-[0_0_20px] items-center justify-center text-[#3c5f7c] opacity-0" aria-hidden="true">
+      <span
+        className={[
+          "flex h-5 w-5 flex-[0_0_20px] items-center justify-center text-[#3c5f7c]",
+          selected ? "opacity-100" : "opacity-0"
+        ].join(" ")}
+        aria-hidden="true"
+      >
         <Check size={20} strokeWidth={2} />
       </span>
     </button>

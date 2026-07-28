@@ -13,53 +13,94 @@ import {
 } from "lucide-react";
 import { SiteTopBar } from "@/shared/ui";
 
-const SCHEDULED_STARTER_ACTIONS_STORAGE_KEY = "focusdam:scheduled-starter-actions";
-
 type ScheduledStarterAction = {
   id: string;
+  starterActionId: string;
   title: string;
-  subtitle: string;
-  durationMinutes: number;
-  recommendedMinutes: number;
+  subtitle: string | null;
+  plannedDurationMinutes: number;
+  recommendedDurationMinutes: number;
+  scheduledAt: string;
   scheduledDate: string;
   scheduledTime: string;
   createdAt: string;
 };
-
-const fallbackActions: ScheduledStarterAction[] = [
-  {
-    id: "sample-report-outline",
-    title: "보고서 목차만 정리하기",
-    subtitle: "초안만 만들기",
-    durationMinutes: 25,
-    recommendedMinutes: 10,
-    scheduledDate: getTodayDateValue(),
-    scheduledTime: "",
-    createdAt: ""
-  }
-];
 
 export function FocusActionListPage() {
   const todayDate = getTodayDateValue();
   const [actions, setActions] = useState<ScheduledStarterAction[]>([]);
   const [selectedDate, setSelectedDate] = useState(todayDate);
   const [weekAnchorDate, setWeekAnchorDate] = useState(todayDate);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const storedActions = window.localStorage.getItem(SCHEDULED_STARTER_ACTIONS_STORAGE_KEY);
-      const parsedActions = storedActions ? (JSON.parse(storedActions) as ScheduledStarterAction[]) : [];
+    const weekDates = getWeekDates(weekAnchorDate);
+    const from = new Date(weekDates[0]);
+    from.setHours(0, 0, 0, 0);
+    const to = new Date(from);
+    to.setDate(to.getDate() + 7);
+    const controller = new AbortController();
 
-      setActions(parsedActions);
-    } catch {
-      setActions([]);
+    async function loadSchedules() {
+      setIsLoading(true);
+
+      try {
+        const params = new URLSearchParams({
+          from: from.toISOString(),
+          to: to.toISOString()
+        });
+        const response = await fetch(`/api/starter/schedules?${params.toString()}`, {
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          throw new Error("예약 행동 조회에 실패했습니다.");
+        }
+
+        const result = (await response.json()) as {
+          schedules: Array<{
+            id: string;
+            starterActionId: string;
+            title: string;
+            subtitle: string | null;
+            plannedDurationMinutes: number;
+            recommendedDurationMinutes: number;
+            scheduledAt: string;
+            createdAt: string;
+          }>;
+        };
+        setActions(
+          result.schedules.map((schedule) => {
+            const scheduledAt = new Date(schedule.scheduledAt);
+
+            return {
+              ...schedule,
+              scheduledDate: formatDateValue(scheduledAt),
+              scheduledTime: `${`${scheduledAt.getHours()}`.padStart(2, "0")}:${`${scheduledAt.getMinutes()}`.padStart(2, "0")}`
+            };
+          })
+        );
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          console.error(error);
+          setActions([]);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
+      }
     }
-  }, []);
+
+    void loadSchedules();
+
+    return () => controller.abort();
+  }, [weekAnchorDate]);
 
   const selectedDateActions = actions.filter((action) => action.scheduledDate === selectedDate);
   const otherDayActionCount = actions.filter((action) => action.scheduledDate && action.scheduledDate !== selectedDate).length;
-  const visibleActions = actions.length > 0 ? selectedDateActions : fallbackActions;
-  const hasNoSelectedDateActions = actions.length > 0 && selectedDateActions.length === 0;
+  const visibleActions = selectedDateActions;
+  const hasNoSelectedDateActions = !isLoading && selectedDateActions.length === 0;
   const selectedDateLabel = formatDateLabel(selectedDate);
   const weekDates = getWeekDates(weekAnchorDate);
   const weekRangeLabel = formatWeekRangeLabel(weekDates);
@@ -184,7 +225,7 @@ export function FocusActionListPage() {
                 {selectedDate === todayDate ? "오늘 행동" : "이 날의 행동"}
               </h3>
               <p className="m-0 mt-0.5 text-[13px] font-medium leading-[18px] tracking-[0.52px] text-[#72777e]">
-                {visibleActions.length}개의 행동
+                {isLoading ? "불러오는 중" : `${visibleActions.length}개의 행동`}
               </p>
             </div>
             {otherDayActionCount > 0 ? (
@@ -211,8 +252,8 @@ export function FocusActionListPage() {
           <section className="mt-4 flex flex-col gap-4" aria-label="선택한 날짜 예약 행동 목록">
             {visibleActions.map((action, index) => {
               const detailHref = `/focus/next-action?title=${encodeURIComponent(action.title)}&subtitle=${encodeURIComponent(
-                action.subtitle
-              )}&duration=${action.durationMinutes}&recommended=${action.recommendedMinutes}`;
+                action.subtitle ?? ""
+              )}&duration=${action.plannedDurationMinutes}&recommended=${action.recommendedDurationMinutes}&starterActionId=${action.starterActionId}&scheduleId=${action.id}`;
               const scheduleText = formatSchedule(action);
 
               return (
@@ -262,7 +303,7 @@ export function FocusActionListPage() {
                     </span>
                     <span className="flex items-center gap-2 rounded-2xl bg-white/70 px-3 py-3 text-[13px] font-medium leading-[18px] text-[#5f656c]">
                       <Timer size={16} strokeWidth={2.4} className="text-[#3c5f7c]" aria-hidden="true" />
-                      추천 {action.recommendedMinutes}분
+                      추천 {action.recommendedDurationMinutes}분
                     </span>
                   </div>
                 </Link>
@@ -272,7 +313,7 @@ export function FocusActionListPage() {
 
           {actions.length === 0 ? (
             <p className="m-0 mt-5 rounded-[24px] bg-[#fff7ef] px-5 py-4 text-[14px] font-medium leading-6 text-[#8a6427]">
-              아직 저장된 행동이 없어 샘플 행동을 보여주고 있어요. `행동 생성`을 누르면 예약한 날짜에 맞춰 하루씩 보여요.
+              아직 예약한 행동이 없어요. 새 행동을 만들면 예약한 날짜에 맞춰 보여드릴게요.
             </p>
           ) : null}
         </section>

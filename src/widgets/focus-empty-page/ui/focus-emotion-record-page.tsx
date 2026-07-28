@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Cloud, Info, Play, Sun } from "lucide-react";
 import { SiteTopBar } from "@/shared/ui";
+import { readStoredFocusSession } from "@/shared/lib/focus-session-storage";
 
 const summarySteps = [
   {
@@ -24,6 +29,85 @@ const summarySteps = [
 ] as const;
 
 export function FocusEmotionRecordPage() {
+  const router = useRouter();
+  const [note, setNote] = useState("");
+  const [emotions, setEmotions] = useState<string[]>([]);
+  const [nextAction, setNextAction] = useState("3분 행동 시작");
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const storedEmotions = window.localStorage.getItem("focusdam:emotion-reset-emotions");
+      setEmotions(storedEmotions ? (JSON.parse(storedEmotions) as string[]) : []);
+    } catch {
+      setEmotions([]);
+    }
+
+    setNextAction(
+      window.localStorage.getItem("focusdam:emotion-reset-next-action") ?? "3분 행동 시작"
+    );
+  }, []);
+
+  const saveRecord = async () => {
+    if (isSaving) {
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveError(null);
+    const session = readStoredFocusSession();
+    const thoughtPattern = window.localStorage.getItem(
+      "focusdam:emotion-reset-thought-pattern"
+    );
+    const balancedThought = window.localStorage.getItem(
+      "focusdam:emotion-reset-balanced-thought"
+    );
+
+    try {
+      const response = await fetch("/api/focus/emotions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId: session?.sessionId ?? null,
+          emotionLabel: emotions.length > 0 ? emotions.join(" · ") : "기타",
+          intensity: 3,
+          triggerNote: [thoughtPattern, balancedThought, note.trim()]
+            .filter(Boolean)
+            .join(" / ") || null,
+          resetAction: nextAction,
+          returnedToFocus: true
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("감정 기록 저장에 실패했습니다.");
+      }
+
+      if (session?.sessionId) {
+        await fetch(`/api/focus/sessions/${session.sessionId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            eventType: "emotion_reset_completed"
+          })
+        });
+      }
+
+      const params = new URLSearchParams({
+        duration: "3",
+        plannedDuration: "3",
+        title: nextAction,
+        subtitle: "감정 리셋 후 복귀 행동"
+      });
+      router.push(`/focus/current?${params.toString()}`);
+    } catch (error) {
+      console.error(error);
+      setSaveError("기록을 저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
+      setIsSaving(false);
+    }
+  };
+
   return (
     <main className="relative mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col overflow-hidden bg-[#faf9fc] pb-2 font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
       <SiteTopBar title="마음 챙김" backHref="/focus/emotion-reset/restart" className="z-[1]" />
@@ -73,9 +157,13 @@ export function FocusEmotionRecordPage() {
             나의 한 줄 소감
           </h3>
           <div className="relative h-32 w-full rounded-[32px] bg-white p-4">
-            <p className="m-0 text-[16px] font-medium leading-6 text-[rgba(114,119,126,0.5)]">
-              리셋 후의 기분을 간단히 적어보세요...
-            </p>
+            <textarea
+              value={note}
+              onChange={(event) => setNote(event.target.value)}
+              maxLength={300}
+              placeholder="리셋 후의 기분을 간단히 적어보세요..."
+              className="h-full w-full resize-none bg-transparent text-[16px] font-medium leading-6 text-[#42474d] outline-none placeholder:text-[rgba(114,119,126,0.5)]"
+            />
             <div className="absolute bottom-3 right-4 flex gap-2">
               <span className="rounded-full bg-[rgba(221,227,235,0.5)] px-3 py-1 text-[13px] font-medium leading-[18px] tracking-[0.52px] text-[#5f656c]">
                 #평온
@@ -96,18 +184,25 @@ export function FocusEmotionRecordPage() {
       </section>
 
       <div className="absolute bottom-0 left-0 z-[2] flex h-[168px] w-full flex-col gap-3 rounded-t-[32px] bg-[rgba(255,255,255,0.8)] px-5 pb-5 pt-6 shadow-[0_-8px_30px_rgba(60,95,124,0.08)] backdrop-blur-[12px]">
-        <Link
-          href="/focus/current?duration=3"
+        <button
+          type="button"
+          disabled={isSaving}
+          onClick={() => void saveRecord()}
           className="flex h-[60px] w-full items-center justify-center rounded-full bg-[#3c5f7c] text-[18px] font-medium leading-7 text-white shadow-[0_10px_15px_-3px_rgba(60,95,124,0.2),0_4px_6px_-4px_rgba(60,95,124,0.2)]"
         >
-          기록 저장
-        </Link>
+          {isSaving ? "저장 중..." : "기록 저장"}
+        </button>
         <Link
           href="/focus/emotion-reset/restart"
           className="flex h-[52px] w-full items-center justify-center rounded-full bg-[rgba(221,227,235,0.5)] text-[18px] font-medium leading-7 text-[#5f656c]"
         >
           수정
         </Link>
+        {saveError ? (
+          <p role="alert" className="m-0 text-center text-[12px] font-medium text-[#ba1a1a]">
+            {saveError}
+          </p>
+        ) : null}
       </div>
     </main>
   );

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   ChevronRight,
@@ -11,10 +12,12 @@ import {
   Star
 } from "lucide-react";
 import { SiteTopBar } from "@/shared/ui";
+import { writeStarterActionDraft } from "@/shared/lib/starter-action-draft";
 
 const MAX_TASK_LENGTH = 50;
 
 export function StarterCreatePage() {
+  const router = useRouter();
   const [target, setTarget] = useState("");
   const [microAction, setMicroAction] = useState("");
   const [verb, setVerb] = useState("");
@@ -22,6 +25,29 @@ export function StarterCreatePage() {
   const taskText = useMemo(() => {
     return [target, microAction, verb].filter(Boolean).join(" ");
   }, [target, microAction, verb]);
+
+  const saveDraft = () => {
+    const title = taskText.trim();
+
+    if (!title) {
+      return;
+    }
+
+    writeStarterActionDraft({
+      title,
+      subtitle: "직접 만든 최소 행동",
+      target: target.trim() || null,
+      microAction: microAction.trim() || null,
+      verb: verb.trim() || null,
+      category: null,
+      templateId: null,
+      source: "custom",
+      plannedDurationMinutes: 25,
+      recommendedDurationMinutes: 10,
+      isFavorite: false
+    });
+    router.push("/starter/time");
+  };
 
   return (
     <main className="relative isolate mx-auto flex min-h-[100svh] w-full max-w-[390px] flex-col overflow-hidden bg-[#faf9fc] pb-[136px] font-['42dot_Sans','Hanken_Grotesk','Noto_Sans_KR',sans-serif]">
@@ -161,13 +187,15 @@ export function StarterCreatePage() {
       </section>
 
       <div className="fixed bottom-0 left-1/2 z-[2] flex w-full max-w-[390px] -translate-x-1/2 bg-gradient-to-t from-[#faf9fc] via-[#faf9fc] to-[#faf9fc00] px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-6">
-        <Link
-          href="/starter/time"
-          className="flex h-16 w-full items-center justify-center gap-3 rounded-full bg-[#3c5f7c] text-[18px] font-medium leading-7 text-white shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.1)]"
+        <button
+          type="button"
+          disabled={!taskText.trim()}
+          onClick={saveDraft}
+          className="flex h-16 w-full items-center justify-center gap-3 rounded-full bg-[#3c5f7c] text-[18px] font-medium leading-7 text-white shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.1)] disabled:cursor-not-allowed disabled:opacity-50"
         >
           최소 행동 만들기
           <ArrowRight size={20} strokeWidth={2.6} aria-hidden="true" />
-        </Link>
+        </button>
       </div>
 
     </main>
