@@ -81,6 +81,10 @@ Supabase Cron은 이 함수를 5분마다 최대 100건씩 실행합니다.
 완료·취소된 후속 작업과 삭제된 결제 3심은 처리하지 않습니다. 함수는 대상 행을 잠그고
 기존 상태를 다시 확인하므로 Cron과 수동 실행이 겹치거나 반복되어도 중복 처리되지 않습니다.
 
+예약 작업과 향후 알림 실행은 외부 스케줄러가 아니라 Supabase 내장 기능을 기준으로 구성합니다.
+현재 단계에서는 Database Cron(`pg_cron`)이 후속 작업의 도래 상태를 갱신합니다. 실제 모바일 푸시가
+필요해지면 이 상태 변경을 Supabase Database Webhook과 Edge Function에 연결합니다.
+
 ## 후속 작업 완료 트랜잭션
 
 만족도 제출은 `complete_payment_third_review_satisfaction`, 리마인드 판단 제출은
