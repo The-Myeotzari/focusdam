@@ -13,6 +13,7 @@ import { QUERY_KEYS } from '@/shared/constants/query-key';
 
 export const PAYMENT_THIRD_REVIEW_LIST_PAGE_SIZE = 6;
 export const PAYMENT_THIRD_REVIEW_STALE_TIME = 60_000;
+export const PAYMENT_THIRD_REVIEW_SCHEDULED_REFETCH_INTERVAL = 60_000;
 
 export function activePaymentSavingGoalQueryOptions() {
   return queryOptions({
@@ -43,6 +44,11 @@ export function paymentThirdReviewDetailQueryOptions(id: string) {
     queryKey: QUERY_KEYS.paymentThirdReviews.detail(id),
     queryFn: () => getPaymentThirdReviewDetailClient(id),
     staleTime: PAYMENT_THIRD_REVIEW_STALE_TIME,
+    refetchOnWindowFocus: 'always',
+    refetchInterval: (query) =>
+      query.state.data?.item.followUps.some((followUp) => followUp.status === 'scheduled')
+        ? PAYMENT_THIRD_REVIEW_SCHEDULED_REFETCH_INTERVAL
+        : false,
   });
 }
 
@@ -51,6 +57,11 @@ export function paymentThirdReviewHomeQueryOptions() {
     queryKey: QUERY_KEYS.paymentThirdReviews.home,
     queryFn: getPaymentThirdReviewHomeClient,
     staleTime: PAYMENT_THIRD_REVIEW_STALE_TIME,
+    refetchOnWindowFocus: 'always',
+    refetchInterval: (query) =>
+      query.state.data?.recentItems.some((item) => item.followUp?.status === 'scheduled')
+        ? PAYMENT_THIRD_REVIEW_SCHEDULED_REFETCH_INTERVAL
+        : false,
   });
 }
 
@@ -67,6 +78,13 @@ export function paymentThirdReviewListInfiniteQueryOptions(
       }),
     initialPageParam: 1,
     staleTime: PAYMENT_THIRD_REVIEW_STALE_TIME,
+    refetchOnWindowFocus: 'always',
+    refetchInterval: (query) =>
+      query.state.data?.pages.some((page) =>
+        page.items.some((item) => item.followUp?.status === 'scheduled'),
+      )
+        ? PAYMENT_THIRD_REVIEW_SCHEDULED_REFETCH_INTERVAL
+        : false,
     getNextPageParam: (lastPage) =>
       lastPage.pagination.page < lastPage.pagination.totalPages
         ? lastPage.pagination.page + 1

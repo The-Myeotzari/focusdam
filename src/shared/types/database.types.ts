@@ -1084,6 +1084,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activate_due_payment_review_followups: {
+        Args: { p_batch_size?: number }
+        Returns: {
+          processed_count: number
+          reminder_count: number
+          satisfaction_count: number
+        }[]
+      }
       create_payment_third_review: {
         Args: {
           p_alternative_status: Database["public"]["Enums"]["payment_alternative_status"]

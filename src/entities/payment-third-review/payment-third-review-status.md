@@ -64,6 +64,23 @@
 `결제 미진행`은 사용자가 실제로 소비하지 않은 결과이므로 `save` 묶음으로 분류합니다.
 `보류`를 다시 선택한 경우는 완료가 아니라 다음 리마인드가 예약된 진행 상태로 봅니다.
 
+## 예약 상태 자동 전환
+
+`payment_review_followups.scheduled_at`이 현재 시각보다 이전이고 후속 작업의 상태가
+`scheduled`이면 `activate_due_payment_review_followups` 함수가 다음 상태로 전환합니다.
+Supabase Cron은 이 함수를 5분마다 최대 100건씩 실행합니다.
+
+| followupType | 기존 status | 변경 status |
+| --- | --- | --- |
+| `satisfaction` | `buy_satisfaction_scheduled` | `buy_satisfaction_required` |
+| `reminder` | `hold_reminder_scheduled` | `hold_reminder_required` |
+| `reminder` | `hold_after_hold_scheduled` | `rehold_reminder_required` |
+| `reminder` | `rehold_reminder_scheduled` | `rehold_reminder_required` |
+| `reminder` | `rehold_after_hold_scheduled` | `rehold_reminder_required` |
+
+완료·취소된 후속 작업과 삭제된 결제 3심은 처리하지 않습니다. 함수는 대상 행을 잠그고
+기존 상태를 다시 확인하므로 Cron과 수동 실행이 겹치거나 반복되어도 중복 처리되지 않습니다.
+
 ## 예시 데이터
 
 각 `PaymentReviewStatus`별 예시 데이터는 `PAYMENT_REVIEW_HISTORY_ITEMS`에 하나씩 포함되어 있습니다.
