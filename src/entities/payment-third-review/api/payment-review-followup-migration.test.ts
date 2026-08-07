@@ -36,5 +36,21 @@ describe('payment review followup migrations', () => {
     expect(migration).toContain("'*/5 * * * *'");
     expect(migration).toContain('public.activate_due_payment_review_followups(100)');
   });
-});
 
+  it('defines transactional satisfaction and reminder completion functions', () => {
+    const migration = readFileSync(
+      join(
+        migrationDirectory,
+        '20260807020000_complete_payment_review_followups.sql',
+      ),
+      'utf8',
+    );
+
+    expect(migration).toContain('public.complete_payment_third_review_satisfaction');
+    expect(migration).toContain('public.complete_payment_third_review_reminder');
+    expect(migration).toContain('current_user_id uuid := (select auth.uid())');
+    expect(migration).toMatch(/for update;/gi);
+    expect(migration).toContain('insert into public.payment_saving_entries');
+    expect(migration).toContain('insert into public.payment_review_followups');
+  });
+});
