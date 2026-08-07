@@ -6,11 +6,12 @@ import type { NotificationSettingItem as NotificationSettingItemType } from '../
 
 type Props = {
   checked: boolean;
+  disabled?: boolean;
   item: NotificationSettingItemType;
   onCheckedChange: (id: NotificationSettingId, checked: boolean) => void;
 };
 
-export function NotificationSettingItem({ checked, item, onCheckedChange }: Props) {
+export function NotificationSettingItem({ checked, disabled, item, onCheckedChange }: Props) {
   const Icon = item.icon;
 
   return (
@@ -33,6 +34,7 @@ export function NotificationSettingItem({ checked, item, onCheckedChange }: Prop
 
       <SiteSwitch
         checked={checked}
+        disabled={disabled}
         label={`${item.label} ${checked ? '끄기' : '켜기'}`}
         onCheckedChange={(nextChecked) => onCheckedChange(item.id, nextChecked)}
       />

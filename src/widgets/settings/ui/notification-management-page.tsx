@@ -1,13 +1,7 @@
-// 알림 관리 페이지
-
-
-import { getNotificationSettings } from '@/entities/notification-settings';
 import { NotificationSettingsForm } from '@/features/update-notification-settings';
 import { SiteTopBar } from '@/shared/ui';
 
-export async function NotificationManagementPage() {
-  const settings = await getNotificationSettings();
-
+export function NotificationManagementPage() {
   return (
     <main className="flex gap-8 flex-col px-5 py-4">
       {/* TODO: 페이지 헤더 영역 추후 분리 필요*/}
@@ -22,7 +16,7 @@ export async function NotificationManagementPage() {
         </p>
       </section>
 
-      <NotificationSettingsForm initialSettings={settings} />
+      <NotificationSettingsForm />
     </main>
   );
 }
