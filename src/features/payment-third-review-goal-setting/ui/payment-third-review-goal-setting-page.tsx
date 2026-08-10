@@ -7,8 +7,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 
 import { activePaymentSavingGoalQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import { savePaymentSavingGoalClient } from '@/entities/payment-third-review/api/payment-saving-goal.client';
-import { SavePaymentSavingGoalRequestSchema } from '@/entities/payment-third-review/api/payment-saving-goal.schema';
-import { parsePaymentReviewWon } from '@/entities/payment-third-review/lib/payment-review-amount';
+import { validatePaymentSavingGoalForm } from '@/entities/payment-third-review/lib/payment-saving-goal-form';
 import { QUERY_KEYS } from '@/shared/constants/query-key';
 import { ApiRequestError } from '@/shared/lib/api/api';
 import { SiteButton, SiteInput, SiteTopBar } from '@/shared/ui';
@@ -19,11 +18,13 @@ export function PaymentThirdReviewGoalSettingPage() {
   const goalQuery = useQuery(activePaymentSavingGoalQueryOptions());
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
-  const [validationError, setValidationError] = useState<string | null>(null);
+  const [touchedFields, setTouchedFields] = useState({ amount: false, name: false });
   const [initializedGoalId, setInitializedGoalId] = useState<string | null | undefined>(
     undefined,
   );
   const activeGoal = goalQuery.data?.item ?? null;
+  const formValidation = validatePaymentSavingGoalForm(name, amount);
+  const isFormValid = Boolean(formValidation.data);
   const saveMutation = useMutation({
     mutationFn: (input: { name: string; targetAmountKrw: number }) =>
       savePaymentSavingGoalClient(input, activeGoal ? 'update' : 'create'),
@@ -53,24 +54,18 @@ export function PaymentThirdReviewGoalSettingPage() {
   const handleAmountChange = (value: string) => {
     const digits = value.replace(/[^0-9]/g, '');
     setAmount(digits ? Number(digits).toLocaleString('ko-KR') : '');
-    setValidationError(null);
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const result = SavePaymentSavingGoalRequestSchema.safeParse({
-      name,
-      targetAmountKrw: parsePaymentReviewWon(amount),
-    });
+    setTouchedFields({ amount: true, name: true });
 
-    if (!result.success) {
-      setValidationError(result.error.issues[0]?.message ?? '입력값을 확인해주세요.');
+    if (!formValidation.data || saveMutation.isPending) {
       return;
     }
 
-    setValidationError(null);
-    saveMutation.mutate(result.data);
+    saveMutation.mutate(formValidation.data);
   };
 
   const submitError =
@@ -125,15 +120,23 @@ export function PaymentThirdReviewGoalSettingPage() {
           <span className="text-xs font-medium leading-5 text-[#72777e]">목표 이름</span>
           <SiteInput
             value={name}
-            onChange={(event) => {
-              setName(event.target.value);
-              setValidationError(null);
-            }}
+            onChange={(event) => setName(event.target.value)}
+            onBlur={() => setTouchedFields((current) => ({ ...current, name: true }))}
+            aria-invalid={touchedFields.name && Boolean(formValidation.errors.name)}
+            aria-describedby="payment-saving-goal-name-error"
             maxLength={40}
             placeholder="예: 여행비"
             disabled={goalQuery.isPending || saveMutation.isPending}
             className="!min-h-[56px] !rounded-[20px] !border-transparent !bg-white !shadow-[0_4px_12px_rgba(0,0,0,0.04)]"
           />
+          {touchedFields.name && formValidation.errors.name ? (
+            <span
+              id="payment-saving-goal-name-error"
+              className="text-sm font-medium leading-6 text-[#ba1a1a]"
+            >
+              {formValidation.errors.name}
+            </span>
+          ) : null}
         </label>
 
         <label className="grid gap-2">
@@ -142,6 +145,9 @@ export function PaymentThirdReviewGoalSettingPage() {
             <SiteInput
               value={amount}
               onChange={(event) => handleAmountChange(event.target.value)}
+              onBlur={() => setTouchedFields((current) => ({ ...current, amount: true }))}
+              aria-invalid={touchedFields.amount && Boolean(formValidation.errors.amount)}
+              aria-describedby="payment-saving-goal-amount-error"
               inputMode="numeric"
               placeholder="예: 86,000"
               disabled={goalQuery.isPending || saveMutation.isPending}
@@ -151,18 +157,28 @@ export function PaymentThirdReviewGoalSettingPage() {
               원
             </span>
           </span>
+          {touchedFields.amount && formValidation.errors.amount ? (
+            <span
+              id="payment-saving-goal-amount-error"
+              className="text-sm font-medium leading-6 text-[#ba1a1a]"
+            >
+              {formValidation.errors.amount}
+            </span>
+          ) : null}
         </label>
 
-        {validationError || submitError ? (
+        {submitError ? (
           <p className="text-sm font-medium leading-6 text-[#ba1a1a]" role="alert">
-            {validationError ?? submitError}
+            {submitError}
           </p>
         ) : null}
 
         <div className="mt-auto grid gap-2 pt-4">
           <button
             type="submit"
-            disabled={goalQuery.isPending || goalQuery.isError || saveMutation.isPending}
+            disabled={
+              goalQuery.isPending || goalQuery.isError || saveMutation.isPending || !isFormValid
+            }
             className="site-button site-button--primary min-h-[62px] w-full gap-2 rounded-full px-6 text-[17px] font-semibold disabled:cursor-not-allowed disabled:opacity-50"
           >
             {saveMutation.isPending ? '저장 중...' : activeGoal ? '목표 수정' : '목표 저장'}

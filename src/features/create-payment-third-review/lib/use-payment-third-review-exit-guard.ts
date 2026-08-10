@@ -9,10 +9,16 @@ import {
   isPaymentThirdReviewCreatePath,
   readPaymentThirdReviewDraft,
 } from '@/features/create-payment-third-review/lib/payment-third-review-draft-storage';
+import {
+  PAYMENT_REVIEW_STEP_ONE_PATH,
+  createPaymentThirdReviewExitGuardStates,
+  hasPaymentThirdReviewExitGuardState,
+  isPaymentThirdReviewExitGuardBaseTransition,
+} from '@/features/create-payment-third-review/lib/payment-third-review-exit-history';
 
 type PendingNavigation =
   | { type: 'link'; href: string; isExternal: boolean }
-  | { type: 'history' };
+  | { type: 'history'; delta: number };
 
 function hasStoredDraftInput() {
   return hasPaymentThirdReviewDraftInput(readPaymentThirdReviewDraft());
@@ -25,6 +31,20 @@ export function usePaymentThirdReviewExitGuard() {
   const historyTransitionRef = useRef<'leaving' | 'restoring' | null>(null);
 
   useEffect(() => {
+    const currentHref = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    const isStepOne = window.location.pathname === PAYMENT_REVIEW_STEP_ONE_PATH;
+    const hasGuardState = hasPaymentThirdReviewExitGuardState(window.history.state);
+
+    // 첫 단계에 동일 URL의 보호용 history 항목을 추가해 브라우저 뒤로가기가
+    // 생성 화면을 벗어나기 전에 현재 컴포넌트에서 먼저 처리되도록 합니다.
+    if (isStepOne && !hasGuardState) {
+      const { baseState, sentinelState } = createPaymentThirdReviewExitGuardStates(
+        window.history.state,
+      );
+      window.history.replaceState(baseState, '', currentHref);
+      window.history.pushState(sentinelState, '', currentHref);
+    }
+
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (!hasStoredDraftInput()) {
         return;
@@ -34,7 +54,7 @@ export function usePaymentThirdReviewExitGuard() {
       event.returnValue = '';
     };
 
-    const handleBrowserBack = () => {
+    const handleBrowserBack = (event: PopStateEvent) => {
       if (historyTransitionRef.current === 'leaving') {
         historyTransitionRef.current = null;
         return;
@@ -42,6 +62,25 @@ export function usePaymentThirdReviewExitGuard() {
 
       if (historyTransitionRef.current === 'restoring') {
         historyTransitionRef.current = null;
+        setIsExitDialogOpen(true);
+        return;
+      }
+
+      const reachedStepOneGuardBase = isPaymentThirdReviewExitGuardBaseTransition(
+        window.location.pathname,
+        event.state,
+      );
+
+      if (reachedStepOneGuardBase) {
+        if (!hasStoredDraftInput()) {
+          historyTransitionRef.current = 'leaving';
+          window.history.back();
+          return;
+        }
+
+        const { sentinelState } = createPaymentThirdReviewExitGuardStates(event.state);
+        window.history.pushState(sentinelState, '', currentHref);
+        pendingNavigationRef.current = { type: 'history', delta: -2 };
         setIsExitDialogOpen(true);
         return;
       }
@@ -55,7 +94,7 @@ export function usePaymentThirdReviewExitGuard() {
         return;
       }
 
-      pendingNavigationRef.current = { type: 'history' };
+      pendingNavigationRef.current = { type: 'history', delta: -1 };
       historyTransitionRef.current = 'restoring';
       window.history.forward();
     };
@@ -139,7 +178,7 @@ export function usePaymentThirdReviewExitGuard() {
 
     if (pendingNavigation.type === 'history') {
       historyTransitionRef.current = 'leaving';
-      window.history.back();
+      window.history.go(pendingNavigation.delta);
       return;
     }
 

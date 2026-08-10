@@ -15,8 +15,16 @@ export const ActivePaymentSavingGoalResponseSchema = z.object({
 });
 
 export const SavePaymentSavingGoalRequestSchema = z.object({
-  name: z.string().trim().min(1, '목표 이름을 입력해주세요.').max(40),
-  targetAmountKrw: z.number().int().min(1000, '목표 금액은 1,000원 이상이어야 합니다.').max(1_000_000_000),
+  name: z
+    .string()
+    .trim()
+    .min(1, '목표 이름을 입력해주세요.')
+    .max(40, '목표 이름은 40자 이하로 입력해주세요.'),
+  targetAmountKrw: z
+    .number()
+    .int()
+    .min(1000, '목표 금액은 1,000원 이상이어야 합니다.')
+    .max(1_000_000_000, '목표 금액은 10억원 이하여야 합니다.'),
 });
 
 export const SavePaymentSavingGoalResponseSchema = z.object({

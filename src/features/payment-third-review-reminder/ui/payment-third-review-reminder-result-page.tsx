@@ -74,6 +74,7 @@ export function PaymentThirdReviewReminderResultPage({ decision, id, listFilter 
   );
   const queryClient = useQueryClient();
   const [memo, setMemo] = useState('');
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const detailQuery = useQuery({
     ...paymentThirdReviewDetailQueryOptions(id),
     select: (response) => mapPaymentThirdReviewDetailToHistoryItem(response.item),
@@ -82,8 +83,16 @@ export function PaymentThirdReviewReminderResultPage({ decision, id, listFilter 
   });
   const reminderMutation = useMutation({
     mutationFn: () => completePaymentThirdReviewReminderClient(id, { decision, memo }),
-    onSuccess: async (response) => {
-      await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.paymentThirdReviews.all });
+    onSuccess: (response) => {
+      setIsRedirecting(true);
+      queryClient.removeQueries({
+        queryKey: QUERY_KEYS.paymentThirdReviews.detail(id),
+        exact: true,
+      });
+      void queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.paymentThirdReviews.all,
+        refetchType: 'none',
+      });
       router.replace(
         response.item.goalAchievementId
           ? `/payment-third-review/goal-achievement/${response.item.goalAchievementId}`
@@ -101,7 +110,7 @@ export function PaymentThirdReviewReminderResultPage({ decision, id, listFilter 
         backHref={reminderHref}
         skipHref="/payment-third-review"
       />
-      {detailQuery.isPending ? (
+      {detailQuery.isPending || isRedirecting ? (
         <ReminderResultSkeleton />
       ) : detailQuery.isError || invalidReminderTarget ? (
         <ReminderResultLoadError
