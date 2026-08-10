@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import type { NotificationSettings } from '@/entities/notification-settings';
+import type { PaymentThirdReviewListItem } from '@/entities/payment-third-review/api/payment-third-review-list.schema';
 
 const PaymentReviewFollowUpRealtimeRowSchema = z.object({
   id: z.string().uuid(),
@@ -52,6 +53,42 @@ export function getPaymentThirdReviewRealtimeNotification(
     title: '결제 만족도를 확인할 시간이에요',
     description: '결제 후 만족도를 기록해 다음 선택의 기준을 만들어보세요.',
   };
+}
+
+export function getMissedPaymentThirdReviewNotification(
+  items: PaymentThirdReviewListItem[],
+  settings: NotificationSettings,
+  seenFollowUpIds: ReadonlySet<string>,
+  now = new Date(),
+) {
+  for (const item of items) {
+    const followUp = item.followUp;
+
+    if (!followUp || seenFollowUpIds.has(followUp.id)) {
+      continue;
+    }
+
+    const notification = getPaymentThirdReviewRealtimeNotification(
+      {
+        id: followUp.id,
+        review_id: item.id,
+        followup_type: followUp.type,
+        status: followUp.status,
+      },
+      settings,
+      now,
+    );
+
+    if (notification) {
+      return notification;
+    }
+  }
+
+  return null;
+}
+
+export function shouldUseRealtimeFallback(status: string) {
+  return status === 'TIMED_OUT' || status === 'CHANNEL_ERROR' || status === 'CLOSED';
 }
 
 function isDefaultQuietHours(now: Date) {
