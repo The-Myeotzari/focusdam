@@ -18,6 +18,7 @@ import type {
   PaymentReviewHistoryItem,
   PaymentReviewReminderDecision,
 } from '@/entities/payment-third-review';
+import { PaymentThirdReviewLoadError } from '@/entities/payment-third-review';
 import { ApiRequestError } from '@/shared/lib/api/api';
 import { SiteTopBar } from '@/shared/ui';
 
@@ -84,14 +85,27 @@ export function PaymentThirdReviewReminderPage({ id, listFilter }: Props) {
       {detailQuery.isPending ? (
         <ReminderPageSkeleton />
       ) : detailQuery.isError || invalidReminderTarget ? (
-        <ReminderLoadError
-          listHref={listHref}
-          notFound={
-            invalidReminderTarget ||
-            (detailQuery.error instanceof ApiRequestError && detailQuery.error.body.status === 404)
-          }
-          onRetry={() => void detailQuery.refetch()}
-        />
+        invalidReminderTarget ||
+        (detailQuery.error instanceof ApiRequestError && detailQuery.error.body.status === 404) ? (
+          <PaymentThirdReviewLoadError
+            description="삭제되었거나 리마인드 대상이 아닌 내역이에요."
+            fullPage
+            href={listHref}
+            icon={Clock3}
+            iconClassName="bg-[#fff2e0] text-[#94640a]"
+            title="리마인드 대상을 찾을 수 없어요"
+          />
+        ) : (
+          <PaymentThirdReviewLoadError
+            description="잠시 후 다시 시도해주세요."
+            fullPage
+            icon={Clock3}
+            iconClassName="bg-[#fff2e0] text-[#94640a]"
+            isRetrying={detailQuery.isFetching}
+            onRetry={() => void detailQuery.refetch()}
+            title="정보를 불러오지 못했어요"
+          />
+        )
       ) : item ? (
         <ReminderContent
           detailHref={detailHref}
@@ -259,46 +273,6 @@ function ReminderPageSkeleton() {
         <span className="h-[100px] rounded-[28px] bg-white" />
         <span className="h-[100px] rounded-[28px] bg-white" />
       </div>
-    </main>
-  );
-}
-
-function ReminderLoadError({
-  listHref,
-  notFound,
-  onRetry,
-}: {
-  listHref: string;
-  notFound: boolean;
-  onRetry: () => void;
-}) {
-  return (
-    <main className="mx-auto grid min-h-[calc(100svh-56px)] w-full max-w-[430px] place-content-center px-5 py-10 text-center">
-      <span className="mx-auto grid size-14 place-items-center rounded-full bg-[#fff2e0] text-[#94640a]">
-        <Clock3 size={26} aria-hidden="true" />
-      </span>
-      <h1 className="mt-4 text-xl font-semibold text-[#1a1c1e]">
-        {notFound ? '리마인드 대상을 찾을 수 없어요' : '정보를 불러오지 못했어요'}
-      </h1>
-      <p className="mt-2 text-sm leading-6 text-[#72777e]">
-        {notFound ? '삭제되었거나 리마인드 대상이 아닌 내역이에요.' : '잠시 후 다시 시도해주세요.'}
-      </p>
-      {notFound ? (
-        <Link
-          href={listHref}
-          className="mt-6 flex min-h-12 items-center justify-center rounded-full bg-[#3c5f7c] px-5 text-sm font-semibold text-white"
-        >
-          목록으로 돌아가기
-        </Link>
-      ) : (
-        <button
-          type="button"
-          onClick={onRetry}
-          className="mt-6 min-h-12 rounded-full bg-[#3c5f7c] px-5 text-sm font-semibold text-white"
-        >
-          다시 불러오기
-        </button>
-      )}
     </main>
   );
 }

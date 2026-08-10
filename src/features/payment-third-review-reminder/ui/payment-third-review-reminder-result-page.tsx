@@ -9,6 +9,7 @@ import { useMemo, useState } from 'react';
 import { paymentThirdReviewDetailQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import { completePaymentThirdReviewReminderClient } from '@/entities/payment-third-review/api/payment-third-review-reminder.client';
 import { mapPaymentThirdReviewDetailToHistoryItem } from '@/entities/payment-third-review/lib/payment-review-detail-item';
+import { getPaymentThirdReviewSubmitErrorMessage } from '@/entities/payment-third-review/lib/payment-third-review-submit-error';
 import {
   getPaymentThirdReviewDetailHref,
   getPaymentThirdReviewListHref,
@@ -20,7 +21,11 @@ import type {
   PaymentReviewReminderDecision,
   PaymentReviewReminderStatus,
 } from '@/entities/payment-third-review';
-import { PaymentReviewInfoRow } from '@/entities/payment-third-review';
+import {
+  PaymentReviewInfoRow,
+  PaymentThirdReviewLoadError,
+  PaymentThirdReviewSubmitError,
+} from '@/entities/payment-third-review';
 import { QUERY_KEYS } from '@/shared/constants/query-key';
 import { ApiRequestError } from '@/shared/lib/api/api';
 import { SiteTopBar } from '@/shared/ui';
@@ -113,14 +118,27 @@ export function PaymentThirdReviewReminderResultPage({ decision, id, listFilter 
       {detailQuery.isPending || isRedirecting ? (
         <ReminderResultSkeleton />
       ) : detailQuery.isError || invalidReminderTarget ? (
-        <ReminderResultLoadError
-          listHref={listHref}
-          notFound={
-            invalidReminderTarget ||
-            (detailQuery.error instanceof ApiRequestError && detailQuery.error.body.status === 404)
-          }
-          onRetry={() => void detailQuery.refetch()}
-        />
+        invalidReminderTarget ||
+        (detailQuery.error instanceof ApiRequestError && detailQuery.error.body.status === 404) ? (
+          <PaymentThirdReviewLoadError
+            description="삭제되었거나 리마인드 대상이 아닌 내역이에요."
+            fullPage
+            href={listHref}
+            icon={Clock3}
+            iconClassName="bg-[#fff2e0] text-[#94640a]"
+            title="리마인드 대상을 찾을 수 없어요"
+          />
+        ) : (
+          <PaymentThirdReviewLoadError
+            description="잠시 후 다시 시도해주세요."
+            fullPage
+            icon={Clock3}
+            iconClassName="bg-[#fff2e0] text-[#94640a]"
+            isRetrying={detailQuery.isFetching}
+            onRetry={() => void detailQuery.refetch()}
+            title="정보를 불러오지 못했어요"
+          />
+        )
       ) : item?.reminder?.status !== 'required' ? (
         <ReminderResultUnavailable detailHref={detailHref} status={item?.reminder?.status} />
       ) : item ? (
@@ -129,7 +147,10 @@ export function PaymentThirdReviewReminderResultPage({ decision, id, listFilter 
           item={item}
           memo={memo}
           isSubmitting={reminderMutation.isPending}
-          submitError={getSubmitErrorMessage(reminderMutation.error)}
+          submitError={getPaymentThirdReviewSubmitErrorMessage(
+            reminderMutation.error,
+            'reminder',
+          )}
           onMemoChange={setMemo}
           onSubmit={() => reminderMutation.mutate()}
         />
@@ -210,9 +231,11 @@ function ReminderResultContent({
       </label>
 
       {submitError ? (
-        <p className="rounded-2xl bg-[#f9e9e6] px-4 py-3 text-sm leading-6 text-[#9f3e30]" role="alert">
-          {submitError}
-        </p>
+        <PaymentThirdReviewSubmitError
+          isRetrying={isSubmitting}
+          message={submitError}
+          onRetry={onSubmit}
+        />
       ) : null}
 
       <div className="mt-auto grid gap-2 pt-4">
@@ -266,53 +289,8 @@ function ReminderResultSkeleton() {
   );
 }
 
-function ReminderResultLoadError({
-  listHref,
-  notFound,
-  onRetry,
-}: {
-  listHref: string;
-  notFound: boolean;
-  onRetry: () => void;
-}) {
-  return (
-    <main className="mx-auto grid min-h-[calc(100svh-56px)] w-full max-w-[430px] place-content-center px-5 py-10 text-center">
-      <Clock3 className="mx-auto text-[#94640a]" size={36} aria-hidden="true" />
-      <h1 className="mt-4 text-xl font-semibold text-[#1a1c1e]">
-        {notFound ? '리마인드 대상을 찾을 수 없어요' : '정보를 불러오지 못했어요'}
-      </h1>
-      {notFound ? (
-        <Link
-          href={listHref}
-          className="mt-6 flex min-h-12 items-center justify-center rounded-full bg-[#3c5f7c] px-5 text-sm font-semibold text-white"
-        >
-          목록으로 돌아가기
-        </Link>
-      ) : (
-        <button
-          type="button"
-          onClick={onRetry}
-          className="mt-6 min-h-12 rounded-full bg-[#3c5f7c] px-5 text-sm font-semibold text-white"
-        >
-          다시 불러오기
-        </button>
-      )}
-    </main>
-  );
-}
-
 function getReminderDecisionLabel(decision: PaymentReviewReminderDecision) {
   if (decision === 'buy') return '결제 진행';
   if (decision === 'cancel') return '결제 미진행';
   return '보류';
-}
-
-function getSubmitErrorMessage(error: Error | null) {
-  if (!error) return null;
-
-  if (error instanceof ApiRequestError && error.body.status === 409) {
-    return `${error.body.detail} 최신 상태를 다시 확인해주세요.`;
-  }
-
-  return '리마인드 판단을 저장하지 못했어요. 잠시 후 다시 시도해주세요.';
 }

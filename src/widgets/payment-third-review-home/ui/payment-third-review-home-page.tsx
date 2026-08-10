@@ -1,8 +1,9 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { ClipboardCheck, PiggyBank, RotateCcw } from 'lucide-react';
+import { ClipboardCheck, PiggyBank } from 'lucide-react';
 
+import { PaymentThirdReviewLoadError } from '@/entities/payment-third-review';
 import { paymentThirdReviewHomeQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import type { PaymentThirdReviewHomeResponse } from '@/entities/payment-third-review/api/payment-third-review-home.schema';
 import { formatPaymentReviewWon } from '@/entities/payment-third-review/lib/payment-review-amount';
@@ -27,7 +28,12 @@ export function PaymentThirdReviewHomePage() {
         {homeQuery.isPending ? (
           <PaymentThirdReviewHomeSkeleton />
         ) : homeQuery.isError && !homeQuery.data ? (
-          <PaymentThirdReviewHomeError onRetry={() => void homeQuery.refetch()} />
+          <PaymentThirdReviewLoadError
+            description="잠시 후 다시 시도해주세요."
+            isRetrying={homeQuery.isFetching}
+            onRetry={() => void homeQuery.refetch()}
+            title="홈 정보를 불러오지 못했어요"
+          />
         ) : homeQuery.data ? (
           <PaymentThirdReviewHomeContent data={homeQuery.data} />
         ) : null}
@@ -123,29 +129,5 @@ function PaymentThirdReviewHomeSkeleton() {
         <span className="h-24 rounded-[22px] bg-white" />
       </section>
     </div>
-  );
-}
-
-function PaymentThirdReviewHomeError({ onRetry }: { onRetry: () => void }) {
-  return (
-    <section
-      className="rounded-[24px] border border-[#eadfdd] bg-white px-5 py-9 text-center"
-      role="alert"
-    >
-      <span className="mx-auto grid size-12 place-items-center rounded-full bg-[#f1f3f5] text-[#72777e]">
-        <RotateCcw size={21} aria-hidden="true" />
-      </span>
-      <p className="mt-4 text-[16px] font-semibold leading-7 text-[#1a1c1e]">
-        홈 정보를 불러오지 못했어요
-      </p>
-      <p className="mt-1 text-sm leading-6 text-[#72777e]">잠시 후 다시 시도해주세요.</p>
-      <button
-        type="button"
-        onClick={onRetry}
-        className="mt-4 min-h-10 rounded-full bg-[#3c5f7c] px-5 text-sm font-semibold text-white"
-      >
-        다시 불러오기
-      </button>
-    </section>
   );
 }

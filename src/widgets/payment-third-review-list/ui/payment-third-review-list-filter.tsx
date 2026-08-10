@@ -4,7 +4,10 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { FileSearch } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { PaymentReviewHistoryRow } from '@/entities/payment-third-review';
+import {
+  PaymentReviewHistoryRow,
+  PaymentThirdReviewLoadError,
+} from '@/entities/payment-third-review';
 import { paymentThirdReviewListInfiniteQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import { mapPaymentThirdReviewListItemToHistoryRow } from '@/entities/payment-third-review/lib/payment-review-list-item';
 import {
@@ -103,7 +106,12 @@ export function PaymentThirdReviewListFilter({
       {listQuery.isPending ? (
         <PaymentThirdReviewListSkeleton />
       ) : listQuery.isError ? (
-        <PaymentThirdReviewListError onRetry={() => void listQuery.refetch()} />
+        <PaymentThirdReviewLoadError
+          description="잠시 후 다시 시도해주세요."
+          isRetrying={listQuery.isFetching}
+          onRetry={() => void listQuery.refetch()}
+          title="내역을 불러오지 못했어요"
+        />
       ) : items.length === 0 ? (
         <PaymentThirdReviewListEmpty filter={selectedFilter} />
       ) : (
@@ -163,25 +171,6 @@ function PaymentThirdReviewListEmpty({ filter }: { filter: PaymentThirdReviewLis
       <p className="mx-auto mt-1 max-w-[280px] text-sm leading-6 text-[#72777e]">
         {emptyState.description}
       </p>
-    </div>
-  );
-}
-
-function PaymentThirdReviewListError({ onRetry }: { onRetry: () => void }) {
-  return (
-    <div
-      className="rounded-[24px] border border-[#eadfdd] bg-white px-5 py-9 text-center shadow-[0_4px_12px_rgba(0,0,0,0.04)]"
-      role="alert"
-    >
-      <p className="text-[16px] font-semibold leading-7 text-[#1a1c1e]">내역을 불러오지 못했어요</p>
-      <p className="mt-1 text-sm leading-6 text-[#72777e]">잠시 후 다시 시도해주세요.</p>
-      <button
-        type="button"
-        onClick={onRetry}
-        className="mt-4 min-h-10 rounded-full bg-[#3c5f7c] px-5 text-sm font-semibold text-white"
-      >
-        다시 불러오기
-      </button>
     </div>
   );
 }
