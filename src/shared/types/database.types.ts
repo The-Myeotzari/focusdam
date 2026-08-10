@@ -1084,6 +1084,31 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activate_due_payment_review_followups: {
+        Args: { p_batch_size?: number }
+        Returns: {
+          processed_count: number
+          reminder_count: number
+          satisfaction_count: number
+        }[]
+      }
+      complete_payment_third_review_reminder: {
+        Args: {
+          p_decision: Database["public"]["Enums"]["payment_reminder_decision"]
+          p_memo?: string
+          p_review_id: string
+        }
+        Returns: Json
+      }
+      complete_payment_third_review_satisfaction: {
+        Args: {
+          p_memo?: string
+          p_review_id: string
+          p_score: number
+          p_summary: string
+        }
+        Returns: Json
+      }
       create_payment_third_review: {
         Args: {
           p_alternative_status: Database["public"]["Enums"]["payment_alternative_status"]
@@ -1102,10 +1127,7 @@ export type Database = {
         }
         Returns: Json
       }
-      delete_current_user_account: {
-        Args: never
-        Returns: undefined
-      }
+      delete_current_user_account: { Args: never; Returns: undefined }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }

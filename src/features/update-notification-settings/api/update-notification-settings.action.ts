@@ -1,5 +1,8 @@
-'use server';
-
+import {
+  NOTIFICATION_SETTINGS_UPDATED_EVENT,
+  updateNotificationSettingsClient,
+} from '@/entities/notification-settings';
+import { ApiRequestError } from '@/shared/lib/api/api';
 import type {
   UpdateNotificationSettingsInput,
   UpdateNotificationSettingsResult,
@@ -17,40 +20,26 @@ export async function updateNotificationSettings(
     };
   }
 
-  const endpoint = process.env.NOTIFICATION_SETTINGS_API_URL;
-
-  if (!endpoint) {
-    return {
-      success: true,
-      message: 'API 연결 전 임시 저장 요청을 확인했습니다.',
-    };
-  }
-
   try {
-    const response = await fetch(endpoint, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(input),
-      cache: 'no-store',
-    });
+    const savedSettings = await updateNotificationSettingsClient(input);
 
-    if (!response.ok) {
-      return {
-        success: false,
-        message: '알림 설정을 저장하지 못했습니다.',
-      };
-    }
+    window.dispatchEvent(
+      new CustomEvent(NOTIFICATION_SETTINGS_UPDATED_EVENT, {
+        detail: savedSettings,
+      }),
+    );
 
     return {
       success: true,
       message: '알림 설정을 저장했습니다.',
     };
-  } catch {
+  } catch (error) {
     return {
       success: false,
-      message: '네트워크 상태를 확인한 뒤 다시 시도해주세요.',
+      message:
+        error instanceof ApiRequestError
+          ? error.body.detail
+          : '네트워크 상태를 확인한 뒤 다시 시도해주세요.',
     };
   }
 }

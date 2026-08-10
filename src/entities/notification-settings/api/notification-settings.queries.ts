@@ -1,4 +1,6 @@
-// Notification Settings API Queries
+import { Api } from '@/shared/lib/api/api';
+
+import { NotificationSettingsResponseSchema } from './notification-settings.schema';
 import type { NotificationSettings } from '../model/notification-settings.types';
 
 export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
@@ -8,40 +10,26 @@ export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
   quietHours: true,
 };
 
-function isNotificationSettings(value: unknown): value is NotificationSettings {
-  if (!value || typeof value !== 'object') {
-    return false;
-  }
+export async function getNotificationSettings(): Promise<NotificationSettings> {
+  const response = await Api.get('/notification-settings', NotificationSettingsResponseSchema, {
+    credentials: 'include',
+  });
 
-  const settings = value as Record<string, unknown>;
-
-  return (
-    typeof settings.startReminder === 'boolean' &&
-    typeof settings.spendHold === 'boolean' &&
-    typeof settings.emotionReset === 'boolean' &&
-    typeof settings.quietHours === 'boolean'
-  );
+  return response.settings;
 }
 
-export async function getNotificationSettings(): Promise<NotificationSettings> {
-  const endpoint = process.env.NOTIFICATION_SETTINGS_API_URL;
+export async function updateNotificationSettingsClient(
+  settings: NotificationSettings,
+): Promise<NotificationSettings> {
+  const response = await Api.patch(
+    '/notification-settings',
+    NotificationSettingsResponseSchema,
+    {
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(settings),
+    },
+  );
 
-  if (!endpoint) {
-    return DEFAULT_NOTIFICATION_SETTINGS;
-  }
-
-  try {
-    const response = await fetch(endpoint, {
-      cache: 'no-store',
-    });
-
-    if (!response.ok) {
-      return DEFAULT_NOTIFICATION_SETTINGS;
-    }
-
-    const data: unknown = await response.json();
-    return isNotificationSettings(data) ? data : DEFAULT_NOTIFICATION_SETTINGS;
-  } catch {
-    return DEFAULT_NOTIFICATION_SETTINGS;
-  }
+  return response.settings;
 }

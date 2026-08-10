@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   PAYMENT_THIRD_REVIEW_LIST_PAGE_SIZE,
+  PAYMENT_THIRD_REVIEW_SCHEDULED_REFETCH_INTERVAL,
   PAYMENT_THIRD_REVIEW_STALE_TIME,
   paymentGoalAchievementDetailQueryOptions,
   paymentGoalAchievementListQueryOptions,
@@ -32,6 +33,17 @@ describe('paymentThirdReviewDetailQueryOptions', () => {
 
     expect(options.queryKey).toEqual(['payment-third-reviews', 'detail', 'review-1']);
     expect(options.staleTime).toBe(PAYMENT_THIRD_REVIEW_STALE_TIME);
+    expect(options.refetchOnWindowFocus).toBe('always');
+    expect(
+      runRefetchInterval(options.refetchInterval, {
+        item: { followUps: [{ status: 'scheduled' }] },
+      }),
+    ).toBe(PAYMENT_THIRD_REVIEW_SCHEDULED_REFETCH_INTERVAL);
+    expect(
+      runRefetchInterval(options.refetchInterval, {
+        item: { followUps: [{ status: 'completed' }] },
+      }),
+    ).toBe(false);
   });
 });
 
@@ -41,6 +53,12 @@ describe('paymentThirdReviewHomeQueryOptions', () => {
 
     expect(options.queryKey).toEqual(['payment-third-reviews', 'home']);
     expect(options.staleTime).toBe(PAYMENT_THIRD_REVIEW_STALE_TIME);
+    expect(options.refetchOnWindowFocus).toBe('always');
+    expect(
+      runRefetchInterval(options.refetchInterval, {
+        recentItems: [{ followUp: { status: 'scheduled' } }],
+      }),
+    ).toBe(PAYMENT_THIRD_REVIEW_SCHEDULED_REFETCH_INTERVAL);
   });
 });
 
@@ -51,6 +69,12 @@ describe('paymentThirdReviewListInfiniteQueryOptions', () => {
     expect(options.queryKey).toEqual(['payment-third-reviews', 'list', 'all']);
     expect(options.initialPageParam).toBe(1);
     expect(options.staleTime).toBe(PAYMENT_THIRD_REVIEW_STALE_TIME);
+    expect(options.refetchOnWindowFocus).toBe('always');
+    expect(
+      runRefetchInterval(options.refetchInterval, {
+        pages: [{ items: [{ followUp: { status: 'scheduled' } }] }],
+      }),
+    ).toBe(PAYMENT_THIRD_REVIEW_SCHEDULED_REFETCH_INTERVAL);
     expect(PAYMENT_THIRD_REVIEW_LIST_PAGE_SIZE).toBe(6);
     expect(
       options.getNextPageParam?.(
@@ -78,3 +102,14 @@ describe('paymentThirdReviewListInfiniteQueryOptions', () => {
     ).toBeUndefined();
   });
 });
+
+function runRefetchInterval(
+  refetchInterval: unknown,
+  data: unknown,
+) {
+  if (typeof refetchInterval !== 'function') {
+    return refetchInterval;
+  }
+
+  return refetchInterval({ state: { data } } as never);
+}
