@@ -5,8 +5,9 @@ import { useState, type FormEvent } from 'react';
 
 import { savePaymentSavingGoalClient } from '@/entities/payment-third-review/api/payment-saving-goal.client';
 import { validatePaymentSavingGoalForm } from '@/entities/payment-third-review/lib/payment-saving-goal-form';
+import { getPaymentThirdReviewSubmitErrorMessage } from '@/entities/payment-third-review/lib/payment-third-review-submit-error';
+import { PaymentThirdReviewSubmitError } from '@/entities/payment-third-review';
 import { QUERY_KEYS } from '@/shared/constants/query-key';
-import { ApiRequestError } from '@/shared/lib/api/api';
 import {
   Dialog,
   DialogContent,
@@ -53,6 +54,10 @@ export function PaymentSavingGoalDialog({ open, onOpenChange }: Props) {
     event.preventDefault();
     setTouchedFields({ amount: true, name: true });
 
+    retrySubmit();
+  };
+
+  const retrySubmit = () => {
     if (!formValidation.data || saveMutation.isPending) {
       return;
     }
@@ -60,12 +65,7 @@ export function PaymentSavingGoalDialog({ open, onOpenChange }: Props) {
     saveMutation.mutate(formValidation.data);
   };
 
-  const submitError =
-    saveMutation.error instanceof ApiRequestError
-      ? saveMutation.error.body.detail
-      : saveMutation.error
-        ? '목표를 저장하지 못했어요. 잠시 후 다시 시도해주세요.'
-        : null;
+  const submitError = getPaymentThirdReviewSubmitErrorMessage(saveMutation.error, 'goal');
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -123,12 +123,11 @@ export function PaymentSavingGoalDialog({ open, onOpenChange }: Props) {
           </label>
 
           {submitError ? (
-            <p
-              role="alert"
-              className="rounded-2xl bg-[#f9e9e6] px-4 py-3 text-sm leading-6 text-[#9f3e30]"
-            >
-              {submitError}
-            </p>
+            <PaymentThirdReviewSubmitError
+              isRetrying={saveMutation.isPending}
+              message={submitError}
+              onRetry={retrySubmit}
+            />
           ) : null}
 
           <button

@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 
 import { createPaymentThirdReviewClient } from '@/entities/payment-third-review/api/payment-third-review-create.client';
 import { activePaymentSavingGoalQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
+import { getPaymentThirdReviewSubmitErrorMessage } from '@/entities/payment-third-review/lib/payment-third-review-submit-error';
+import { PaymentThirdReviewSubmitError } from '@/entities/payment-third-review';
 import { useCreatePaymentThirdReviewDraft } from '@/features/create-payment-third-review/lib/use-create-payment-third-review-draft';
 import { createPaymentThirdReviewPayload } from '@/features/create-payment-third-review/model/create-payment-third-review.draft';
 import {
@@ -19,7 +21,6 @@ import { CreatePaymentThirdReviewFooter } from '@/features/create-payment-third-
 import { CreatePaymentThirdReviewProgress } from '@/features/create-payment-third-review/ui/create-payment-third-review-progress';
 import { CreatePaymentThirdReviewStepBody } from '@/features/create-payment-third-review/ui/create-payment-third-review-step-body';
 import { QUERY_KEYS } from '@/shared/constants/query-key';
-import { ApiRequestError } from '@/shared/lib/api/api';
 
 type Props = {
   step: CreatePaymentThirdReviewStep;
@@ -127,13 +128,14 @@ export function CreatePaymentThirdReviewStep({ step }: Props) {
           />
         </div>
 
-        {createMutation.isError ? (
-          <p
-            className="mx-5 mb-2 rounded-2xl bg-[#f9e9e6] px-4 py-3 text-sm leading-6 text-[#9f3e30]"
-            role="alert"
-          >
-            {getCreateErrorMessage(createMutation.error)}
-          </p>
+        {createMutation.error ? (
+          <div className="mx-5 mb-2">
+            <PaymentThirdReviewSubmitError
+              isRetrying={createMutation.isPending}
+              message={getPaymentThirdReviewSubmitErrorMessage(createMutation.error, 'create')!}
+              onRetry={handleSubmit}
+            />
+          </div>
         ) : null}
 
         <CreatePaymentThirdReviewFooter
@@ -153,12 +155,4 @@ export function CreatePaymentThirdReviewStep({ step }: Props) {
       </section>
     </div>
   );
-}
-
-function getCreateErrorMessage(error: unknown) {
-  if (error instanceof ApiRequestError) {
-    return error.body.detail;
-  }
-
-  return '결제 3심 기록을 저장하지 못했어요. 잠시 후 다시 시도해주세요.';
 }

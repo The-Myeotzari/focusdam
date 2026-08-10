@@ -8,8 +8,9 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { activePaymentSavingGoalQueryOptions } from '@/entities/payment-third-review/api/payment-third-review-query-options';
 import { savePaymentSavingGoalClient } from '@/entities/payment-third-review/api/payment-saving-goal.client';
 import { validatePaymentSavingGoalForm } from '@/entities/payment-third-review/lib/payment-saving-goal-form';
+import { getPaymentThirdReviewSubmitErrorMessage } from '@/entities/payment-third-review/lib/payment-third-review-submit-error';
+import { PaymentThirdReviewSubmitError } from '@/entities/payment-third-review';
 import { QUERY_KEYS } from '@/shared/constants/query-key';
-import { ApiRequestError } from '@/shared/lib/api/api';
 import { SiteButton, SiteInput, SiteTopBar } from '@/shared/ui';
 
 export function PaymentThirdReviewGoalSettingPage() {
@@ -61,6 +62,10 @@ export function PaymentThirdReviewGoalSettingPage() {
 
     setTouchedFields({ amount: true, name: true });
 
+    retrySubmit();
+  };
+
+  const retrySubmit = () => {
     if (!formValidation.data || saveMutation.isPending) {
       return;
     }
@@ -68,12 +73,7 @@ export function PaymentThirdReviewGoalSettingPage() {
     saveMutation.mutate(formValidation.data);
   };
 
-  const submitError =
-    saveMutation.error instanceof ApiRequestError
-      ? saveMutation.error.body.detail
-      : saveMutation.error
-        ? '목표를 저장하지 못했습니다. 잠시 후 다시 시도해주세요.'
-        : null;
+  const submitError = getPaymentThirdReviewSubmitErrorMessage(saveMutation.error, 'goal');
 
   return (
     <>
@@ -168,9 +168,11 @@ export function PaymentThirdReviewGoalSettingPage() {
         </label>
 
         {submitError ? (
-          <p className="text-sm font-medium leading-6 text-[#ba1a1a]" role="alert">
-            {submitError}
-          </p>
+          <PaymentThirdReviewSubmitError
+            isRetrying={saveMutation.isPending}
+            message={submitError}
+            onRetry={retrySubmit}
+          />
         ) : null}
 
         <div className="mt-auto grid gap-2 pt-4">
