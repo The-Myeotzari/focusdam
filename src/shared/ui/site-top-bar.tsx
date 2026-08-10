@@ -91,11 +91,11 @@ export function SiteTopBar({
 
 function HeaderBackSlot({ href }: { href?: string }) {
   if (!href) {
-    return <span className="h-6 w-12" aria-hidden="true" />;
+    return <span className="h-11 w-12" aria-hidden="true" />;
   }
 
   return (
-    <Link href={href} className="flex h-6 w-12 shrink-0 items-center justify-start text-[#3c5f7c]" aria-label="이전 화면으로 돌아가기">
+    <Link href={href} className="flex h-11 w-12 shrink-0 items-center justify-start rounded-xl text-[#3c5f7c]" aria-label="이전 화면으로 돌아가기">
       <ArrowLeft size={16} strokeWidth={2} />
     </Link>
   );
@@ -103,15 +103,15 @@ function HeaderBackSlot({ href }: { href?: string }) {
 
 function HeaderActionSlot({ href, action, children }: { href?: string; action?: ReactNode; children: ReactNode }) {
   if (action) {
-    return <span className="flex h-8 w-12 items-center justify-end">{action}</span>;
+    return <span className="flex h-11 w-12 items-center justify-end">{action}</span>;
   }
 
   if (!href) {
-    return <span className="h-6 w-12" aria-hidden="true" />;
+    return <span className="h-11 w-12" aria-hidden="true" />;
   }
 
   return (
-    <Link href={href} className="relative -top-px flex h-6 w-12 shrink-0 items-center justify-end font-['Hanken_Grotesk','Noto_Sans_KR',sans-serif] text-[13px] font-semibold leading-[18px] tracking-[0.52px] text-[#42474d]">
+    <Link href={href} className="relative -top-px flex h-11 w-12 shrink-0 items-center justify-end rounded-xl font-['Hanken_Grotesk','Noto_Sans_KR',sans-serif] text-[13px] font-semibold leading-[18px] tracking-[0.52px] text-[#42474d]">
       {children}
     </Link>
   );

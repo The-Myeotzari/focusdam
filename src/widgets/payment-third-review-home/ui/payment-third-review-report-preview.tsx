@@ -18,7 +18,7 @@ export function PaymentThirdReviewReportPreview({ items }: Props) {
         <SiteButton
           href="/payment-third-review/list"
           variant="secondary"
-          className="!min-h-9 !rounded-full !bg-transparent !px-1 !text-xs !font-semibold !text-[#72777e] !shadow-none"
+          className="!min-h-11 !rounded-full !bg-transparent !px-2 !text-xs !font-semibold !text-[#72777e] !shadow-none"
         >
           더보기
         </SiteButton>

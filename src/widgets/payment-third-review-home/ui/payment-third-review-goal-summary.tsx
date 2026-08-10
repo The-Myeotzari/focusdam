@@ -28,7 +28,7 @@ export function PaymentThirdReviewGoalSummary({
       </h2>
 
       <article
-        className={`flex items-center justify-between gap-4 rounded-[24px] p-4 shadow-[0_4px_12px_rgba(0,0,0,0.04)] ${
+        className={`flex items-center justify-between gap-4 rounded-[24px] p-4 shadow-[0_4px_12px_rgba(0,0,0,0.04)] max-[360px]:flex-col max-[360px]:items-stretch ${
           overview.status === 'achieved' ? 'bg-[#eef8f5]' : 'bg-white'
         }`}
       >
@@ -54,32 +54,32 @@ export function PaymentThirdReviewGoalSummary({
             </p>
           </div>
         </div>
-        <div className="grid shrink-0 gap-2">
+        <div className="grid shrink-0 gap-2 max-[360px]:grid-cols-2">
           <SiteButton
             href={goalSettingHref}
             variant="secondary"
-            className="!min-h-10 !gap-1.5 !rounded-full !px-4 !text-xs !font-semibold"
+            className="!min-h-11 !gap-1.5 !rounded-full !px-4 !text-xs !font-semibold"
           >
             {overview.actionLabel}
           </SiteButton>
           <SiteButton
             href={goalAchievementHref}
             variant="outline"
-            className="!min-h-9 !gap-1.5 !rounded-full !border-transparent !bg-transparent !px-3 !text-xs !font-semibold !text-[#3c5f7c] !shadow-none"
+            className="!min-h-11 !gap-1.5 !rounded-full !border-transparent !bg-transparent !px-3 !text-xs !font-semibold !text-[#3c5f7c] !shadow-none"
           >
             달성 기록
           </SiteButton>
         </div>
       </article>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 max-[360px]:grid-cols-1">
         {items.map((item) => {
           const Icon = item.icon;
 
           return (
             <article
               key={item.title}
-              className="flex min-h-[156px] flex-col rounded-[24px] bg-white p-4 shadow-[0_4px_12px_rgba(0,0,0,0.04)]"
+              className="flex min-h-[156px] flex-col rounded-[24px] bg-white p-4 shadow-[0_4px_12px_rgba(0,0,0,0.04)] max-[360px]:min-h-[132px]"
             >
               <span className={`grid size-9 place-items-center rounded-full ${item.tone}`}>
                 <Icon size={18} strokeWidth={2.1} aria-hidden="true" />

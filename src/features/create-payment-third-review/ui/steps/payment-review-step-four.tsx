@@ -247,7 +247,7 @@ function PaymentReviewGoalImpactError({ onRetry }: { onRetry: () => void }) {
       <button
         type="button"
         onClick={onRetry}
-        className="mt-4 min-h-10 rounded-full bg-[#3c5f7c] px-5 text-sm font-semibold text-white"
+        className="mt-4 min-h-11 rounded-full bg-[#3c5f7c] px-5 text-sm font-semibold text-white"
       >
         다시 불러오기
       </button>

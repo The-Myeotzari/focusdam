@@ -89,7 +89,7 @@ export function PaymentThirdReviewListFilter({
               type="button"
               onClick={() => handleFilterChange(option.value)}
               className={[
-                'min-h-9 rounded-full text-sm font-semibold leading-5 transition-colors',
+                'min-h-11 rounded-full text-sm font-semibold leading-5 transition-colors',
                 isSelected
                   ? 'bg-white text-[#1a1c1e] shadow-[0_2px_8px_rgba(0,0,0,0.06)]'
                   : 'text-[#72777e]',

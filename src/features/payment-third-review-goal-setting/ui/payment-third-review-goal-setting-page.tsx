@@ -84,7 +84,7 @@ export function PaymentThirdReviewGoalSettingPage() {
       />
       <form
         onSubmit={handleSubmit}
-        className="mx-auto flex min-h-[calc(100svh-56px)] w-full max-w-[430px] flex-col gap-5 px-5 pb-8 pt-4"
+        className="mx-auto flex min-h-[calc(100svh-56px)] w-full max-w-[430px] flex-col gap-5 px-5 pb-[calc(var(--bottom-nav-height)+2rem)] pt-4"
       >
         <section className="rounded-[32px] bg-[#e6f4f1] px-5 py-6">
           <span className="grid size-12 place-items-center rounded-full bg-white text-[#3c5f7c] shadow-[0_8px_18px_rgba(60,95,124,0.08)]">
@@ -109,7 +109,7 @@ export function PaymentThirdReviewGoalSettingPage() {
             <button
               type="button"
               onClick={() => void goalQuery.refetch()}
-              className="mt-2 font-semibold text-[#3c5f7c]"
+              className="mt-2 min-h-11 rounded-full px-3 font-semibold text-[#3c5f7c]"
             >
               다시 불러오기
             </button>
